@@ -3,6 +3,8 @@ import axios from "axios";
 const baseURL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
 console.log('🌐 API Base URL:', baseURL);
+console.log('🌐 Environment:', import.meta.env.MODE);
+console.log('🌐 All ENV vars:', import.meta.env);
 
 export const api = axios.create({
   baseURL,
