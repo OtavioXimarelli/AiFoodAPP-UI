@@ -10,12 +10,19 @@ const OAuth2Callback = () => {
   useEffect(() => {
     const handleCallback = async () => {
       try {
+        console.log('🔄 OAuth2Callback: Starting authentication check...');
+        console.log('🔄 Current URL:', window.location.href);
+        console.log('🔄 URL search params:', window.location.search);
+        
         // Check if authentication was successful
         await checkAuthentication();
+        
+        console.log('✅ OAuth2Callback: Authentication successful, redirecting to dashboard...');
         // Redirect to dashboard on successful authentication
         navigate('/dashboard', { replace: true });
       } catch (error) {
-        console.error('OAuth2 callback error:', error);
+        console.error('❌ OAuth2 callback error:', error);
+        console.log('🔄 OAuth2Callback: Redirecting to login due to error...');
         // Redirect to login on error
         navigate('/login', { replace: true });
       }
