@@ -1,73 +1,220 @@
-# Welcome to your Lovable project
+# AI Food App - Frontend
 
-## Project info
+A React-based frontend application for the AI Food App that connects to a Spring Boot backend with OAuth2 authentication.
 
-**URL**: https://lovable.dev/projects/3eee5194-6ef6-415c-8da1-27affd3cf39c
+## Features
 
-## How can I edit this code?
+- **OAuth2 Authentication**: Secure login with Google
+- **Food Inventory Management**: Add, edit, delete, and track food items with expiration dates
+- **AI Recipe Generation**: Generate recipes based on your food inventory using AI
+- **Nutritional Analysis**: Get detailed nutritional analysis of recipes
+- **Responsive Design**: Works on desktop and mobile devices
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+- **React 18** with TypeScript
+- **Vite** for build tooling
+- **Tailwind CSS** for styling
+- **Shadcn/ui** for UI components
+- **Zustand** for state management
+- **React Router** for navigation
+- **Axios** for API calls
+- **React Hook Form** for form handling
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/3eee5194-6ef6-415c-8da1-27affd3cf39c) and start prompting.
+## Prerequisites
 
-Changes made via Lovable will be committed automatically to this repo.
+- Node.js 18+ and npm
+- Backend API running on `http://localhost:8080`
 
-**Use your preferred IDE**
+## Setup Instructions
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 1. Clone and Install Dependencies
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+```bash
+# Clone the repository
+git clone <your-repo-url>
+cd ai-food-app-frontend
 
-Follow these steps:
+# Install dependencies
+npm install
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### 2. Environment Configuration
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+Create a `.env` file in the root directory:
 
-# Step 3: Install the necessary dependencies.
-npm i
+```env
+# API Configuration
+VITE_API_BASE_URL=http://localhost:8080
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Frontend URL (should match backend configuration)
+VITE_FRONTEND_URL=http://localhost:5173
+```
+
+### 3. Backend Configuration
+
+Make sure your Spring Boot backend is configured with:
+
+```properties
+# application.properties
+app.frontend.url=http://localhost:5173
+```
+
+And CORS is properly configured to allow requests from `http://localhost:5173`.
+
+### 4. Start Development Server
+
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The application will be available at `http://localhost:5173`.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Backend Integration
 
-**Use GitHub Codespaces**
+This frontend is designed to work with a Spring Boot backend that provides:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Authentication
+- OAuth2 authentication with Google
+- Session-based authentication (no JWT tokens)
+- CSRF protection with cookies
 
-## What technologies are used for this project?
+### API Endpoints
+- `GET /api/auth` - Get current user
+- `POST /api/auth/logout` - Logout user
+- `GET /api/foods/list` - Get all food items
+- `POST /api/foods/create` - Create food items
+- `PUT /api/foods/update` - Update food item
+- `DELETE /api/foods/delete/{id}` - Delete food item
+- `GET /api/recipes/gen` - Generate AI recipes
+- `GET /api/recipes/analyze/{id}` - Analyze recipe nutrition
 
-This project is built with:
+### Data Models
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+The frontend expects the following data structure from the backend:
 
-## How can I deploy this project?
+```typescript
+interface FoodItem {
+  id?: number;
+  name: string;
+  quantity: number;
+  expiration: string; // ISO date format
+  calories?: number;
+  protein?: number;
+  fat?: number;
+  carbohydrates?: number;
+  fiber?: number;
+  sugar?: number;
+  sodium?: number;
+  foodGroup: FoodGroup;
+  tags: string; // Comma-separated values
+}
 
-Simply open [Lovable](https://lovable.dev/projects/3eee5194-6ef6-415c-8da1-27affd3cf39c) and click on Share -> Publish.
+interface Recipe {
+  id?: number;
+  name: string;
+  description: string;
+  nutritionalInfo: string[];
+  instructions: string[];
+  ingredientsList: RecipeIngredient[];
+}
+```
 
-## Can I connect a custom domain to my Lovable project?
+## Project Structure
 
-Yes, you can!
+```
+src/
+├── components/          # Reusable UI components
+│   ├── ui/             # Shadcn/ui components
+│   └── shared/         # Shared components (Layout, etc.)
+├── hooks/              # Custom React hooks
+├── lib/                # Utilities and configurations
+├── pages/              # Page components
+├── services/           # API service functions
+└── store/              # Zustand store definitions
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Key Features Implementation
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### Authentication Flow
+1. User clicks "Login with Google"
+2. Redirected to backend OAuth2 endpoint
+3. After successful authentication, redirected back to frontend
+4. Frontend checks authentication status via `/api/auth`
+5. User data stored in Zustand store
+
+### Food Management
+- Add food items with nutritional information
+- Track expiration dates with visual indicators
+- Edit and delete existing items
+- Categorize by food groups
+
+### Recipe Generation
+- Generate recipes based on available food items
+- View detailed recipe instructions and ingredients
+- Get AI-powered nutritional analysis
+
+## Development
+
+### Available Scripts
+
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run lint         # Run ESLint
+```
+
+### Code Style
+
+- TypeScript for type safety
+- ESLint for code linting
+- Prettier for code formatting
+- Tailwind CSS for styling
+
+## Deployment
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+The built files will be in the `dist/` directory.
+
+### Environment Variables for Production
+
+Update your production environment variables:
+
+```env
+VITE_API_BASE_URL=https://your-api-domain.com
+VITE_FRONTEND_URL=https://your-frontend-domain.com
+```
+
+## Troubleshooting
+
+### Common Issues
+
+1. **CORS Errors**: Make sure your backend CORS configuration includes your frontend URL
+2. **Authentication Issues**: Verify OAuth2 configuration in backend
+3. **API Connection**: Check that `VITE_API_BASE_URL` matches your backend URL
+
+### Debug Mode
+
+Enable debug logging by adding to your `.env`:
+
+```env
+VITE_DEBUG=true
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
