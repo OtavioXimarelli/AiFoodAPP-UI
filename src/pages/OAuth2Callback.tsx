@@ -15,11 +15,14 @@ const OAuth2Callback = () => {
         console.log('🔄 Current URL:', window.location.href);
         console.log('🔄 URL search params:', window.location.search);
         console.log('🔄 API Base URL:', import.meta.env.VITE_API_BASE_URL);
+        console.log('🔄 Document cookies:', document.cookie);
         
-        // Add a small delay to ensure the backend session is properly set
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Add a longer delay to ensure the backend session is properly set
+        console.log('🔄 Waiting for backend session to be established...');
+        await new Promise(resolve => setTimeout(resolve, 2000));
         
         // Check if authentication was successful
+        console.log('🔄 Attempting to check authentication...');
         await checkAuthentication();
         
         console.log('✅ OAuth2Callback: Authentication successful, redirecting to dashboard...');
@@ -27,13 +30,21 @@ const OAuth2Callback = () => {
         navigate('/dashboard', { replace: true });
       } catch (error) {
         console.error('❌ OAuth2 callback error:', error);
-        console.log('🔄 OAuth2Callback: Redirecting to login due to error...');
+        console.log('🔄 OAuth2Callback: Authentication failed, analyzing...');
+        
+        // Log more details about the error
+        if (error instanceof Error) {
+          console.error('❌ Error message:', error.message);
+          console.error('❌ Error stack:', error.stack);
+        }
+        
         setError(error instanceof Error ? error.message : 'Authentication failed');
         
-        // Wait a bit before redirecting to show the error
+        // Wait longer before redirecting to show the error
         setTimeout(() => {
+          console.log('🔄 OAuth2Callback: Redirecting to login due to error...');
           navigate('/login', { replace: true });
-        }, 3000);
+        }, 5000);
       }
     };
 

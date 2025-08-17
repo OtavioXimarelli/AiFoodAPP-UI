@@ -15,7 +15,12 @@ export const api = axios.create({
     "Accept": "application/json"
   },
   // Enable credentials for OAuth2 session-based authentication
-  withCredentials: true
+  withCredentials: true,
+  // Additional settings for production
+  validateStatus: function (status) {
+    // Accept status codes 200-299 and 401 (to handle properly)
+    return (status >= 200 && status < 300) || status === 401;
+  }
 });
 
 // Utility function to get CSRF token from cookies
@@ -62,6 +67,7 @@ api.interceptors.response.use(
     const contentType = response.headers['content-type'];
     if (contentType && contentType.includes('text/html') && typeof response.data === 'string') {
       console.warn('⚠️ Received HTML response instead of JSON - likely redirected to login page');
+      console.warn('⚠️ Response data preview:', response.data.substring(0, 200));
       // Transform HTML response to indicate authentication failure
       throw new Error('Authentication required - received HTML login page');
     }
@@ -69,16 +75,26 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
+    console.error('❌ Full error object:', error);
+    
     if (error.code === 'ECONNABORTED') {
       console.error('❌ Request timeout - backend may not be running');
     } else if (error.code === 'ERR_NETWORK') {
       console.error('❌ Network error - backend may not be running or CORS issue');
-    } else {
+      console.error('❌ Check if CORS is properly configured on backend for domain:', window.location.origin);
+    } else if (error.response) {
       console.error(`❌ ${error.config?.method?.toUpperCase()} ${error.config?.url} - ${error.response?.status}:`, error.response?.data);
-    }
-    
-    if (error.response?.status === 401) {
-      console.log('🔑 Unauthorized - user needs to login');
+      
+      // Handle specific error cases
+      if (error.response.status === 401) {
+        console.log('🔑 Unauthorized - user needs to login');
+      } else if (error.response.status === 403) {
+        console.log('🔑 Forbidden - user lacks permission');
+      } else if (error.response.status >= 500) {
+        console.log('🔧 Server error - backend issue');
+      }
+    } else {
+      console.error('❌ Unknown error:', error.message);
     }
     
     return Promise.reject(error);
@@ -109,7 +125,7 @@ export class ApiClient {
   }
 
   async updateFoodItem(foodItem: any) {
-    const response = await api.put('/api/foods/update', foodItem);
+    const response = await api.put('/foods/update', foodItem);
     return response.data;
   }
 
