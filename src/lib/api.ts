@@ -103,44 +103,44 @@ api.interceptors.response.use(
 
 // API Client class
 export class ApiClient {
-  // Authentication endpoints
+  // Authentication endpoints - these will be proxied through nginx
   async getCurrentUser() {
-    const response = await api.get('/auth/me');
+    const response = await api.get('/api/auth/me');
     return response.data;
   }
 
   async logout() {
-    await api.post('/auth/logout');
+    await api.post('/api/auth/logout');
   }
 
-  // Food endpoints
+  // Food endpoints - these will be proxied through nginx
   async getFoodItems() {
-    const response = await api.get('/foods/list');
+    const response = await api.get('/api/foods/list');
     return response.data;
   }
 
   async createFoodItem(foodItem: any) {
-    const response = await api.post('/foods/create', foodItem);
+    const response = await api.post('/api/foods/create', foodItem);
     return response.data;
   }
 
   async updateFoodItem(foodItem: any) {
-    const response = await api.put('/foods/update', foodItem);
+    const response = await api.put('/api/foods/update', foodItem);
     return response.data;
   }
 
   async deleteFoodItem(id: number) {
-    await api.delete(`/foods/delete/${id}`);
+    await api.delete(`/api/foods/delete/${id}`);
   }
 
-  // Recipe endpoints
+  // Recipe endpoints - these will be proxied through nginx
   async generateRecipes() {
-    const response = await api.get('/recipes/gen');
+    const response = await api.get('/api/recipes/gen');
     return response.data;
   }
 
   async analyzeRecipe(id: number) {
-    const response = await api.get(`/recipes/analyze/${id}`);
+    const response = await api.get(`/api/recipes/analyze/${id}`);
     return response.data;
   }
 }
