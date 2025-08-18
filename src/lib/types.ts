@@ -31,19 +31,13 @@ export interface CreateFoodPayload {
   name: string;
   quantity: number;
   expiration: string;
-  calories?: number;
-  protein?: number;
-  fat?: number;
-  carbohydrates?: number;
-  fiber?: number;
-  sugar?: number;
-  sodium?: number;
-  foodGroup: FoodGroup;
-  tags: string;
 }
 
-export interface UpdateFoodPayload extends CreateFoodPayload {
+export interface UpdateFoodPayload {
   id: number;
+  name: string;
+  quantity: number;
+  expiration: string;
 }
 
 export interface RecipeIngredient {
@@ -70,7 +64,7 @@ export interface User {
 }
 
 // Validation utility
-export const validateFoodItem = (item: Partial<FoodItem>) => {
+export const validateFoodItem = (item: Partial<CreateFoodPayload>) => {
   const errors: Record<string, string> = {};
   
   if (!item.name?.trim()) {
@@ -88,10 +82,6 @@ export const validateFoodItem = (item: Partial<FoodItem>) => {
     if (expirationDate < new Date()) {
       errors.expiration = 'Expiration date must be in the future';
     }
-  }
-  
-  if (!item.foodGroup) {
-    errors.foodGroup = 'Food group is required';
   }
   
   return {
