@@ -115,7 +115,12 @@ export class ApiClient {
 
   // Food endpoints - these will be proxied through nginx
   async getFoodItems() {
-    const response = await api.get('/api/foods/list');
+    const response = await api.get('/api/foods');
+    return response.data;
+  }
+
+  async getFoodItem(id: number) {
+    const response = await api.get(`/api/foods/${id}`);
     return response.data;
   }
 
@@ -125,12 +130,12 @@ export class ApiClient {
   }
 
   async updateFoodItem(foodItem: any) {
-    const response = await api.put('/api/foods/update', foodItem);
+    const response = await api.put(`/api/foods/${foodItem.id}`, foodItem);
     return response.data;
   }
 
   async deleteFoodItem(id: number) {
-    await api.delete(`/api/foods/delete/${id}`);
+    await api.delete(`/api/foods/${id}`);
   }
 
   // Recipe endpoints - these will be proxied through nginx
