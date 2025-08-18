@@ -164,7 +164,8 @@ export default {
 				'soft': 'var(--shadow-soft)',
 				'card': 'var(--shadow-card)',
 				'glow': 'var(--shadow-glow)',
-				'hover': 'var(--shadow-hover)'
+				'hover': 'var(--shadow-hover)',
+				'orange': 'var(--shadow-orange)'
 			},
 			transitionTimingFunction: {
 				'smooth': 'var(--transition-smooth)',

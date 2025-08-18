@@ -13,6 +13,7 @@ import { Plus, Trash2, Pencil, Calendar, Package, AlertTriangle, Loader2 } from 
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import toast from "react-hot-toast";
 import { format, isAfter, differenceInDays } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 const FoodInventory = () => {
   const { foodItems, loading, error, createFoodItem, updateFoodItem, deleteFoodItem, clearError } = useFoodItems();
@@ -148,19 +149,21 @@ const FoodInventory = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Despensa Inteligente</h1>
-          <p className="text-gray-600 mt-1">Gerencie seus alimentos com análise nutricional automática por IA</p>
-        </div>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={resetForm} className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
-              <Plus className="h-4 w-4" />
-              Adicionar Alimento com IA
-            </Button>
-          </DialogTrigger>
+    <div className="min-h-screen bg-background pb-20 lg:pb-0">
+      {/* Header */}
+      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/50 p-4">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Despensa Inteligente</h1>
+            <p className="text-sm text-muted-foreground">Gerencie seus alimentos com IA</p>
+          </div>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={resetForm} className="flex items-center gap-2 bg-primary hover:bg-primary-hover text-primary-foreground">
+                <Plus className="h-4 w-4" />
+                Adicionar Alimento
+              </Button>
+            </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
@@ -249,8 +252,11 @@ const FoodInventory = () => {
               </div>
             </form>
           </DialogContent>
-        </Dialog>
+          </Dialog>
+        </div>
       </div>
+
+      <div className="p-4 space-y-6">
 
       {loading ? (
         <div className="flex items-center justify-center py-12">
@@ -270,13 +276,13 @@ const FoodInventory = () => {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {safeFoodItems.map((item) => {
             const expirationStatus = getExpirationStatus(item.expiration);
             const tags = item.tags ? item.tags.split(',').map(tag => tag.trim()).filter(Boolean) : [];
 
             return (
-              <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <Card key={item.id} className="bg-gradient-card border-border/50 overflow-hidden hover:shadow-glow hover:scale-[1.02] transition-all duration-300">
                 <AspectRatio ratio={16 / 9}>
                   <img
                     src={getFoodImage(item.name)}
@@ -286,47 +292,52 @@ const FoodInventory = () => {
                 </AspectRatio>
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
-                    <CardTitle className="text-lg">{item.name}</CardTitle>
-                    <Badge className={`${expirationStatus.color} text-white`}>
+                    <CardTitle className="text-base text-foreground">{item.name}</CardTitle>
+                    <Badge className={`${expirationStatus.color} text-white text-xs`}>
                       {expirationStatus.text}
                     </Badge>
                   </div>
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
                     <div className="flex items-center gap-1">
-                      <Package className="h-4 w-4" />
+                      <Package className="h-3 w-3" />
                       <span>Qtd: {item.quantity}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      <span>{format(new Date(item.expiration), 'dd/MM/yyyy')}</span>
+                      <Calendar className="h-3 w-3" />
+                      <span>{format(new Date(item.expiration), 'dd/MM/yyyy', { locale: ptBR })}</span>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Grupo Alimentar:</span>
-                      <Badge variant="outline">{FOOD_GROUP_LABELS[item.foodGroup]}</Badge>
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-muted-foreground">Grupo:</span>
+                      <Badge variant="outline" className="text-xs">{FOOD_GROUP_LABELS[item.foodGroup]}</Badge>
                     </div>
 
                     {(item.calories || item.protein || item.fat || item.carbohydrates) && (
-                      <div className="text-sm text-gray-600">
+                      <div className="text-xs text-muted-foreground">
                         <div className="grid grid-cols-2 gap-1">
-                          {item.calories && <span>Calorias: {item.calories}</span>}
-                          {item.protein && <span>Proteína: {item.protein}g</span>}
-                          {item.fat && <span>Gordura: {item.fat}g</span>}
-                          {item.carbohydrates && <span>Carboidratos: {item.carbohydrates}g</span>}
+                          {item.calories && <span>Cal: {item.calories}</span>}
+                          {item.protein && <span>Prot: {item.protein}g</span>}
+                          {item.fat && <span>Gord: {item.fat}g</span>}
+                          {item.carbohydrates && <span>Carb: {item.carbohydrates}g</span>}
                         </div>
                       </div>
                     )}
 
                     {tags.length > 0 && (
                       <div className="flex flex-wrap gap-1">
-                        {tags.map((tag, index) => (
+                        {tags.slice(0, 2).map((tag, index) => (
                           <Badge key={index} variant="secondary" className="text-xs">
                             {tag}
                           </Badge>
                         ))}
+                        {tags.length > 2 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{tags.length - 2}
+                          </Badge>
+                        )}
                       </div>
                     )}
 
@@ -335,12 +346,13 @@ const FoodInventory = () => {
                         size="sm"
                         variant="outline"
                         onClick={() => handleEdit(item)}
+                        className="h-8 w-8 p-0"
                       >
                         <Pencil className="h-3 w-3" />
                       </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button size="sm" variant="outline">
+                          <Button size="sm" variant="outline" className="h-8 w-8 p-0">
                             <Trash2 className="h-3 w-3" />
                           </Button>
                         </AlertDialogTrigger>
@@ -365,6 +377,7 @@ const FoodInventory = () => {
           })}
         </div>
       )}
+      </div>
     </div>
   );
 };

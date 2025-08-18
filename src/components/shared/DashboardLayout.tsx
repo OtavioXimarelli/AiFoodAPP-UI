@@ -9,12 +9,14 @@ import {
   X,
   ChefHat,
   Sparkles,
-  Home
+  Home,
+  TrendingUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
+import BottomNavigation from "./BottomNavigation";
 
 interface DashboardLayoutProps {
   children?: ReactNode;
@@ -41,7 +43,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     {
       to: "/dashboard",
       icon: Home,
-      label: "Painel Principal",
+      label: "Início",
       gradient: "from-blue-500 to-cyan-500"
     },
     {
@@ -53,8 +55,14 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     {
       to: "/dashboard/recipes",
       icon: Sandwich,
-      label: "Gerador de Receitas",
+      label: "Receitas",
       gradient: "from-orange-500 to-red-500"
+    },
+    {
+      to: "/dashboard/insights",
+      icon: TrendingUp,
+      label: "Insights",
+      gradient: "from-purple-500 to-pink-500"
     }
   ];
 
@@ -210,12 +218,17 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         {/* Main content */}
         <main className="flex-1 min-h-[calc(100vh-4rem)] lg:ml-0">
           <div className={cn(
-            "container mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8",
+            "lg:container lg:mx-auto lg:px-4 lg:py-6",
             mounted && "animate-fade-in"
           )}>
             {children ?? <Outlet />}
           </div>
         </main>
+      </div>
+      
+      {/* Mobile Bottom Navigation */}
+      <div className="lg:hidden">
+        <BottomNavigation />
       </div>
     </div>
   );

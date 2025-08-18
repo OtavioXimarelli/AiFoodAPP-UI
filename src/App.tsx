@@ -12,6 +12,8 @@ import DashboardLayout from "./components/shared/DashboardLayout";
 import ProtectedRoute from "./components/shared/ProtectedRoute";
 import FoodInventory from "./pages/dashboard/FoodInventory";
 import RecipeGenerator from "./pages/dashboard/RecipeGenerator";
+import DashboardHome from "./pages/dashboard/DashboardHome";
+import NutritionInsights from "./pages/dashboard/NutritionInsights";
 
 const queryClient = new QueryClient();
 
@@ -28,9 +30,10 @@ const App = () => (
           <Route path="/oauth2/callback" element={<OAuth2Callback />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardLayout />}>
-              <Route index element={<FoodInventory />} />
+              <Route index element={<DashboardHome />} />
               <Route path="food" element={<FoodInventory />} />
               <Route path="recipes" element={<RecipeGenerator />} />
+              <Route path="insights" element={<NutritionInsights />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />
