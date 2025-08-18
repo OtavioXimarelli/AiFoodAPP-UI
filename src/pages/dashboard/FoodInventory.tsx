@@ -25,16 +25,7 @@ const FoodInventory = () => {
   const [form, setForm] = useState<CreateFoodPayload>({
     name: "",
     quantity: 1,
-    expiration: "",
-    calories: 0,
-    protein: 0,
-    fat: 0,
-    carbohydrates: 0,
-    fiber: 0,
-    sugar: 0,
-    sodium: 0,
-    foodGroup: FoodGroup.FRUITS,
-    tags: ""
+    expiration: ""
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
@@ -75,16 +66,7 @@ const FoodInventory = () => {
     setForm({
       name: "",
       quantity: 1,
-      expiration: "",
-      calories: 0,
-      protein: 0,
-      fat: 0,
-      carbohydrates: 0,
-      fiber: 0,
-      sugar: 0,
-      sodium: 0,
-      foodGroup: FoodGroup.FRUITS,
-      tags: ""
+      expiration: ""
     });
     setFormErrors({});
     setEditing(null);
@@ -95,16 +77,7 @@ const FoodInventory = () => {
     setForm({
       name: item.name,
       quantity: item.quantity,
-      expiration: item.expiration,
-      calories: item.calories || 0,
-      protein: item.protein || 0,
-      fat: item.fat || 0,
-      carbohydrates: item.carbohydrates || 0,
-      fiber: item.fiber || 0,
-      sugar: item.sugar || 0,
-      sodium: item.sodium || 0,
-      foodGroup: item.foodGroup,
-      tags: item.tags
+      expiration: item.expiration
     });
     setOpen(true);
   };
@@ -121,9 +94,18 @@ const FoodInventory = () => {
 
     try {
       if (editing) {
-        await updateFoodItem({ ...form, id: editing.id! });
+        // Para atualização, enviamos apenas nome, quantidade e data de validade
+        const updatePayload = {
+          id: editing.id!,
+          name: form.name,
+          quantity: form.quantity,
+          expiration: form.expiration
+        };
+        await updateFoodItem(updatePayload);
         toast.success("Alimento atualizado com sucesso!");
       } else {
+        // Para criação, enviamos apenas nome, quantidade e data de validade
+        // O backend calculará automaticamente as informações nutricionais
         await createFoodItem(form);
         toast.success("Alimento criado com sucesso!");
       }
@@ -169,36 +151,47 @@ const FoodInventory = () => {
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Despensa</h1>
-          <p className="text-gray-600 mt-1">Gerencie seus alimentos e acompanhe as datas de validade</p>
+          <h1 className="text-3xl font-bold text-gray-900">Despensa Inteligente</h1>
+          <p className="text-gray-600 mt-1">Gerencie seus alimentos com análise nutricional automática por IA</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button onClick={resetForm} className="flex items-center gap-2">
+            <Button onClick={resetForm} className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
               <Plus className="h-4 w-4" />
-              Adicionar Alimento
+              Adicionar Alimento com IA
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="flex items-center gap-2">
                 {editing ? "Editar Alimento" : "Adicionar Novo Alimento"}
+                {!editing && (
+                  <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                    Nutrientes via IA
+                  </span>
+                )}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <div>
-                  <Label htmlFor="name">Nome *</Label>
+                  <Label htmlFor="name">Nome do Alimento *</Label>
                   <Input
                     id="name"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    placeholder="ex: Maçã"
+                    placeholder="ex: Maçã, Peito de Frango, Arroz..."
                   />
                   {formErrors.name && (
                     <p className="text-sm text-red-500 mt-1">{formErrors.name}</p>
                   )}
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Nossa IA identificará automaticamente os nutrientes e grupo alimentar
+                  </p>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="quantity">Quantidade *</Label>
                   <Input
@@ -212,9 +205,6 @@ const FoodInventory = () => {
                     <p className="text-sm text-red-500 mt-1">{formErrors.quantity}</p>
                   )}
                 </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="expiration">Data de Validade *</Label>
                   <Input
@@ -227,109 +217,26 @@ const FoodInventory = () => {
                     <p className="text-sm text-red-500 mt-1">{formErrors.expiration}</p>
                   )}
                 </div>
-                <div>
-                  <Label htmlFor="foodGroup">Grupo Alimentar *</Label>
-                  <Select
-                    value={form.foodGroup}
-                    onValueChange={(value) => setForm({ ...form, foodGroup: value as FoodGroup })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.values(FoodGroup).map((group) => (
-                        <SelectItem key={group} value={group}>
-                          {FOOD_GROUP_LABELS[group]}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {formErrors.foodGroup && (
-                    <p className="text-sm text-red-500 mt-1">{formErrors.foodGroup}</p>
-                  )}
-                </div>
               </div>
 
-              <div>
-                <Label htmlFor="tags">Tags</Label>
-                <Input
-                  id="tags"
-                  value={form.tags}
-                  onChange={(e) => setForm({ ...form, tags: e.target.value })}
-                  placeholder="ex: orgânico,fresco,local (separado por vírgulas)"
-                />
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="calories">Calorias</Label>
-                  <Input
-                    id="calories"
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    value={form.calories}
-                    onChange={(e) => setForm({ ...form, calories: parseFloat(e.target.value) || 0 })}
-                  />
+              <div className="bg-blue-50 p-4 rounded-md border border-blue-100 mt-4">
+                <div className="flex items-center gap-2 text-blue-700 mb-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+                  <span className="font-medium">Informações Nutricionais Automáticas</span>
                 </div>
-                <div>
-                  <Label htmlFor="protein">Proteína (g)</Label>
-                  <Input
-                    id="protein"
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    value={form.protein}
-                    onChange={(e) => setForm({ ...form, protein: parseFloat(e.target.value) || 0 })}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="fat">Gordura (g)</Label>
-                  <Input
-                    id="fat"
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    value={form.fat}
-                    onChange={(e) => setForm({ ...form, fat: parseFloat(e.target.value) || 0 })}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="carbohydrates">Carboidratos (g)</Label>
-                  <Input
-                    id="carbohydrates"
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    value={form.carbohydrates}
-                    onChange={(e) => setForm({ ...form, carbohydrates: parseFloat(e.target.value) || 0 })}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="fiber">Fibra (g)</Label>
-                  <Input
-                    id="fiber"
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    value={form.fiber}
-                    onChange={(e) => setForm({ ...form, fiber: parseFloat(e.target.value) || 0 })}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="sodium">Sódio (mg)</Label>
-                  <Input
-                    id="sodium"
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    value={form.sodium}
-                    onChange={(e) => setForm({ ...form, sodium: parseFloat(e.target.value) || 0 })}
-                  />
-                </div>
+                <p className="text-sm text-blue-600">
+                  Nossa IA analisará automaticamente o alimento para calcular:
+                </p>
+                <ul className="text-xs text-blue-600 mt-2 grid grid-cols-2 gap-1">
+                  <li>• Calorias</li>
+                  <li>• Proteínas</li>
+                  <li>• Gorduras</li>
+                  <li>• Carboidratos</li>
+                  <li>• Fibras</li>
+                  <li>• Açúcares</li>
+                  <li>• Sódio</li>
+                  <li>• Grupo alimentar</li>
+                </ul>
               </div>
 
               <div className="flex justify-end gap-2 pt-4">
@@ -337,7 +244,7 @@ const FoodInventory = () => {
                   Cancelar
                 </Button>
                 <Button type="submit">
-                  {editing ? "Atualizar" : "Criar"} Alimento
+                  {editing ? "Atualizar" : "Adicionar"} Alimento
                 </Button>
               </div>
             </form>
@@ -353,12 +260,12 @@ const FoodInventory = () => {
       ) : safeFoodItems.length === 0 ? (
         <Card>
           <CardContent className="p-12 text-center">
-            <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <Package className="h-12 w-12 text-blue-500 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Nenhum alimento ainda</h3>
-            <p className="text-gray-600 mb-4">Comece adicionando seu primeiro alimento para acompanhar sua despensa.</p>
-            <Button onClick={() => setOpen(true)}>
+            <p className="text-gray-600 mb-4">Adicione seu primeiro alimento e nossa IA calculará automaticamente as informações nutricionais.</p>
+            <Button onClick={() => setOpen(true)} className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
               <Plus className="h-4 w-4 mr-2" />
-              Adicionar Alimento
+              Adicionar Alimento com IA
             </Button>
           </CardContent>
         </Card>
