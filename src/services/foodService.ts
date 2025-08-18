@@ -32,11 +32,7 @@ export const foodService = {
   async getFoodItem(id: number): Promise<FoodItem> {
     try {
       console.log("🥗 Fetching food item:", id);
-      const items = await this.getFoodItems();
-      const item = items.find((item: FoodItem) => item.id === id);
-      if (!item) {
-        throw new Error(`Food item with id ${id} not found`);
-      }
+      const item = await apiClient.getFoodItem(id);
       console.log("🥗 Food item fetched:", item);
       return item;
     } catch (error: any) {
