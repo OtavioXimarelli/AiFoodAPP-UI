@@ -26,3 +26,4 @@ dist-ssr
 .env*
 
 /android*
+rsync.txt
