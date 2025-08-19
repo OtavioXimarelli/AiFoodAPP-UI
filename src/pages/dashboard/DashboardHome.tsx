@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useFoodItems } from "@/hooks/useFoodItems";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import WelcomeDialog from "@/components/shared/WelcomeDialog";
 import { 
   Package, 
   Clock, 
@@ -27,12 +28,22 @@ const DashboardHome = () => {
   const { foodItems, loading } = useFoodItems();
   const { user } = useAuth();
   const [showUserInfo, setShowUserInfo] = useState(false);
+  const [showWelcomeDialog, setShowWelcomeDialog] = useState(false);
   const [greeting] = useState(() => {
     const hour = new Date().getHours();
     if (hour < 12) return "Bom dia";
     if (hour < 18) return "Boa tarde";
     return "Boa noite";
   });
+
+  // Show welcome dialog on first visit
+  useEffect(() => {
+    const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
+    if (!hasSeenWelcome && user) {
+      setShowWelcomeDialog(true);
+      localStorage.setItem("hasSeenWelcome", "true");
+    }
+  }, [user]);
 
   const getUserName = () => {
     if (user?.name) return user.name.split(' ')[0];
@@ -295,6 +306,13 @@ const DashboardHome = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Welcome Dialog */}
+      <WelcomeDialog 
+        open={showWelcomeDialog}
+        onOpenChange={setShowWelcomeDialog}
+        userName={getUserName()}
+      />
     </div>
   );
 };
