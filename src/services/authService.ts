@@ -40,10 +40,36 @@ export const authService = {
   async refreshToken(): Promise<void> {
     try {
       console.log("🔄 Refreshing authentication token...");
-      await apiClient.refreshToken();
-      console.log("🔄 Token refreshed successfully");
+      
+      // Tentar refresh do token com retry
+      let retryCount = 0;
+      const maxRetries = 2;
+      
+      while (retryCount <= maxRetries) {
+        try {
+          if (retryCount > 0) {
+            console.log(`🔄 Retry attempt ${retryCount}/${maxRetries} for token refresh`);
+            // Esperar um pouco antes de retry
+            await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+          }
+          
+          await apiClient.refreshToken();
+          console.log("🔄 Token refreshed successfully");
+          return;
+        } catch (retryError: any) {
+          console.error(`🔄 Token refresh attempt ${retryCount + 1} failed:`, retryError);
+          retryCount++;
+          
+          if (retryCount > maxRetries) {
+            throw retryError;
+          }
+        }
+      }
     } catch (error: any) {
-      console.error("🔄 Failed to refresh token:", error);
+      console.error("🔄 All token refresh attempts failed:", error);
+      // Remover marcadores de autenticação local
+      localStorage.removeItem('is_authenticated');
+      localStorage.removeItem('session_established_at');
       throw error;
     }
   },

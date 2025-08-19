@@ -23,17 +23,38 @@ const queryClient = new QueryClient();
 const App = () => {
   // Initialize session service
   useEffect(() => {
-    // Initialize persistent session check
-    sessionService.initialize().catch(error => {
-      console.error("Failed to initialize session service:", error);
-    });
+    const initApp = async () => {
+      try {
+        console.log("🚀 App: Initializing session service...");
+        
+        // Verificar se temos um indicador de sessão estabelecida
+        const sessionTimestamp = localStorage.getItem('session_established_at');
+        if (sessionTimestamp) {
+          console.log("🚀 App: Found previous session from:", new Date(sessionTimestamp).toLocaleString());
+        }
+        
+        // Tentar inicializar o serviço de sessão imediatamente
+        await sessionService.initialize();
+        console.log("🚀 App: Session service initialized successfully");
+        
+        // Tentar verificar a sessão persistente
+        const hasSession = await sessionService.checkPersistentSession();
+        console.log("🚀 App: Persistent session check result:", hasSession ? "authenticated" : "not authenticated");
+      } catch (error) {
+        console.error("🚀 App: Failed to initialize session service:", error);
+      }
+    };
     
-    // Set up a refresh interval (every 15 minutes)
+    // Inicializar o app
+    initApp();
+    
+    // Configurar verificação periódica (a cada 5 minutos)
     const refreshInterval = setInterval(() => {
+      console.log("🔄 App: Running periodic session check");
       sessionService.checkPersistentSession().catch(error => {
-        console.error("Periodic session check failed:", error);
+        console.error("🔄 App: Periodic session check failed:", error);
       });
-    }, 15 * 60 * 1000); // 15 minutes
+    }, 5 * 60 * 1000); // 5 minutos
     
     return () => clearInterval(refreshInterval);
   }, []);

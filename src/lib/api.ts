@@ -62,6 +62,8 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => {
     console.log(`✅ ${response.config.method?.toUpperCase()} ${response.config.url} - ${response.status}`);
+    console.log('✅ Response data:', response.data);
+    console.log('✅ Response headers:', response.headers);
     
     // Check if we received HTML instead of JSON
     const contentType = response.headers['content-type'];
@@ -70,6 +72,11 @@ api.interceptors.response.use(
       console.warn('⚠️ Response data preview:', response.data.substring(0, 200));
       // Transform HTML response to indicate authentication failure
       throw new Error('Authentication required - received HTML login page');
+    }
+    
+    // Se a resposta contém redirectUrl, este pode ser um problema
+    if (response.data && response.data.redirectUrl) {
+      console.warn('⚠️ Response contains redirectUrl:', response.data.redirectUrl);
     }
     
     return response;
@@ -135,8 +142,16 @@ export class ApiClient {
   }
   
   async getAuthStatus() {
-    const response = await api.get('/api/auth/status');
-    return response.data;
+    try {
+      console.log('🔍 Calling auth status endpoint...');
+      const response = await api.get('/api/auth/status');
+      console.log('🔍 Auth status response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('🔍 Error getting auth status:', error);
+      // Se falhar, retornar explicitamente não autenticado
+      return { authenticated: false };
+    }
   }
 
   async refreshToken() {

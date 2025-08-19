@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
-import { apiClient } from '@/lib/api';
+import { apiClient, api } from '@/lib/api';
 
 const OAuth2Callback = () => {
   const navigate = useNavigate();
@@ -21,6 +21,13 @@ const OAuth2Callback = () => {
         // Check for token parameter in the URL
         const params = new URLSearchParams(window.location.search);
         const hasToken = params.has('token') || params.has('code');
+        const hasError = params.has('error');
+        
+        if (hasError) {
+          const errorMsg = params.get('error') || 'Unknown error';
+          console.error('❌ Error in OAuth callback URL:', errorMsg);
+          throw new Error(`OAuth error: ${errorMsg}`);
+        }
         
         if (!hasToken) {
           console.log('⚠️ No token or code found in URL, checking if session is already established...');
@@ -28,39 +35,66 @@ const OAuth2Callback = () => {
           console.log('🔒 Authentication token/code found in URL');
         }
         
-        // Add a longer delay to ensure the backend session is properly set
-        console.log('🔄 Waiting for backend session to be established...');
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Try multiple times to get authentication status, with increasing delays
+        // This helps with race conditions where cookies are not yet set
+        console.log('🔄 Starting multiple auth check attempts...');
         
-        // Check auth status first directly
-        try {
-          const status = await apiClient.getAuthStatus();
-          console.log('🔍 Auth status from API:', status);
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          console.log(`🔄 Auth check attempt ${attempt}/3...`);
           
-          if (status && status.authenticated) {
-            console.log('✅ User authenticated according to status endpoint');
-            // Store session timestamp
+          // Wait with increasing delay between attempts
+          await new Promise(resolve => setTimeout(resolve, attempt * 1000));
+          
+          // Check auth status directly
+          try {
+            const status = await apiClient.getAuthStatus();
+            console.log(`🔍 Auth status from API (attempt ${attempt}):`, status);
+            
+            if (status && status.authenticated) {
+              console.log('✅ User authenticated according to status endpoint');
+              
+              // Try to get user details to ensure everything is working
+              try {
+                const userResponse = await api.get('/api/auth');
+                console.log('✅ Successfully got user details:', userResponse.data);
+                
+                // Store session timestamp and mark as authenticated
+                localStorage.setItem('session_established_at', new Date().toISOString());
+                localStorage.setItem('is_authenticated', 'true');
+                
+                // Redirect to dashboard
+                console.log('🔄 Redirecting to dashboard...');
+                navigate('/dashboard', { replace: true });
+                return;
+              } catch (userError) {
+                console.error('❌ Failed to get user details even though status shows authenticated:', userError);
+                // Continue to next attempt
+              }
+            } else {
+              console.log('⚠️ Auth status indicates not authenticated, will retry or try alternate method');
+            }
+          } catch (statusError) {
+            console.log(`⚠️ Auth status check failed (attempt ${attempt}):`, statusError);
+          }
+          
+          // If we're on the last attempt, try the regular authentication check
+          if (attempt === 3) {
+            console.log('🔄 All auth status checks failed, trying regular authentication check...');
+            await checkAuthentication();
+            
+            // If we get here, authentication must have succeeded (otherwise an error would have been thrown)
+            console.log('✅ OAuth2Callback: Authentication successful via regular check, redirecting to dashboard...');
             localStorage.setItem('session_established_at', new Date().toISOString());
+            localStorage.setItem('is_authenticated', 'true');
+            
             // Redirect to dashboard
             navigate('/dashboard', { replace: true });
             return;
-          } else {
-            console.log('⚠️ Auth status indicates not authenticated, trying regular check');
           }
-        } catch (statusError) {
-          console.log('⚠️ Auth status check failed:', statusError);
         }
         
-        // If auth status check failed, try the regular authentication check
-        console.log('🔄 Attempting to check authentication via regular method...');
-        await checkAuthentication();
-        
-        console.log('✅ OAuth2Callback: Authentication successful, redirecting to dashboard...');
-        // Store session timestamp to track session longevity
-        localStorage.setItem('session_established_at', new Date().toISOString());
-        
-        // Redirect to dashboard on successful authentication
-        navigate('/dashboard', { replace: true });
+        // If we get here, all attempts failed
+        throw new Error('Authentication failed after multiple attempts');
       } catch (error) {
         console.error('❌ OAuth2 callback error:', error);
         console.log('🔄 OAuth2Callback: Authentication failed, analyzing...');
