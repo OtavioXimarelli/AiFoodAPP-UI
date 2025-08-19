@@ -86,7 +86,7 @@ const RecipeGenerator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/5">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/80 to-background/60 pb-20 lg:pb-0">
       <div className="max-w-7xl mx-auto p-6 space-y-8">
         {/* Header */}
         <div className="text-center space-y-4 animate-fade-in">
@@ -105,7 +105,7 @@ const RecipeGenerator = () => {
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
-          <Card className="gradient-border hover-lift">
+          <Card className="bg-card/60 backdrop-blur-xl border-border/30 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-300">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-green-100 rounded-full">
@@ -119,7 +119,7 @@ const RecipeGenerator = () => {
             </CardContent>
           </Card>
 
-          <Card className="gradient-border hover-lift">
+          <Card className="bg-card/60 backdrop-blur-xl border-border/30 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-300">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-blue-100 rounded-full">
@@ -133,7 +133,7 @@ const RecipeGenerator = () => {
             </CardContent>
           </Card>
 
-          <Card className="gradient-border hover-lift">
+          <Card className="bg-card/60 backdrop-blur-xl border-border/30 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-300">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-purple-100 rounded-full">
@@ -149,7 +149,7 @@ const RecipeGenerator = () => {
         </div>
 
         {/* Pantry Overview */}
-        <Card className="gradient-border animate-fade-in hover-lift">
+        <Card className="bg-card/60 backdrop-blur-xl border-border/30 shadow-sm hover:shadow-md transition-all duration-300">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl">
               <div className="p-2 bg-orange-100 rounded-lg">
@@ -243,7 +243,7 @@ const RecipeGenerator = () => {
         </Card>
 
         {/* AI Recipe Generator */}
-        <Card className="gradient-border animate-fade-in hover-lift">
+        <Card className="bg-card/60 backdrop-blur-xl border-border/30 shadow-sm hover:shadow-md transition-all duration-300">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl">
               <div className="p-2 bg-purple-100 rounded-lg">

@@ -149,9 +149,9 @@ const FoodInventory = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20 lg:pb-0">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/80 to-background/60 pb-20 lg:pb-0">
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/50 p-4">
+      <div className="sticky top-0 z-40 bg-card/70 backdrop-blur-xl border-b border-border/30 p-4 shadow-lg shadow-black/5">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-foreground">Despensa Inteligente</h1>
@@ -282,7 +282,7 @@ const FoodInventory = () => {
             const tags = item.tags ? item.tags.split(',').map(tag => tag.trim()).filter(Boolean) : [];
 
             return (
-              <Card key={item.id} className="bg-gradient-card border-border/50 overflow-hidden hover:shadow-glow hover:scale-[1.02] transition-all duration-300">
+              <Card key={item.id} className="bg-card/60 backdrop-blur-xl border-border/30 overflow-hidden hover:shadow-lg hover:shadow-primary/10 hover:scale-[1.02] transition-all duration-300">
                 <AspectRatio ratio={16 / 9}>
                   <img
                     src={getFoodImage(item.name)}

@@ -23,29 +23,32 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-gray-900">
-            Welcome to AI Food App
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background/80 to-background/60 p-4">
+      <Card className="w-full max-w-md bg-card/60 backdrop-blur-xl border-border/30 shadow-2xl shadow-black/10">
+        <CardHeader className="text-center space-y-4">
+          <div className="mx-auto w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
+            <span className="text-2xl">🍽️</span>
+          </div>
+          <CardTitle className="text-2xl font-bold text-foreground">
+            Bem-vindo ao AI Food App
           </CardTitle>
-          <p className="text-gray-600 mt-2">
-            Sign in to manage your food inventory and generate AI-powered recipes
+          <p className="text-muted-foreground">
+            Entre para gerenciar sua despensa e gerar receitas com IA
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
           <Button 
             onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-2 bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+            className="w-full flex items-center justify-center gap-3 bg-card hover:bg-card/80 text-foreground border border-border/50 hover:border-border transition-all duration-200 h-12"
             variant="outline"
           >
-            <Chrome className="h-5 w-5" />
-            Continue with Google
+            <Chrome className="h-5 w-5 text-muted-foreground" />
+            <span className="font-medium">Continuar com Google</span>
           </Button>
           
-          <div className="text-center text-sm text-gray-500">
+          <div className="text-center text-sm text-muted-foreground">
             <p>
-              By signing in, you agree to our terms of service and privacy policy.
+              Ao entrar, você concorda com nossos termos de serviço e política de privacidade.
             </p>
           </div>
         </CardContent>

@@ -67,9 +67,9 @@ const NutritionInsights = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20 lg:pb-0">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/80 to-background/60 pb-20 lg:pb-0">
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/50 p-4">
+      <div className="sticky top-0 z-40 bg-card/70 backdrop-blur-xl border-b border-border/30 p-4 shadow-lg shadow-black/5">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-foreground">Insights Nutricionais</h1>
@@ -98,7 +98,7 @@ const NutritionInsights = () => {
         <div>
           <h2 className="text-lg font-semibold text-foreground mb-3">Resumo Nutricional</h2>
           <div className="grid grid-cols-2 gap-3">
-            <Card className="bg-gradient-card border-border/50">
+            <Card className="bg-card/60 backdrop-blur-xl border-border/30 shadow-sm hover:shadow-md transition-all duration-300">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-red-500/10">
@@ -112,7 +112,7 @@ const NutritionInsights = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-card border-border/50">
+            <Card className="bg-card/60 backdrop-blur-xl border-border/30 shadow-sm hover:shadow-md transition-all duration-300">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-blue-500/10">
@@ -129,7 +129,7 @@ const NutritionInsights = () => {
         </div>
 
         {/* Daily Goals */}
-        <Card className="bg-gradient-card border-border/50">
+        <Card className="bg-card/60 backdrop-blur-xl border-border/30 shadow-sm hover:shadow-md transition-all duration-300">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg text-foreground flex items-center gap-2">
               <Target className="h-5 w-5 text-primary" />
@@ -171,7 +171,7 @@ const NutritionInsights = () => {
         </Card>
 
         {/* Food Groups */}
-        <Card className="bg-gradient-card border-border/50">
+        <Card className="bg-card/60 backdrop-blur-xl border-border/30 shadow-sm hover:shadow-md transition-all duration-300">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg text-foreground flex items-center gap-2">
               <PieChart className="h-5 w-5 text-primary" />
@@ -231,7 +231,7 @@ const NutritionInsights = () => {
         </Card>
 
         {/* Recommendations */}
-        <Card className="bg-gradient-card border-border/50">
+        <Card className="bg-card/60 backdrop-blur-xl border-border/30 shadow-sm hover:shadow-md transition-all duration-300">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg text-foreground flex items-center gap-2">
               <Award className="h-5 w-5 text-primary" />
