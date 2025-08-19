@@ -23,40 +23,72 @@ const queryClient = new QueryClient();
 const App = () => {
   // Initialize session service
   useEffect(() => {
+    // Inicializar apenas se não estivermos na página de login ou callback do OAuth2
+    const shouldInitSession = !window.location.pathname.includes('/login') && 
+                              !window.location.pathname.includes('/oauth2/callback');
+    
+    // Flag para controlar se devemos configurar verificações periódicas
+    let shouldSetupPeriodicChecks = shouldInitSession;
+    
     const initApp = async () => {
       try {
-        console.log("🚀 App: Initializing session service...");
-        
-        // Verificar se temos um indicador de sessão estabelecida
-        const sessionTimestamp = localStorage.getItem('session_established_at');
-        if (sessionTimestamp) {
-          console.log("🚀 App: Found previous session from:", new Date(sessionTimestamp).toLocaleString());
+        if (!shouldInitSession) {
+          console.log("🚀 App: Skipping session initialization on login/callback page");
+          return;
         }
         
-        // Tentar inicializar o serviço de sessão imediatamente
-        await sessionService.initialize();
-        console.log("🚀 App: Session service initialized successfully");
+        console.log("🚀 App: Initializing session service...");
         
-        // Tentar verificar a sessão persistente
-        const hasSession = await sessionService.checkPersistentSession();
-        console.log("🚀 App: Persistent session check result:", hasSession ? "authenticated" : "not authenticated");
+        // Verificar se já temos um indicador de sessão estabelecida
+        const sessionTimestamp = localStorage.getItem('session_established_at');
+        
+        // Se já temos uma sessão estabelecida, apenas inicializar em segundo plano
+        if (sessionTimestamp) {
+          console.log("🚀 App: Found previous session from:", new Date(sessionTimestamp).toLocaleString());
+          
+          // Inicializar em background sem bloquear
+          sessionService.initialize().catch(error => {
+            console.error("🚀 App: Background session init failed:", error);
+            shouldSetupPeriodicChecks = false;
+          });
+        } else {
+          // Sem sessão anterior, verificar sincronamente
+          await sessionService.initialize();
+          console.log("🚀 App: Session service initialized successfully");
+        }
       } catch (error) {
         console.error("🚀 App: Failed to initialize session service:", error);
+        shouldSetupPeriodicChecks = false;
       }
     };
     
     // Inicializar o app
     initApp();
     
-    // Configurar verificação periódica (a cada 5 minutos)
-    const refreshInterval = setInterval(() => {
-      console.log("🔄 App: Running periodic session check");
-      sessionService.checkPersistentSession().catch(error => {
-        console.error("🔄 App: Periodic session check failed:", error);
-      });
-    }, 5 * 60 * 1000); // 5 minutos
+    // Configurar verificação periódica mais espaçada (a cada 15 minutos)
+    // e apenas se não estivermos em páginas de autenticação
+    let refreshInterval: number | null = null;
     
-    return () => clearInterval(refreshInterval);
+    if (shouldSetupPeriodicChecks) {
+      refreshInterval = window.setInterval(() => {
+        // Não verificar se estivermos em página de login/oauth
+        if (window.location.pathname.includes('/login') || 
+            window.location.pathname.includes('/oauth2/callback')) {
+          return;
+        }
+        
+        console.log("🔄 App: Running periodic session check");
+        sessionService.checkPersistentSession().catch(error => {
+          console.error("🔄 App: Periodic session check failed:", error);
+        });
+      }, 15 * 60 * 1000); // 15 minutos
+    }
+    
+    return () => {
+      if (refreshInterval !== null) {
+        window.clearInterval(refreshInterval);
+      }
+    };
   }, []);
   
   return (

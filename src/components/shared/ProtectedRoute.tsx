@@ -10,6 +10,9 @@ const ProtectedRoute = () => {
 
   // Effect to check authentication on mount and periodically refresh the token
   useEffect(() => {
+    // Variável para rastrear a última verificação
+    let lastCheckTime = 0;
+    
     // Check authentication on mount
     const initialCheck = async () => {
       try {
@@ -19,10 +22,18 @@ const ProtectedRoute = () => {
         const isAuthLocal = localStorage.getItem('is_authenticated') === 'true';
         console.log("🛡️ ProtectedRoute: Local auth status:", isAuthLocal ? "authenticated" : "not authenticated");
         
-        // Always do a full auth check on mount
-        await checkAuthentication();
+        // Se já estiver autenticado localmente, podemos ser mais rápidos
+        if (isAuthLocal && isAuthenticated) {
+          console.log("🛡️ ProtectedRoute: Already authenticated locally, skipping initial check");
+          setIsCheckingAuth(false);
+          return;
+        }
         
-        console.log("🛡️ ProtectedRoute: Authentication check completed, isAuthenticated:", isAuthenticated);
+        // Do a full auth check on mount
+        await checkAuthentication();
+        lastCheckTime = Date.now();
+        
+        console.log("🛡️ ProtectedRoute: Authentication check completed");
       } catch (error) {
         console.error("🛡️ Failed initial authentication check:", error);
         localStorage.removeItem('is_authenticated');
@@ -33,16 +44,13 @@ const ProtectedRoute = () => {
     
     initialCheck();
 
-    // Set up a refresh interval every 5 minutes (300000ms) - more frequent than before
-    const refreshInterval = setInterval(() => {
-      console.log("🔄 Performing periodic token refresh check");
-      checkAuthentication().catch(err => {
-        console.error("Periodic token refresh failed:", err);
-      });
-    }, 300000);
-
-    return () => clearInterval(refreshInterval);
-  }, [checkAuthentication]);
+    // NÃO configurar intervalos aqui - App.tsx já cuida disso
+    // Este componente monta/desmonta várias vezes, criando múltiplos intervalos
+    
+    return () => {
+      // Nenhum intervalo para limpar
+    };
+  }, [checkAuthentication, isAuthenticated]);
 
   // Show loading spinner while checking authentication
   if (isLoading || isCheckingAuth) {
