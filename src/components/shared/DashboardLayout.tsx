@@ -71,7 +71,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
       {/* Header */}
       <header className={cn(
-        "sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+        "sticky top-0 z-50 w-full border-b border-white/10 bg-background/60 backdrop-blur-xl supports-[backdrop-filter]:bg-background/40",
+        "dark:bg-background/70 dark:border-white/10 dark:backdrop-blur-xl",
+        "light:bg-white/80 light:border-black/10 light:backdrop-blur-xl",
         mounted && "animate-slide-in-top"
       )}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -140,12 +142,14 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <div className="flex">
         {/* Sidebar */}
         <aside className={cn(
-          "fixed inset-y-0 left-0 z-50 w-72 transform border-r border-border/40 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:w-64",
+          "fixed inset-y-0 left-0 z-50 w-72 transform border-r border-white/10 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:w-64",
+          "dark:bg-background/80 dark:border-white/10",
+          "light:bg-white/90 light:border-black/10",
           open ? "translate-x-0" : "-translate-x-full",
           mounted && "animate-slide-in-left"
         )}>
           {/* Mobile header */}
-          <div className="flex h-16 items-center justify-between px-4 lg:hidden border-b border-border/40">
+          <div className="flex h-16 items-center justify-between px-4 lg:hidden border-b border-white/10 dark:border-white/10 light:border-black/10">
             <Link
               to="/dashboard"
               className="flex items-center gap-2 font-bold text-lg bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent"
