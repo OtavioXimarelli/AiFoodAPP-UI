@@ -17,6 +17,16 @@ const OAuth2Callback = () => {
         console.log('🔄 API Base URL:', import.meta.env.VITE_API_BASE_URL);
         console.log('🔄 Document cookies:', document.cookie);
         
+        // Check for token parameter in the URL
+        const params = new URLSearchParams(window.location.search);
+        const hasToken = params.has('token') || params.has('code');
+        
+        if (!hasToken) {
+          console.log('⚠️ No token or code found in URL, checking if session is already established...');
+        } else {
+          console.log('🔒 Authentication token/code found in URL');
+        }
+        
         // Add a longer delay to ensure the backend session is properly set
         console.log('🔄 Waiting for backend session to be established...');
         await new Promise(resolve => setTimeout(resolve, 2000));
@@ -26,6 +36,9 @@ const OAuth2Callback = () => {
         await checkAuthentication();
         
         console.log('✅ OAuth2Callback: Authentication successful, redirecting to dashboard...');
+        // Store session timestamp to track session longevity
+        localStorage.setItem('session_established_at', new Date().toISOString());
+        
         // Redirect to dashboard on successful authentication
         navigate('/dashboard', { replace: true });
       } catch (error) {
