@@ -18,8 +18,8 @@ export const useAuth = () => {
 
   const checkAuthentication = async () => {
     // Prevent multiple simultaneous authentication checks
-    if (isCheckingAuth.current || hasCheckedAuth) {
-      console.log('🔄 Authentication check skipped - already checked or in progress');
+    if (isCheckingAuth.current) {
+      console.log('🔄 Authentication check skipped - check in progress');
       return;
     }
 
@@ -34,8 +34,24 @@ export const useAuth = () => {
         console.log('✅ User is authenticated:', result.user);
         setAuth(result.user);
       } else {
-        console.log('❌ User is not authenticated');
-        logout();
+        // If not authenticated but we have a token, try to refresh
+        try {
+          console.log('⚠️ Session expired, attempting to refresh...');
+          await authService.refreshToken();
+          // Check authentication again after refresh
+          const refreshResult = await authService.checkAuthentication();
+          
+          if (refreshResult.isAuthenticated && refreshResult.user) {
+            console.log('✅ User is authenticated after token refresh:', refreshResult.user);
+            setAuth(refreshResult.user);
+          } else {
+            console.log('❌ User is not authenticated even after refresh');
+            logout();
+          }
+        } catch (refreshError) {
+          console.log('❌ Failed to refresh token:', refreshError);
+          logout();
+        }
       }
     } catch (error) {
       console.error('❌ Authentication check failed:', error);
