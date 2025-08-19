@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,10 +16,29 @@ import FoodInventory from "./pages/dashboard/FoodInventory";
 import RecipeGenerator from "./pages/dashboard/RecipeGenerator";
 import DashboardHome from "./pages/dashboard/DashboardHome";
 import NutritionInsights from "./pages/dashboard/NutritionInsights";
+import { sessionService } from "./services/sessionService";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  // Initialize session service
+  useEffect(() => {
+    // Initialize persistent session check
+    sessionService.initialize().catch(error => {
+      console.error("Failed to initialize session service:", error);
+    });
+    
+    // Set up a refresh interval (every 15 minutes)
+    const refreshInterval = setInterval(() => {
+      sessionService.checkPersistentSession().catch(error => {
+        console.error("Periodic session check failed:", error);
+      });
+    }, 15 * 60 * 1000); // 15 minutes
+    
+    return () => clearInterval(refreshInterval);
+  }, []);
+  
+  return (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider
       attribute="class"
@@ -49,6 +69,7 @@ const App = () => (
     </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;
