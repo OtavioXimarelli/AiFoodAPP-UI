@@ -58,7 +58,7 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor for error handling
+// Response interceptor for error handling and token refresh
 api.interceptors.response.use(
   (response) => {
     console.log(`✅ ${response.config.method?.toUpperCase()} ${response.config.url} - ${response.status}`);
@@ -74,8 +74,33 @@ api.interceptors.response.use(
     
     return response;
   },
-  (error) => {
+  async (error) => {
     console.error('❌ Full error object:', error);
+    
+    // Check if this is a 401 error from an API call (not auth endpoints)
+    const originalRequest = error.config;
+    const isAuthEndpoint = originalRequest?.url?.includes('/api/auth/');
+    const needsRetry = error.response?.status === 401 && originalRequest && !isAuthEndpoint && !originalRequest._retry;
+    
+    // Handle token refresh if 401 error and not an auth endpoint
+    if (needsRetry) {
+      console.log('🔄 Token expired, attempting to refresh session...');
+      originalRequest._retry = true;
+      
+      try {
+        // Call the refresh token endpoint
+        await api.post('/api/auth/refresh');
+        console.log('🔄 Session refreshed successfully, retrying request');
+        
+        // Retry the original request
+        return api(originalRequest);
+      } catch (refreshError) {
+        console.error('🔄 Failed to refresh session:', refreshError);
+        // If refresh fails, redirect to login page
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
+      }
+    }
     
     if (error.code === 'ECONNABORTED') {
       console.error('❌ Request timeout - backend may not be running');
@@ -105,7 +130,12 @@ api.interceptors.response.use(
 export class ApiClient {
   // Authentication endpoints - these will be proxied through nginx
   async getCurrentUser() {
-    const response = await api.get('/api/auth/me');
+    const response = await api.get('/api/auth');
+    return response.data;
+  }
+
+  async refreshToken() {
+    const response = await api.post('/api/auth/refresh');
     return response.data;
   }
 
