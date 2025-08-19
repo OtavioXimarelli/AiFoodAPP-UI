@@ -17,6 +17,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import BottomNavigation from "./BottomNavigation";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface DashboardLayoutProps {
   children?: ReactNode;
@@ -98,8 +99,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               </Link>
             </div>
             
-            {/* Right side - User info and logout */}
+            {/* Right side - Theme toggle, User info and logout */}
             <div className="flex items-center gap-2 sm:gap-4">
+              <ThemeToggle />
               {user && (
                 <div className="flex items-center gap-3">
                   <Avatar className="h-9 w-9 ring-2 ring-primary/20 transition-all duration-200 hover:ring-primary/40">
