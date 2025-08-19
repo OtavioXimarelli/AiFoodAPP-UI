@@ -3,20 +3,44 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
-import { Chrome } from "lucide-react";
+import { Chrome, Loader2 } from "lucide-react";
+import { apiClient } from "@/lib/api";
 
 const Login = () => {
-  const { isAuthenticated, redirectToLogin } = useAuth();
+  const { isAuthenticated, redirectToLogin, checkAuthentication } = useAuth();
   const navigate = useNavigate();
   const location = useLocation() as any;
   const from = location.state?.from?.pathname || "/dashboard";
 
-  // Redirect if already authenticated
+  // Check authentication status on mount and redirect if already authenticated
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate(from, { replace: true });
-    }
-  }, [isAuthenticated, navigate, from]);
+    const checkAuthStatus = async () => {
+      try {
+        console.log("🔍 Login: Checking auth status...");
+        // Try direct status check first
+        const status = await apiClient.getAuthStatus();
+        
+        if (status && status.authenticated) {
+          console.log("✅ Login: Already authenticated according to status endpoint");
+          navigate(from, { replace: true });
+          return;
+        }
+        
+        // If not authenticated via status endpoint, try full authentication check
+        console.log("🔄 Login: Status check showed not authenticated, trying full check");
+        await checkAuthentication();
+        
+        if (isAuthenticated) {
+          console.log("✅ Login: Authenticated after full check");
+          navigate(from, { replace: true });
+        }
+      } catch (error) {
+        console.log("❌ Login: Auth check error", error);
+      }
+    };
+    
+    checkAuthStatus();
+  }, [isAuthenticated, navigate, from, checkAuthentication]);
 
   const handleGoogleLogin = () => {
     redirectToLogin('google');

@@ -73,9 +73,33 @@ export const authService = {
     window.location.href = oauthUrl;
   },
 
+  // Get current authentication status
+  async getAuthStatus(): Promise<{ authenticated: boolean; user?: User }> {
+    try {
+      const status = await apiClient.getAuthStatus();
+      return status;
+    } catch (error) {
+      console.error("Failed to get auth status:", error);
+      return { authenticated: false };
+    }
+  },
+
   // Check if user is authenticated by trying to get current user
   async checkAuthentication(): Promise<{ isAuthenticated: boolean; user?: User }> {
     try {
+      // First try with the status endpoint
+      try {
+        const status = await this.getAuthStatus();
+        if (status.authenticated) {
+          // If status shows authenticated, try to get user details
+          const user = await this.getCurrentUser();
+          return { isAuthenticated: true, user };
+        }
+      } catch (statusError) {
+        console.log("Status check failed, falling back to user endpoint:", statusError);
+      }
+      
+      // Fallback to legacy method
       const user = await this.getCurrentUser();
       return { isAuthenticated: true, user };
     } catch (error) {

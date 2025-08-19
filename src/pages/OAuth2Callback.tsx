@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
+import { apiClient } from '@/lib/api';
 
 const OAuth2Callback = () => {
   const navigate = useNavigate();
@@ -31,8 +32,27 @@ const OAuth2Callback = () => {
         console.log('🔄 Waiting for backend session to be established...');
         await new Promise(resolve => setTimeout(resolve, 2000));
         
-        // Check if authentication was successful
-        console.log('🔄 Attempting to check authentication...');
+        // Check auth status first directly
+        try {
+          const status = await apiClient.getAuthStatus();
+          console.log('🔍 Auth status from API:', status);
+          
+          if (status && status.authenticated) {
+            console.log('✅ User authenticated according to status endpoint');
+            // Store session timestamp
+            localStorage.setItem('session_established_at', new Date().toISOString());
+            // Redirect to dashboard
+            navigate('/dashboard', { replace: true });
+            return;
+          } else {
+            console.log('⚠️ Auth status indicates not authenticated, trying regular check');
+          }
+        } catch (statusError) {
+          console.log('⚠️ Auth status check failed:', statusError);
+        }
+        
+        // If auth status check failed, try the regular authentication check
+        console.log('🔄 Attempting to check authentication via regular method...');
         await checkAuthentication();
         
         console.log('✅ OAuth2Callback: Authentication successful, redirecting to dashboard...');

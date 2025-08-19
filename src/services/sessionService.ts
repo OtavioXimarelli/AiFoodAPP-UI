@@ -12,24 +12,36 @@ export const sessionService = {
     try {
       console.log("🔒 Checking for persistent session...");
       
-      // Try to refresh token first
+      // Try to get auth status first
+      try {
+        const status = await apiClient.getAuthStatus();
+        console.log("🔒 Auth status check:", status);
+        if (status && status.authenticated) {
+          console.log("🔒 User is already authenticated according to status endpoint");
+          return true;
+        }
+      } catch (statusError) {
+        console.log("🔒 Auth status check failed, trying refresh:", statusError);
+      }
+      
+      // If status check failed, try to refresh token
       try {
         await apiClient.refreshToken();
         console.log("🔒 Successfully refreshed token on app start");
+        
+        // After refresh, check status again
+        try {
+          const statusAfterRefresh = await apiClient.getAuthStatus();
+          if (statusAfterRefresh && statusAfterRefresh.authenticated) {
+            console.log("🔒 User authenticated after refresh");
+            return true;
+          }
+        } catch (error) {
+          console.log("🔒 Auth status check failed after refresh");
+        }
       } catch (refreshError) {
         console.log("🔒 No session to refresh or refresh failed:", refreshError);
         return false;
-      }
-      
-      // If refresh succeeded, verify authentication
-      try {
-        const authResult = await authService.checkAuthentication();
-        if (authResult.isAuthenticated) {
-          console.log("🔒 Persistent session found and valid");
-          return true;
-        }
-      } catch (authError) {
-        console.log("🔒 Session invalid even after refresh:", authError);
       }
       
       return false;

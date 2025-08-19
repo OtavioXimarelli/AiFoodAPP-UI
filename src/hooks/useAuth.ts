@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { authService } from '@/services/authService';
+import { apiClient } from '@/lib/api';
 
 export const useAuth = () => {
   const { 
@@ -28,6 +29,25 @@ export const useAuth = () => {
       console.log('🔍 Checking authentication...');
       setLoading(true);
       
+      // Check authentication status first
+      try {
+        const status = await apiClient.getAuthStatus();
+        console.log('🔍 Auth status response:', status);
+        
+        if (status && status.authenticated) {
+          // If authenticated via status endpoint, get the user details
+          const user = await authService.getCurrentUser();
+          console.log('✅ User is authenticated:', user);
+          setAuth(user);
+          return;
+        } else {
+          console.log('⚠️ Auth status indicates not authenticated');
+        }
+      } catch (statusError) {
+        console.log('⚠️ Auth status check failed, falling back to regular check:', statusError);
+      }
+      
+      // Fall back to the regular authentication check
       const result = await authService.checkAuthentication();
       
       if (result.isAuthenticated && result.user) {

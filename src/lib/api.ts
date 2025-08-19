@@ -133,6 +133,11 @@ export class ApiClient {
     const response = await api.get('/api/auth');
     return response.data;
   }
+  
+  async getAuthStatus() {
+    const response = await api.get('/api/auth/status');
+    return response.data;
+  }
 
   async refreshToken() {
     const response = await api.post('/api/auth/refresh');
