@@ -38,10 +38,10 @@ const BottomNavigation = () => {
               end={item.end}
               className={({ isActive }) =>
                 cn(
-                  "flex flex-col items-center gap-1.5 py-2 px-3 rounded-xl transition-all duration-300 min-w-0 flex-1 touch-feedback hover:scale-105 active:scale-95",
+                  "flex flex-col items-center gap-1.5 py-2 px-3 rounded-xl transition-all duration-300 min-w-0 flex-1 touch-feedback active:scale-95",
                   isActive 
                     ? "text-primary transform scale-105" 
-                    : "text-muted-foreground hover:text-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:scale-102"
                 )
               }
               style={{ animationDelay: `${index * 100}ms` }}
@@ -51,14 +51,17 @@ const BottomNavigation = () => {
                   <div className={cn(
                     "p-2.5 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md",
                     isActive 
-                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30 animate-breathe" 
-                      : "bg-muted/50 hover:bg-muted hover:scale-110"
+                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30 scale-110" 
+                      : "bg-muted/50 hover:bg-muted hover:scale-105"
                   )}>
-                    <item.icon className="h-5 w-5" />
+                    <item.icon className={cn(
+                      "h-5 w-5 transition-all duration-300",
+                      isActive ? "animate-spin" : ""
+                    )} />
                   </div>
                   <span className={cn(
                     "text-xs font-medium truncate transition-all duration-200",
-                    isActive ? "text-primary animate-pulse" : ""
+                    isActive ? "text-primary font-semibold" : ""
                   )}>
                     {item.label}
                   </span>

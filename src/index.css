@@ -258,14 +258,23 @@ All colors MUST be HSL.
   }
 
   /* Breathing animation for icons */
-  @keyframes breathe {
-    0%, 100% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.05);
-    }
+@keyframes spin-once {
+  from {
+    transform: rotate(0deg);
   }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes gentle-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(180deg);
+  }
+}
 
   /* Subtle glow pulse */
   @keyframes glowPulse {
