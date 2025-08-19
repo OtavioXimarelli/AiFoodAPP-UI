@@ -22,6 +22,28 @@ export const authService = {
       return user;
     } catch (error: any) {
       console.error("🔑 Failed to get current user:", error);
+      
+      // Try to refresh the token if getting current user fails
+      try {
+        console.log("🔑 Attempting to refresh token...");
+        await this.refreshToken();
+        // Try to get user again after refresh
+        return await apiClient.getCurrentUser();
+      } catch (refreshError) {
+        console.error("🔑 Token refresh failed:", refreshError);
+        throw error; // Throw the original error if refresh fails
+      }
+    }
+  },
+  
+  // Refresh the authentication token
+  async refreshToken(): Promise<void> {
+    try {
+      console.log("🔄 Refreshing authentication token...");
+      await apiClient.refreshToken();
+      console.log("🔄 Token refreshed successfully");
+    } catch (error: any) {
+      console.error("🔄 Failed to refresh token:", error);
       throw error;
     }
   },
