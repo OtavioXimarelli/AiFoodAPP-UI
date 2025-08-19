@@ -30,6 +30,14 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   useEffect(() => {
     setMounted(true);
+    
+    // Close sidebar when clicking outside or pressing escape
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
   }, []);
 
   const handleLogout = () => {
@@ -134,44 +142,37 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       {/* Mobile overlay */}
       {open && (
         <div 
-          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden animate-fade-in"
+          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm lg:hidden animate-fade-in"
           onClick={closeMobileMenu}
+          style={{ bottom: '6rem' }} // Keep space for bottom nav
         />
       )}
 
       <div className="flex">
         {/* Sidebar */}
         <aside className={cn(
-          "fixed inset-y-0 left-0 z-50 w-72 transform border-r border-white/10 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:w-64",
-          "dark:bg-background/80 dark:border-white/10",
-          "light:bg-white/90 light:border-black/10",
-          open ? "translate-x-0" : "-translate-x-full",
+          "fixed left-0 z-50 w-80 transform border-r border-white/10 bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/90 transition-transform duration-200 ease-out lg:relative lg:translate-x-0 lg:w-64",
+          "dark:bg-background/95 dark:border-white/10",
+          "light:bg-white/95 light:border-black/10",
+          "top-16 bottom-24 lg:top-0 lg:bottom-0 lg:inset-y-0", // Mobile: space for header and bottom nav
+          open ? "translate-x-0 shadow-2xl" : "-translate-x-full",
           mounted && "animate-slide-in-left"
         )}>
-          {/* Mobile header */}
-          <div className="flex h-16 items-center justify-between px-4 lg:hidden border-b border-white/10 dark:border-white/10 light:border-black/10">
-            <Link
-              to="/dashboard"
-              className="flex items-center gap-2 font-bold text-lg bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent"
-              onClick={closeMobileMenu}
-            >
-              <div className="p-1.5 rounded-lg bg-gradient-to-br from-primary to-primary/80 shadow-lg">
-                <ChefHat className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <span className="hidden sm:block">AI Food App</span>
-            </Link>
+          {/* Mobile header - simpler for better performance */}
+          <div className="flex h-14 items-center justify-between px-4 lg:hidden border-b border-border/20">
+            <span className="font-semibold text-base text-foreground">Menu</span>
             <Button
               variant="ghost"
               size="sm"
               onClick={closeMobileMenu}
-              className="hover:bg-primary/10"
+              className="hover:bg-primary/10 transition-colors duration-150 touch-feedback"
             >
               <X className="h-5 w-5" />
             </Button>
           </div>
 
-          {/* Navigation */}
-          <nav className="flex-1 space-y-2 p-4 pt-6 lg:pt-4">
+          {/* Navigation - optimized for performance */}
+          <nav className="flex-1 space-y-1 p-4 pt-4 lg:pt-4 overflow-y-auto">
             {navigationItems.map((item, index) => (
               <NavLink
                 key={item.to}
@@ -179,30 +180,29 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 onClick={closeMobileMenu}
                 className={({ isActive }) =>
                   cn(
-                    "group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 hover:bg-accent/50 touch-feedback hover-lift animate-slide-in-right",
+                    "group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors duration-150 touch-feedback",
                     isActive 
-                      ? "bg-gradient-to-r from-primary/10 to-primary/5 text-primary border border-primary/20 shadow-sm" 
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "bg-primary/10 text-primary border border-primary/20" 
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                   )
                 }
-                style={{ animationDelay: `${index * 100}ms` }}
               >
                 {({ isActive }) => (
                   <>
                     <div className={cn(
-                      "p-2 rounded-lg transition-all duration-200 hover:scale-105",
+                      "p-2 rounded-lg transition-colors duration-150",
                       isActive 
-                        ? `bg-gradient-to-br ${item.gradient} shadow-lg animate-glow-pulse` 
-                        : "bg-muted group-hover:bg-accent"
+                        ? `bg-primary text-primary-foreground` 
+                        : "bg-muted/80 group-hover:bg-accent"
                     )}>
                       <item.icon className={cn(
-                        "h-4 w-4 transition-colors duration-200",
-                        isActive ? "text-white" : "text-muted-foreground group-hover:text-foreground"
+                        "h-4 w-4 transition-transform duration-150",
+                        isActive && "animate-spin-once"
                       )} />
                     </div>
                     <span className="flex-1">{item.label}</span>
                     {isActive && (
-                      <Sparkles className="h-4 w-4 text-primary animate-pulse" />
+                      <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                     )}
                   </>
                 )}
@@ -222,7 +222,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 min-h-[calc(100vh-4rem)] lg:ml-0">
+        <main className="flex-1 min-h-[calc(100vh-4rem)] lg:ml-0 pb-24 lg:pb-0">
           <div className={cn(
             "lg:container lg:mx-auto lg:px-4 lg:py-6",
             mounted && "animate-fade-in"
