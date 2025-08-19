@@ -14,26 +14,53 @@ const Login = () => {
 
   // Check authentication status on mount and redirect if already authenticated
   useEffect(() => {
+    // Se já estamos em processo de login via OAuth, não fazer verificação adicional
+    const isOauthInProgress = sessionStorage.getItem('oauth_login_in_progress');
+    
+    // Se já estamos autenticados, redirecionar imediatamente sem verificações adicionais
+    if (isAuthenticated) {
+      console.log("✅ Login: Already authenticated in global state, redirecting");
+      navigate(from, { replace: true });
+      return;
+    }
+    
+    // Se estamos em processo de OAuth, não fazer verificações adicionais
+    if (isOauthInProgress) {
+      console.log("🔄 Login: OAuth login in progress, skipping auth checks");
+      return;
+    }
+    
     const checkAuthStatus = async () => {
       try {
         console.log("🔍 Login: Checking auth status...");
-        // Try direct status check first
+        
+        // Verificar se já existe algum marcador local antes de fazer chamadas de API
+        const localAuthFlag = localStorage.getItem('is_authenticated') === 'true';
+        
+        if (localAuthFlag) {
+          console.log("✅ Login: Local auth flag found, proceeding with verification");
+          await checkAuthentication();
+          
+          if (isAuthenticated) {
+            console.log("✅ Login: Authenticated after check");
+            navigate(from, { replace: true });
+            return;
+          } else {
+            console.log("⚠️ Login: Local auth flag was wrong, not authenticated");
+          }
+        }
+        
+        // Verificar status de autenticação do servidor apenas se necessário
         const status = await apiClient.getAuthStatus();
         
         if (status && status.authenticated) {
-          console.log("✅ Login: Already authenticated according to status endpoint");
+          console.log("✅ Login: Authenticated according to status endpoint");
+          await checkAuthentication(); // Obter detalhes do usuário
           navigate(from, { replace: true });
           return;
         }
         
-        // If not authenticated via status endpoint, try full authentication check
-        console.log("🔄 Login: Status check showed not authenticated, trying full check");
-        await checkAuthentication();
-        
-        if (isAuthenticated) {
-          console.log("✅ Login: Authenticated after full check");
-          navigate(from, { replace: true });
-        }
+        console.log("ℹ️ Login: Not authenticated, staying on login page");
       } catch (error) {
         console.log("❌ Login: Auth check error", error);
       }
@@ -43,6 +70,10 @@ const Login = () => {
   }, [isAuthenticated, navigate, from, checkAuthentication]);
 
   const handleGoogleLogin = () => {
+    // Marcar que estamos iniciando o processo de login OAuth
+    sessionStorage.setItem('oauth_login_in_progress', 'true');
+    // Marcar quando iniciamos o login
+    sessionStorage.setItem('oauth_login_started_at', new Date().toISOString());
     redirectToLogin('google');
   };
 

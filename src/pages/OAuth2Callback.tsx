@@ -10,127 +10,190 @@ const OAuth2Callback = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Flag para evitar efeitos de corrida
+    let mounted = true;
+    
+    // Verificar se o processo de OAuth já está há muito tempo e limpar se necessário
+    const oauthStartedAt = sessionStorage.getItem('oauth_login_started_at');
+    if (oauthStartedAt) {
+      const startTime = new Date(oauthStartedAt).getTime();
+      const now = Date.now();
+      const timePassed = now - startTime;
+      
+      // Se passou mais de 10 minutos, considerar que o processo falhou e limpar
+      if (timePassed > 10 * 60 * 1000) {
+        console.log('⚠️ OAuth login process timed out after', Math.round(timePassed/1000/60), 'minutes');
+        sessionStorage.removeItem('oauth_login_in_progress');
+        sessionStorage.removeItem('oauth_login_started_at');
+      }
+    }
+    
     const handleCallback = async () => {
+      // Evitar múltiplas chamadas/redirecionamentos por causa de efeitos de montagem/desmontagem
+      if (!mounted) return;
+      
       try {
         console.log('🔄 OAuth2Callback: Starting authentication check...');
-        console.log('🔄 Current URL:', window.location.href);
-        console.log('🔄 URL search params:', window.location.search);
-        console.log('🔄 API Base URL:', import.meta.env.VITE_API_BASE_URL);
-        console.log('🔄 Document cookies:', document.cookie);
         
         // Check for token parameter in the URL
         const params = new URLSearchParams(window.location.search);
         const hasToken = params.has('token') || params.has('code');
         const hasError = params.has('error');
         
+        // Verificar por erro no URL - o servidor pode retornar erro tanto pelo parâmetro error
+        // quanto pelo código de status na própria URL (caso do erro 500)
         if (hasError) {
           const errorMsg = params.get('error') || 'Unknown error';
           console.error('❌ Error in OAuth callback URL:', errorMsg);
           throw new Error(`OAuth error: ${errorMsg}`);
         }
         
-        if (!hasToken) {
-          console.log('⚠️ No token or code found in URL, checking if session is already established...');
-        } else {
-          console.log('🔒 Authentication token/code found in URL');
+        // Verificar por padrão de erro 500 na URL (caso do Whitelabel Error)
+        const currentUrl = window.location.href;
+        if (currentUrl.includes('error') || 
+            currentUrl.includes('status=500') || 
+            currentUrl.includes('Internal+Server+Error')) {
+          console.error('❌ Detected server error in URL:', currentUrl);
+          throw new Error('Server error (500) - The authentication server encountered an error');
         }
         
-        // Try multiple times to get authentication status, with increasing delays
-        // This helps with race conditions where cookies are not yet set
-        console.log('🔄 Starting multiple auth check attempts...');
+        // Registrar que o callback foi iniciado (pode ajudar no debugging)
+        console.log('🔄 OAuth2 callback processing with params:', 
+          Object.fromEntries([...params.entries()]
+            .filter(([key]) => !['token', 'code'].includes(key)))); // Não logar tokens por segurança
         
-        for (let attempt = 1; attempt <= 3; attempt++) {
-          console.log(`🔄 Auth check attempt ${attempt}/3...`);
+        // Esperar um tempo fixo (3 segundos) para o backend processar o token/código
+        // Isso reduz o número de chamadas desnecessárias enquanto o backend está processando
+        console.log('🔄 Waiting for backend to process authentication...');
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        
+        // Verificar se ainda estamos montados após a espera
+        if (!mounted) return;
+        
+        // Fazer apenas uma única tentativa com o endpoint de status
+        try {
+          console.log('🔄 Checking authentication status...');
+          const status = await apiClient.getAuthStatus();
           
-          // Wait with increasing delay between attempts
-          await new Promise(resolve => setTimeout(resolve, attempt * 1000));
-          
-          // Check auth status directly
-          try {
-            const status = await apiClient.getAuthStatus();
-            console.log(`🔍 Auth status from API (attempt ${attempt}):`, status);
+          if (status && status.authenticated) {
+            console.log('✅ User authenticated according to status endpoint');
             
-            if (status && status.authenticated) {
-              console.log('✅ User authenticated according to status endpoint');
-              
-              // Try to get user details to ensure everything is working
-              try {
-                const userResponse = await api.get('/api/auth');
-                console.log('✅ Successfully got user details:', userResponse.data);
-                
-                // Store session timestamp and mark as authenticated
-                localStorage.setItem('session_established_at', new Date().toISOString());
-                localStorage.setItem('is_authenticated', 'true');
-                
-                // Redirect to dashboard
-                console.log('🔄 Redirecting to dashboard...');
-                navigate('/dashboard', { replace: true });
-                return;
-              } catch (userError) {
-                console.error('❌ Failed to get user details even though status shows authenticated:', userError);
-                // Continue to next attempt
-              }
-            } else {
-              console.log('⚠️ Auth status indicates not authenticated, will retry or try alternate method');
-            }
-          } catch (statusError) {
-            console.log(`⚠️ Auth status check failed (attempt ${attempt}):`, statusError);
-          }
-          
-          // If we're on the last attempt, try the regular authentication check
-          if (attempt === 3) {
-            console.log('🔄 All auth status checks failed, trying regular authentication check...');
-            await checkAuthentication();
-            
-            // If we get here, authentication must have succeeded (otherwise an error would have been thrown)
-            console.log('✅ OAuth2Callback: Authentication successful via regular check, redirecting to dashboard...');
+            // Definir marcadores de sessão
             localStorage.setItem('session_established_at', new Date().toISOString());
             localStorage.setItem('is_authenticated', 'true');
             
-            // Redirect to dashboard
-            navigate('/dashboard', { replace: true });
+            // Limpar marcadores de processo OAuth
+            sessionStorage.removeItem('oauth_login_in_progress');
+            sessionStorage.removeItem('oauth_login_started_at');
+            
+            // Redirecionar para o dashboard
+            if (mounted) {
+              console.log('🔄 Redirecting to dashboard...');
+              navigate('/dashboard', { replace: true });
+            }
             return;
+          } else {
+            console.log('⚠️ Status endpoint reports not authenticated');
           }
+        } catch (statusError) {
+          console.log('⚠️ Failed to check auth status:', statusError);
         }
         
-        // If we get here, all attempts failed
-        throw new Error('Authentication failed after multiple attempts');
+        // Se o status falhou, tentar uma verificação de autenticação regular
+        try {
+          console.log('🔄 Attempting regular authentication check...');
+          await checkAuthentication();
+          
+          // Se chegamos aqui sem erros, a autenticação foi bem-sucedida
+          localStorage.setItem('session_established_at', new Date().toISOString());
+          localStorage.setItem('is_authenticated', 'true');
+          
+          // Limpar marcadores de processo OAuth
+          sessionStorage.removeItem('oauth_login_in_progress');
+          sessionStorage.removeItem('oauth_login_started_at');
+          
+          if (mounted) {
+            navigate('/dashboard', { replace: true });
+          }
+          return;
+        } catch (authError) {
+          console.error('❌ Authentication check failed:', authError);
+          throw authError;
+        }
       } catch (error) {
-        console.error('❌ OAuth2 callback error:', error);
-        console.log('🔄 OAuth2Callback: Authentication failed, analyzing...');
+        if (!mounted) return;
         
-        // Log more details about the error
-        if (error instanceof Error) {
-          console.error('❌ Error message:', error.message);
-          console.error('❌ Error stack:', error.stack);
+        console.error('❌ OAuth2 callback error:', error instanceof Error ? error.message : error);
+        
+        const errorMessage = error instanceof Error ? error.message : 'Authentication failed';
+        
+        // Detectar tipos específicos de erro para mensagens mais amigáveis
+        let userFriendlyMessage = 'Authentication failed. Please try again.';
+        let errorDetails = '';
+        
+        if (errorMessage.includes('500') || errorMessage.includes('Server error')) {
+          userFriendlyMessage = 'Authentication server error';
+          errorDetails = 'The authentication server encountered an internal error. This is a backend issue that requires attention from the development team.';
+        } else if (errorMessage.includes('Network Error') || errorMessage.includes('timeout')) {
+          userFriendlyMessage = 'Connection error';
+          errorDetails = 'Could not connect to the authentication server. Please check your internet connection and try again.';
+        } else if (errorMessage.includes('OAuth error')) {
+          userFriendlyMessage = 'OAuth authentication error';
+          errorDetails = errorMessage;
         }
         
-        setError(error instanceof Error ? error.message : 'Authentication failed');
+        setError(userFriendlyMessage + (errorDetails ? `: ${errorDetails}` : ''));
         
-        // Wait longer before redirecting to show the error
+        // Limpar marcadores de processo OAuth em caso de erro
+        sessionStorage.removeItem('oauth_login_in_progress');
+        sessionStorage.removeItem('oauth_login_started_at');
+        
+        // Redirecionar após um tempo maior para erros do servidor (usuário pode precisar ler a mensagem)
+        const redirectDelay = errorMessage.includes('500') ? 5000 : 3000;
         setTimeout(() => {
-          console.log('🔄 OAuth2Callback: Redirecting to login due to error...');
-          navigate('/login', { replace: true });
-        }, 5000);
+          if (mounted) {
+            navigate('/login', { replace: true });
+          }
+        }, redirectDelay);
       }
     };
 
     handleCallback();
+    
+    // Função de limpeza para evitar atualizações em componentes desmontados
+    return () => {
+      mounted = false;
+    };
   }, [checkAuthentication, navigate]);
 
   if (error) {
+    // Determinar se é erro de servidor para estilo especial
+    const isServerError = error.includes('server error') || error.includes('500');
+    
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
-        <div className="text-center max-w-md">
-          <div className="text-red-600 mb-4">⚠️</div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Authentication Error
+        <div className="text-center max-w-md p-6 bg-white rounded-lg shadow-lg border border-red-100">
+          <div className={`text-4xl mb-4 ${isServerError ? 'text-red-600' : 'text-amber-500'}`}>
+            {isServerError ? '🛑' : '⚠️'}
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-3">
+            {isServerError ? 'Server Error' : 'Authentication Error'}
           </h2>
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-700 mb-4 leading-relaxed">
             {error}
           </p>
+          {isServerError && (
+            <div className="bg-gray-50 p-3 rounded text-left text-sm mb-4 border border-gray-200">
+              <p className="text-gray-700 font-medium mb-1">Troubleshooting:</p>
+              <ul className="list-disc pl-5 text-gray-600 space-y-1">
+                <li>Verifique se o servidor backend está funcionando corretamente</li>
+                <li>Verifique os logs do servidor para mais detalhes sobre o erro</li>
+                <li>O erro 500 indica um problema no lado do servidor e não no cliente</li>
+              </ul>
+            </div>
+          )}
           <p className="text-sm text-gray-500">
-            Redirecting to login page...
+            Redirecionando para a página de login em alguns segundos...
           </p>
         </div>
       </div>
