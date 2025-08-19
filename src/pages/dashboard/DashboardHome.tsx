@@ -145,11 +145,11 @@ const DashboardHome = () => {
         </div>
 
         {/* Status Cards */}
-        <div className="grid grid-cols-2 gap-3">
-          <Card className="bg-gradient-card border-border/50 hover:shadow-glow transition-all duration-300">
+        <div className="grid grid-cols-2 gap-3 animate-slide-in-bottom animation-delay-400">
+          <Card className="bg-gradient-card border-border/50 hover:shadow-glow transition-all duration-300 hover-lift card-hover">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
+                <div className="p-2 rounded-lg bg-primary/10 hover:scale-110 transition-transform duration-300">
                   <Package className="h-5 w-5 text-primary" />
                 </div>
                 <div>
@@ -160,10 +160,10 @@ const DashboardHome = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-card border-border/50 hover:shadow-glow transition-all duration-300">
+          <Card className="bg-gradient-card border-border/50 hover:shadow-glow transition-all duration-300 hover-lift card-hover">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-yellow-500/10">
+                <div className="p-2 rounded-lg bg-yellow-500/10 hover:scale-110 transition-transform duration-300">
                   <Clock className="h-5 w-5 text-yellow-500" />
                 </div>
                 <div>
@@ -200,15 +200,15 @@ const DashboardHome = () => {
         )}
 
         {/* Quick Actions */}
-        <div>
+        <div className="animate-slide-in-bottom animation-delay-600">
           <h2 className="text-lg font-semibold text-foreground mb-3">Ações Rápidas</h2>
           <div className="space-y-4">
             {quickActions.map((action, index) => (
-              <Link key={index} to={action.to}>
-                <Card className="bg-gradient-card border-border/50 hover:shadow-glow hover:scale-[1.02] transition-all duration-300">
+              <Link key={index} to={action.to} className={`stagger-${index + 1}`}>
+                <Card className="bg-gradient-card border-border/50 hover:shadow-glow hover:scale-[1.02] transition-all duration-300 card-hover touch-feedback">
                   <CardContent className="p-5">
                     <div className="flex items-center gap-4">
-                      <div className={`p-3 rounded-xl ${action.color} ${action.textColor} shadow-lg`}>
+                      <div className={`p-3 rounded-xl ${action.color} ${action.textColor} shadow-lg hover:scale-110 transition-transform duration-300`}>
                         <action.icon className="h-6 w-6" />
                       </div>
                       <div className="flex-1">
@@ -225,26 +225,30 @@ const DashboardHome = () => {
 
         {/* Recent Items Preview */}
         {safeFoodItems.length > 0 && (
-          <div>
+          <div className="animate-fade-in-scale animation-delay-600">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-lg font-semibold text-foreground">Adicionados Recentemente</h2>
               <Link to="/dashboard/food">
-                <Button variant="ghost" size="sm" className="text-primary">
+                <Button variant="ghost" size="sm" className="text-primary hover:scale-105 transition-transform duration-300 touch-feedback">
                   Ver Todos
                 </Button>
               </Link>
             </div>
             <div className="space-y-2">
-              {safeFoodItems.slice(0, 3).map((item) => {
+              {safeFoodItems.slice(0, 3).map((item, index) => {
                 const daysUntilExpiration = differenceInDays(new Date(item.expiration), new Date());
                 const isExpiring = daysUntilExpiration >= 0 && daysUntilExpiration <= 3;
                 const isExpired = daysUntilExpiration < 0;
 
                 return (
-                  <Card key={item.id} className="bg-gradient-card border-border/50">
+                  <Card 
+                    key={item.id} 
+                    className={`bg-gradient-card border-border/50 hover:shadow-md transition-all duration-300 hover-lift stagger-${index + 1} animate-slide-in-right`}
+                    style={{ animationDelay: `${(index + 1) * 150}ms` }}
+                  >
                     <CardContent className="p-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center hover:scale-110 transition-transform duration-300">
                           <Leaf className="h-6 w-6 text-primary" />
                         </div>
                         <div className="flex-1 min-w-0">

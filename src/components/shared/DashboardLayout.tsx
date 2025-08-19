@@ -83,7 +83,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <Button 
                 variant="ghost" 
                 size="sm"
-                className="lg:hidden hover:bg-primary/10 transition-colors duration-200" 
+                className="lg:hidden hover:bg-primary/10 transition-colors duration-200 touch-feedback press-animation" 
                 onClick={() => setOpen(!open)}
               >
                 <Menu className="h-5 w-5" />
@@ -92,9 +92,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               
               <Link
                 to="/dashboard"
-                className="flex items-center gap-2 font-bold text-lg bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent hover:from-primary/80 hover:to-primary transition-all duration-300"
+                className="flex items-center gap-2 font-bold text-lg bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent hover:from-primary/80 hover:to-primary transition-all duration-300 touch-feedback"
               >
-                <div className="p-1.5 rounded-lg bg-gradient-to-br from-primary to-primary/80 shadow-lg">
+                <div className="p-1.5 rounded-lg bg-gradient-to-br from-primary to-primary/80 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                   <ChefHat className="h-5 w-5 text-primary-foreground" />
                 </div>
                 <span className="hidden sm:block">AI Food App</span>
@@ -106,7 +106,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <ThemeToggle />
               {user && (
                 <div className="flex items-center gap-3">
-                  <Avatar className="h-9 w-9 ring-2 ring-primary/20 transition-all duration-200 hover:ring-primary/40">
+                  <Avatar className="h-9 w-9 ring-2 ring-primary/20 transition-all duration-200 hover:ring-primary/40 hover:scale-105 cursor-pointer">
                     <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-semibold">
                       {user.name ? user.name.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
                     </AvatarFallback>
@@ -121,7 +121,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 variant="outline" 
                 size="sm"
                 onClick={handleLogout} 
-                className="gap-2 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20 transition-all duration-200"
+                className="gap-2 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20 transition-all duration-200 touch-feedback press-animation ripple"
               >
                 <LogOut className="h-4 w-4" />
                 <span className="hidden sm:inline">Desconectar</span>
@@ -179,7 +179,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 onClick={closeMobileMenu}
                 className={({ isActive }) =>
                   cn(
-                    "group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 hover:bg-accent/50",
+                    "group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 hover:bg-accent/50 touch-feedback hover-lift animate-slide-in-right",
                     isActive 
                       ? "bg-gradient-to-r from-primary/10 to-primary/5 text-primary border border-primary/20 shadow-sm" 
                       : "text-muted-foreground hover:text-foreground"
@@ -190,9 +190,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 {({ isActive }) => (
                   <>
                     <div className={cn(
-                      "p-2 rounded-lg transition-all duration-200",
+                      "p-2 rounded-lg transition-all duration-200 hover:scale-105",
                       isActive 
-                        ? `bg-gradient-to-br ${item.gradient} shadow-lg` 
+                        ? `bg-gradient-to-br ${item.gradient} shadow-lg animate-glow-pulse` 
                         : "bg-muted group-hover:bg-accent"
                     )}>
                       <item.icon className={cn(

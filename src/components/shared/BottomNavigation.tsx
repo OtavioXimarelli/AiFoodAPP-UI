@@ -28,36 +28,37 @@ const BottomNavigation = () => {
   ];
 
   return (
-    <nav className="fixed bottom-4 left-4 right-4 z-50 safe-area-inset-bottom">
-      <div className="bg-card/90 backdrop-blur-xl border border-border/30 rounded-2xl shadow-2xl max-w-sm mx-auto">
+    <nav className="fixed bottom-4 left-4 right-4 z-50 safe-area-bottom animate-slide-in-bottom">
+      <div className="bg-card/95 backdrop-blur-xl border border-border/20 rounded-2xl shadow-2xl max-w-sm mx-auto hover:shadow-3xl transition-all duration-300">
         <div className="flex items-center justify-around py-3 px-2">
-          {navItems.map((item) => (
+          {navItems.map((item, index) => (
             <NavLink
               key={item.to}
               to={item.to}
               end={item.end}
               className={({ isActive }) =>
                 cn(
-                  "flex flex-col items-center gap-1.5 py-2 px-3 rounded-xl transition-all duration-300 min-w-0 flex-1",
+                  "flex flex-col items-center gap-1.5 py-2 px-3 rounded-xl transition-all duration-300 min-w-0 flex-1 touch-feedback hover:scale-105 active:scale-95",
                   isActive 
                     ? "text-primary transform scale-105" 
-                    : "text-muted-foreground hover:text-foreground hover:scale-105"
+                    : "text-muted-foreground hover:text-foreground"
                 )
               }
+              style={{ animationDelay: `${index * 100}ms` }}
             >
               {({ isActive }) => (
                 <>
                   <div className={cn(
-                    "p-2.5 rounded-xl transition-all duration-300 shadow-sm",
+                    "p-2.5 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md",
                     isActive 
-                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25" 
-                      : "bg-muted/50 hover:bg-muted"
+                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30 animate-breathe" 
+                      : "bg-muted/50 hover:bg-muted hover:scale-110"
                   )}>
                     <item.icon className="h-5 w-5" />
                   </div>
                   <span className={cn(
                     "text-xs font-medium truncate transition-all duration-200",
-                    isActive ? "text-primary" : ""
+                    isActive ? "text-primary animate-pulse" : ""
                   )}>
                     {item.label}
                   </span>
