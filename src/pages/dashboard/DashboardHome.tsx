@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useFoodItems } from "@/hooks/useFoodItems";
+import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,9 +15,9 @@ import {
   Leaf,
   Star,
   Calendar,
-  Bell,
   Search,
-  Filter
+  Filter,
+  User
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { format, differenceInDays } from "date-fns";
@@ -24,12 +25,25 @@ import { ptBR } from "date-fns/locale";
 
 const DashboardHome = () => {
   const { foodItems, loading } = useFoodItems();
+  const { user } = useAuth();
+  const [showUserInfo, setShowUserInfo] = useState(false);
   const [greeting] = useState(() => {
     const hour = new Date().getHours();
     if (hour < 12) return "Bom dia";
     if (hour < 18) return "Boa tarde";
     return "Boa noite";
   });
+
+  const getUserName = () => {
+    if (user?.name) return user.name.split(' ')[0];
+    if (user?.email) return user.email.split('@')[0];
+    return "Usuário";
+  };
+
+  const getUserInitials = () => {
+    const name = getUserName();
+    return name.substring(0, 2).toUpperCase();
+  };
 
   const safeFoodItems = Array.isArray(foodItems) ? foodItems : [];
   
@@ -74,27 +88,40 @@ const DashboardHome = () => {
     <div className="min-h-screen bg-background pb-20 lg:pb-0">
       {/* Header */}
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/50 p-4">
-        <div className="flex items-center justify-between">
-          <div>
+        <div 
+          className="flex items-center justify-between cursor-pointer"
+          onClick={() => setShowUserInfo(!showUserInfo)}
+        >
+          <div className="flex-1">
             <h1 className="text-2xl font-bold text-foreground">
-              {greeting} 👋
+              {greeting}, {getUserName()}! 👋
             </h1>
             <p className="text-sm text-muted-foreground">
               {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
             </p>
+            {showUserInfo && (
+              <div className="mt-3 p-3 bg-card/50 rounded-lg border border-border/30 backdrop-blur-sm">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <User className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-foreground">{user?.name || "Nome não informado"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">Email:</span>
+                    <span className="text-xs text-foreground">{user?.email}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">Total de itens:</span>
+                    <span className="text-xs font-medium text-primary">{totalItems}</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="relative">
-              <Bell className="h-5 w-5" />
-              {(expiringItems.length > 0 || expiredItems.length > 0) && (
-                <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {expiringItems.length + expiredItems.length}
-                </span>
-              )}
-            </Button>
-            <Avatar className="h-9 w-9 ring-2 ring-primary/20">
-              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-semibold">
-                U
+          <div className="flex items-center gap-3">
+            <Avatar className="h-10 w-10 ring-2 ring-primary/20">
+              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-semibold text-sm">
+                {getUserInitials()}
               </AvatarFallback>
             </Avatar>
           </div>
@@ -175,11 +202,11 @@ const DashboardHome = () => {
         {/* Quick Actions */}
         <div>
           <h2 className="text-lg font-semibold text-foreground mb-3">Ações Rápidas</h2>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {quickActions.map((action, index) => (
               <Link key={index} to={action.to}>
                 <Card className="bg-gradient-card border-border/50 hover:shadow-glow hover:scale-[1.02] transition-all duration-300">
-                  <CardContent className="p-4">
+                  <CardContent className="p-5">
                     <div className="flex items-center gap-4">
                       <div className={`p-3 rounded-xl ${action.color} ${action.textColor} shadow-lg`}>
                         <action.icon className="h-6 w-6" />

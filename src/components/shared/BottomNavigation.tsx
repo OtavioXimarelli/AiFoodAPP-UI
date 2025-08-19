@@ -28,39 +28,44 @@ const BottomNavigation = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-t border-border/50 safe-area-inset-bottom">
-      <div className="flex items-center justify-around py-2 px-4 max-w-lg mx-auto">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={item.end}
-            className={({ isActive }) =>
-              cn(
-                "flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-all duration-200 min-w-0 flex-1",
-                isActive 
-                  ? "text-primary" 
-                  : "text-muted-foreground hover:text-foreground"
-              )
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <div className={cn(
-                  "p-2 rounded-xl transition-all duration-200",
+    <nav className="fixed bottom-4 left-4 right-4 z-50 safe-area-inset-bottom">
+      <div className="bg-card/90 backdrop-blur-xl border border-border/30 rounded-2xl shadow-2xl max-w-sm mx-auto">
+        <div className="flex items-center justify-around py-3 px-2">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              className={({ isActive }) =>
+                cn(
+                  "flex flex-col items-center gap-1.5 py-2 px-3 rounded-xl transition-all duration-300 min-w-0 flex-1",
                   isActive 
-                    ? "bg-primary text-primary-foreground shadow-orange" 
-                    : "bg-muted"
-                )}>
-                  <item.icon className="h-5 w-5" />
-                </div>
-                <span className="text-xs font-medium truncate">
-                  {item.label}
-                </span>
-              </>
-            )}
-          </NavLink>
-        ))}
+                    ? "text-primary transform scale-105" 
+                    : "text-muted-foreground hover:text-foreground hover:scale-105"
+                )
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <div className={cn(
+                    "p-2.5 rounded-xl transition-all duration-300 shadow-sm",
+                    isActive 
+                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25" 
+                      : "bg-muted/50 hover:bg-muted"
+                  )}>
+                    <item.icon className="h-5 w-5" />
+                  </div>
+                  <span className={cn(
+                    "text-xs font-medium truncate transition-all duration-200",
+                    isActive ? "text-primary" : ""
+                  )}>
+                    {item.label}
+                  </span>
+                </>
+              )}
+            </NavLink>
+          ))}
+        </div>
       </div>
     </nav>
   );
