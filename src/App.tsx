@@ -25,7 +25,8 @@ const App = () => {
   useEffect(() => {
     // Inicializar apenas se não estivermos na página de login ou callback do OAuth2
     const shouldInitSession = !window.location.pathname.includes('/login') && 
-                              !window.location.pathname.includes('/oauth2/callback');
+                              !window.location.pathname.includes('/oauth2/callback') &&
+                              !window.location.pathname.includes('/login/oauth2/code/');
     
     // Flag para controlar se devemos configurar verificações periódicas
     let shouldSetupPeriodicChecks = shouldInitSession;
@@ -73,7 +74,8 @@ const App = () => {
       refreshInterval = window.setInterval(() => {
         // Não verificar se estivermos em página de login/oauth
         if (window.location.pathname.includes('/login') || 
-            window.location.pathname.includes('/oauth2/callback')) {
+            window.location.pathname.includes('/oauth2/callback') ||
+            window.location.pathname.includes('/login/oauth2/code/')) {
           return;
         }
         
@@ -108,6 +110,7 @@ const App = () => {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/oauth2/callback" element={<OAuth2Callback />} />
+              <Route path="/login/oauth2/code/google" element={<OAuth2Callback />} />
               <Route element={<ProtectedRoute />}>
                 <Route path="/dashboard" element={<DashboardLayout />}>
                   <Route index element={<DashboardHome />} />

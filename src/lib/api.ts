@@ -511,6 +511,27 @@ export class ApiClient {
     await api.post(ensureApiPath('/auth/logout'));
   }
 
+  /**
+   * Inicia o processo de login OAuth2 com o provedor especificado
+   * @param provider O provedor OAuth2 (default: 'google')
+   */
+  initiateOAuth2Login(provider: string = 'google') {
+    // Os endpoints OAuth2 estão na raiz do servidor, não sob /api
+    const url = new URL(baseURL);
+    
+    // Construir a URL do endpoint OAuth2
+    // O Spring Security OAuth2 espera: /oauth2/authorization/{provider}
+    const oauthUrl = `${url.protocol}//${url.host}/oauth2/authorization/${provider}`;
+    
+    console.log("🔑 Redirecionando para login OAuth2:", oauthUrl);
+    
+    // Marcar que um login OAuth está em andamento para evitar loops
+    sessionStorage.setItem('oauth_login_in_progress', 'true');
+    
+    // Redirecionar o navegador para a URL de autenticação
+    window.location.href = oauthUrl;
+  }
+
   // Food endpoints - these will be proxied through nginx
   async getFoodItems() {
     const response = await api.get(ensureApiPath('/foods'));
