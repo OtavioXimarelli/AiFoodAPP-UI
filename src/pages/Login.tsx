@@ -2,8 +2,9 @@ import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
-import { Chrome, Loader2 } from "lucide-react";
+import { Chrome, Loader2, ChefHat, Sparkles, Lock } from "lucide-react";
 import { apiClient } from "@/lib/api";
 
 const Login = () => {
@@ -78,36 +79,92 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background/80 to-background/60 p-4">
-      <Card className="w-full max-w-md bg-card/60 backdrop-blur-xl border-border/30 shadow-2xl shadow-black/10">
-        <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
-            <span className="text-2xl">🍽️</span>
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+      {/* Modern gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-accent/20"></div>
+      <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-accent/10"></div>
+      
+      {/* Floating decorative elements */}
+      <div className="absolute top-20 left-20 w-32 h-32 bg-primary/5 rounded-full blur-xl animate-float"></div>
+      <div className="absolute bottom-20 right-20 w-24 h-24 bg-accent/5 rounded-full blur-xl animate-float" style={{ animationDelay: '2s' }}></div>
+      <div className="absolute top-1/2 left-10 w-16 h-16 bg-primary/10 rounded-full blur-lg animate-float" style={{ animationDelay: '4s' }}></div>
+      
+      <div className="relative z-10 w-full max-w-md mx-auto p-6">
+        {/* Header section */}
+        <div className="text-center mb-8 animate-fade-in">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-3xl mb-6 shadow-lg shadow-primary/20">
+            <ChefHat className="w-10 h-10 text-white" />
           </div>
-          <CardTitle className="text-2xl font-bold text-foreground">
-            Bem-vindo ao AI Food App
-          </CardTitle>
-          <p className="text-muted-foreground">
-            Entre para gerenciar sua despensa e gerar receitas com IA
-          </p>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Button 
-            onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-3 bg-card hover:bg-card/80 text-foreground border border-border/50 hover:border-border transition-all duration-200 h-12"
-            variant="outline"
-          >
-            <Chrome className="h-5 w-5 text-muted-foreground" />
-            <span className="font-medium">Continuar com Google</span>
-          </Button>
           
-          <div className="text-center text-sm text-muted-foreground">
-            <p>
-              Ao entrar, você concorda com nossos termos de serviço e política de privacidade.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+          <h1 className="text-4xl font-bold text-foreground mb-3">
+            Bem-vindo de volta
+          </h1>
+          
+          <p className="text-lg text-muted-foreground mb-4">
+            Acesse sua conta e continue criando receitas incríveis com IA
+          </p>
+          
+          <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-2">
+            <Lock className="w-3 h-3 mr-2" />
+            Login Seguro
+          </Badge>
+        </div>
+
+        {/* Login Card */}
+        <Card className="bg-card/80 backdrop-blur-xl border border-border/50 shadow-2xl shadow-black/5 animate-scale-in">
+          <CardContent className="p-8">
+            <Button 
+              onClick={handleGoogleLogin}
+              className="w-full h-14 text-lg font-semibold bg-white hover:bg-gray-50 text-gray-800 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              variant="outline"
+            >
+              <div className="flex items-center justify-center gap-4">
+                <div className="flex items-center justify-center w-8 h-8 bg-white rounded-full shadow-sm">
+                  <Chrome className="h-5 w-5 text-gray-600" />
+                </div>
+                <span>Entrar com Google</span>
+                <Sparkles className="h-5 w-5 text-primary" />
+              </div>
+            </Button>
+            
+            <div className="mt-6 text-center">
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Ao entrar, você concorda com nossos{" "}
+                <a href="#" className="text-primary hover:underline font-medium">
+                  termos de serviço
+                </a>{" "}
+                e{" "}
+                <a href="#" className="text-primary hover:underline font-medium">
+                  política de privacidade
+                </a>
+              </p>
+            </div>
+
+            {/* Features highlight */}
+            <div className="mt-8 grid grid-cols-2 gap-4 pt-6 border-t border-border/30">
+              <div className="text-center">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-2">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                </div>
+                <p className="text-xs text-muted-foreground">IA Avançada</p>
+              </div>
+              <div className="text-center">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-2">
+                  <ChefHat className="w-4 h-4 text-primary" />
+                </div>
+                <p className="text-xs text-muted-foreground">Receitas Personalizadas</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Bottom text */}
+        <div className="text-center mt-6 animate-fade-in" style={{ animationDelay: '300ms' }}>
+          <p className="text-sm text-muted-foreground">
+            Primeira vez aqui? O login com Google já cria sua conta automaticamente! 🎉
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
