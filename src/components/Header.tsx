@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
-import { ChefHat, LogIn, UserPlus, LayoutDashboard, LogOut } from "lucide-react";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
+import { ChefHat, LogIn, LayoutDashboard, LogOut } from "lucide-react";
 
 const Header = () => {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -25,23 +26,15 @@ const Header = () => {
           </Link>
           
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             {!isAuthenticated ? (
               <div className="flex items-center gap-2">
                 <Link to="/login">
                   <Button 
-                    variant="ghost" 
-                    className="gap-2 hover:bg-primary/10 hover:text-primary transition-all duration-200"
+                    className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/80 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-300"
                   >
                     <LogIn className="h-4 w-4" />
                     <span className="hidden sm:inline">Entrar</span>
-                  </Button>
-                </Link>
-                <Link to="/register">
-                  <Button 
-                    className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/80 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-300"
-                  >
-                    <UserPlus className="h-4 w-4" />
-                    <span className="hidden sm:inline">Registrar</span>
                   </Button>
                 </Link>
               </div>

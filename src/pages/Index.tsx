@@ -250,7 +250,7 @@ const Index = () => {
             {/* Action buttons */}
             <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12 animate-slide-up" style={{ animationDelay: '400ms' }}>
               <Button asChild size="lg" className="bg-white text-primary hover:bg-white/95 hover-lift shadow-2xl px-8 py-4 text-lg font-semibold h-auto">
-                <Link to="/register">
+                <Link to="/login">
                   <Sparkles className="mr-3 h-6 w-6" />
                   Começar Grátis Hoje
                 </Link>
@@ -258,7 +258,7 @@ const Index = () => {
               <Button asChild size="lg" variant="outline" className="border-2 border-foreground/20 text-foreground bg-background/20 hover:bg-white hover:text-primary hover:border-white hover-lift backdrop-blur-sm px-8 py-4 text-lg font-semibold h-auto shadow-lg">
                 <Link to="/login">
                   <Users className="mr-3 h-6 w-6" />
-                  Já tenho conta
+                  Fazer Login
                 </Link>
               </Button>
             </div>
