@@ -27,3 +27,5 @@ dist-ssr
 
 /android*
 rsync.txt
+deploy-frontend.sh
+deploy.sh
