@@ -14,22 +14,6 @@ const Hero = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
           {/* Left Column - Content */}
           <div className="text-center lg:text-left animate-fade-in">
-            {/* Trust Badge */}
-            <div className="flex flex-wrap gap-2 justify-center lg:justify-start mb-6">
-              <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/15">
-                <Star className="w-3 h-3 mr-1" />
-                IA Avançada
-              </Badge>
-              <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200 hover:bg-green-200">
-                <Users className="w-3 h-3 mr-1" />
-                +10k Usuários
-              </Badge>
-              <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200">
-                <TrendingUp className="w-3 h-3 mr-1" />
-                Crescimento 300%
-              </Badge>
-            </div>
-
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-foreground leading-tight">
               Transforme sua
               <span className="block bg-gradient-to-r from-primary via-primary/80 to-accent bg-clip-text text-transparent mt-2">
@@ -40,24 +24,8 @@ const Hero = () => {
             
             <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
               Descubra receitas personalizadas, gerencie ingredientes e otimize sua nutrição com nossa plataforma alimentada por IA. 
-              <span className="text-primary font-semibold">Mais de 50.000 receitas</span> já criadas!
+              <span className="text-primary font-semibold">O futuro da culinária</span> está aqui!
             </p>
-            
-            {/* Social Proof Numbers */}
-            <div className="grid grid-cols-3 gap-6 mb-8 max-w-md mx-auto lg:mx-0">
-              <div className="text-center">
-                <div className="text-2xl sm:text-3xl font-bold text-foreground">50k+</div>
-                <div className="text-sm text-muted-foreground">Receitas Criadas</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl sm:text-3xl font-bold text-foreground">98%</div>
-                <div className="text-sm text-muted-foreground">Satisfação</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl sm:text-3xl font-bold text-foreground">4.8⭐</div>
-                <div className="text-sm text-muted-foreground">Avaliação</div>
-              </div>
-            </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
               <Button 
@@ -86,7 +54,7 @@ const Hero = () => {
 
             {/* Trust Indicators */}
             <div className="mt-8 text-sm text-muted-foreground">
-              <p>✓ Teste grátis por 14 dias • ✓ Sem cartão de crédito • ✓ Cancele a qualquer momento</p>
+              <p>✓ Teste grátis • ✓ Sem cartão de crédito • ✓ Cancele a qualquer momento</p>
             </div>
           </div>
 
