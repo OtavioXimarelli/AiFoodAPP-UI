@@ -255,7 +255,7 @@ const Index = () => {
                   Começar Grátis Hoje
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-2 border-white/40 text-white hover:bg-white/10 hover:border-white hover-lift backdrop-blur-sm px-8 py-4 text-lg font-semibold h-auto">
+              <Button asChild size="lg" variant="outline" className="border-2 border-white/80 text-white hover:bg-white/20 hover:border-white hover-lift backdrop-blur-sm px-8 py-4 text-lg font-semibold h-auto shadow-lg">
                 <Link to="/login">
                   <Users className="mr-3 h-6 w-6" />
                   Já tenho conta
