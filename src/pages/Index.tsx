@@ -69,29 +69,29 @@ const Index = () => {
       icon: Brain,
       title: "Sugestões Inteligentes",
       description: "A IA analisa seus ingredientes e preferências dietéticas para sugerir receitas perfeitas.",
-      color: "text-purple-600",
-      bg: "bg-purple-50"
+      color: "text-purple-700",
+      bg: "bg-purple-100"
     },
     {
       icon: Clock,
       title: "Economize Tempo",
       description: "Não perca mais tempo pensando no que cozinhar. Obtenha ideias instantâneas baseadas no que você tem.",
-      color: "text-blue-600",
-      bg: "bg-blue-50"
+      color: "text-blue-700",
+      bg: "bg-blue-100"
     },
     {
       icon: Heart,
       title: "Alimentação Saudável",
       description: "Acompanhe a nutrição e tome decisões informadas sobre suas refeições.",
-      color: "text-red-600",
-      bg: "bg-red-50"
+      color: "text-red-700",
+      bg: "bg-red-100"
     },
     {
       icon: Target,
       title: "Reduza o Desperdício",
       description: "Use ingredientes antes que estraguem com o rastreamento inteligente de validade.",
-      color: "text-green-600",
-      bg: "bg-green-50"
+      color: "text-green-700",
+      bg: "bg-green-100"
     }
   ];
 
@@ -172,6 +172,49 @@ const Index = () => {
                 Crie, explore e otimize suas receitas com o poder da inteligência artificial.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Benefits Section */}
+      <section className="py-20 px-4 bg-white/50 dark:bg-background/50">
+        <div className="container mx-auto">
+          <div className="text-center mb-16">
+            <Badge className="mb-4 bg-accent/10 text-accent border-accent/20">
+              Benefícios
+            </Badge>
+            <h2 className="text-4xl font-bold text-foreground mb-4">
+              Por que escolher o AI Food App?
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Transforme sua experiência culinária com gerenciamento inteligente de alimentos
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {benefits.map((benefit, index) => (
+              <Card 
+                key={index} 
+                className="group hover-lift bg-card/80 backdrop-blur-sm border border-border/50 shadow-xl animate-fade-in" 
+                style={{ animationDelay: `${index * 150}ms` }}
+              >
+                <CardContent className="p-8">
+                  <div className="flex items-start gap-4">
+                    <div className={`w-12 h-12 rounded-xl ${benefit.bg} dark:bg-background/10 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-all duration-300 hover-float border border-border/20`}>
+                      <benefit.icon className={`h-6 w-6 ${benefit.color} dark:text-primary`} />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-foreground mb-2">
+                        {benefit.title}
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed">
+                        {benefit.description}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
