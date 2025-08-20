@@ -236,6 +236,26 @@ All colors MUST be HSL.
     }
   }
 
+  @keyframes slideInFromRight {
+    from {
+      transform: translateX(50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
   @keyframes scaleIn {
     from {
       transform: scale(0.95);
@@ -307,12 +327,20 @@ All colors MUST be HSL.
     animation: slideInFromBottom 0.4s ease-out;
   }
 
+  .animate-slide-in-right {
+    animation: slideInFromRight 0.5s ease-out;
+  }
+
   .animate-fade-in {
     animation: fadeIn 0.3s ease-out;
   }
 
   .animate-scale-in {
     animation: scaleIn 0.3s ease-out;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
   }
 
   /* New subtle animations */
