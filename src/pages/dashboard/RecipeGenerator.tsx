@@ -1,25 +1,30 @@
 import { useState } from "react";
 import { useRecipes } from "@/hooks/useRecipes";
 import { useFoodItems } from "@/hooks/useFoodItems";
+import { useLocalRecipes } from "@/hooks/useLocalRecipes";
 import { Recipe } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { ChefHat, Clock, Users, Zap, Loader2, AlertTriangle, Package, Sparkles, Star, Heart, TrendingUp, Award, Flame, Info } from "lucide-react";
+import { ChefHat, Clock, Users, Zap, Loader2, AlertTriangle, Package, Sparkles, Star, Heart, TrendingUp, Award, Flame, Info, Trash2, Save } from "lucide-react";
 import toast from "react-hot-toast";
+import NutritionAnalysisModal from "@/components/NutritionAnalysisModal";
 
 const RecipeGenerator = () => {
   const { recipes, loading, error, analysis, analyzingId, generateRecipe, analyzeRecipe, clearRecipes, clearError } = useRecipes();
   const { foodItems, loading: foodLoading } = useFoodItems();
+  const { storedRecipes, saveRecipes, deleteRecipe, totalRecipes } = useLocalRecipes();
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+  const [showAnalysisModal, setShowAnalysisModal] = useState(false);
 
   const handleGenerate = async () => {
     try {
       clearRecipes();
       const newRecipes = await generateRecipe();
       if (newRecipes.length > 0) {
+        saveRecipes(newRecipes);
         toast.success("Receita gerada com sucesso!");
       }
     } catch (error: any) {
@@ -32,7 +37,9 @@ const RecipeGenerator = () => {
     
     try {
       setSelectedRecipe(recipe);
-      await analyzeRecipe(recipe.id);
+      const id = typeof recipe.id === 'string' ? parseInt(recipe.id) : recipe.id;
+      await analyzeRecipe(id);
+      setShowAnalysisModal(true);
       toast.success("Análise da receita concluída!");
     } catch (error: any) {
       toast.error(error.message || "Falha ao analisar receita");
@@ -86,62 +93,62 @@ const RecipeGenerator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/80 to-background/60 pb-20 lg:pb-0">
-      <div className="max-w-7xl mx-auto p-6 space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/80 to-background/60 pb-24 lg:pb-8">
+      <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-6 md:space-y-8">
         {/* Header */}
-        <div className="text-center space-y-4 animate-fade-in">
+        <div className="text-center space-y-4 animate-fade-in px-2">
           <div className="flex justify-center mb-4">
             <div className="p-3 bg-primary/10 rounded-full">
-              <ChefHat className="h-8 w-8 text-primary" />
+              <ChefHat className="h-6 w-6 md:h-8 md:w-8 text-primary" />
             </div>
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             Gerador de Receitas IA
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
             Transforme os ingredientes da sua despensa em receitas deliciosas com inteligência artificial
           </p>
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 animate-fade-in">
           <Card className="bg-card/60 backdrop-blur-xl border-border/30 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-green-100 rounded-full">
-                  <Package className="h-6 w-6 text-green-600" />
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="p-2 md:p-3 bg-green-100 dark:bg-green-900/20 rounded-full">
+                  <Package className="h-5 w-5 md:h-6 md:w-6 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground">{foodItems.length}</p>
-                  <p className="text-sm text-muted-foreground">Ingredientes disponíveis</p>
+                  <p className="text-xl md:text-2xl font-bold text-foreground">{foodItems.length}</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">Ingredientes disponíveis</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-card/60 backdrop-blur-xl border-border/30 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-blue-100 rounded-full">
-                  <Sparkles className="h-6 w-6 text-blue-600" />
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="p-2 md:p-3 bg-blue-100 dark:bg-blue-900/20 rounded-full">
+                  <Sparkles className="h-5 w-5 md:h-6 md:w-6 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground">{recipes.length}</p>
-                  <p className="text-sm text-muted-foreground">Receitas geradas</p>
+                  <p className="text-xl md:text-2xl font-bold text-foreground">{totalRecipes}</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">Receitas salvas</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-card/60 backdrop-blur-xl border-border/30 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-purple-100 rounded-full">
-                  <TrendingUp className="h-6 w-6 text-purple-600" />
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="p-2 md:p-3 bg-purple-100 dark:bg-purple-900/20 rounded-full">
+                  <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground">IA</p>
-                  <p className="text-sm text-muted-foreground">Powered by AI</p>
+                  <p className="text-xl md:text-2xl font-bold text-foreground">IA</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">Powered by AI</p>
                 </div>
               </div>
             </CardContent>
@@ -485,6 +492,16 @@ const RecipeGenerator = () => {
           </div>
         )}
       </div>
+
+      {/* Nutrition Analysis Modal */}
+      {selectedRecipe && analysis && (
+        <NutritionAnalysisModal
+          open={showAnalysisModal}
+          onOpenChange={setShowAnalysisModal}
+          recipe={selectedRecipe}
+          analysis={analysis}
+        />
+      )}
     </div>
   );
 };

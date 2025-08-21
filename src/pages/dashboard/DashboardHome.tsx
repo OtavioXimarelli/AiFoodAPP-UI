@@ -96,26 +96,26 @@ const DashboardHome = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-28 lg:pb-8">
+    <div className="min-h-screen bg-background pb-20 lg:pb-8">
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/50 px-6 py-5">
+      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/50 px-4 md:px-6 py-4 md:py-5">
         <div 
           className="flex items-center justify-between cursor-pointer"
           onClick={() => setShowUserInfo(!showUserInfo)}
         >
           <div className="flex-1">
-            <h1 className="text-2xl font-bold text-foreground">
+            <h1 className="text-xl md:text-2xl font-bold text-foreground">
               {greeting}, {getUserName()}! 👋
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-xs md:text-sm text-muted-foreground mt-1">
               {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
             </p>
             {showUserInfo && (
-              <div className="mt-4 p-4 bg-card/50 rounded-xl border border-border/30 backdrop-blur-sm">
-                <div className="space-y-3">
+              <div className="mt-4 p-3 md:p-4 bg-card/50 rounded-xl border border-border/30 backdrop-blur-sm">
+                <div className="space-y-2 md:space-y-3">
                   <div className="flex items-center gap-2">
-                    <User className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm text-foreground">{user?.name || "Nome não informado"}</span>
+                    <User className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
+                    <span className="text-xs md:text-sm text-foreground">{user?.name || "Nome não informado"}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-muted-foreground">Email:</span>
@@ -129,9 +129,9 @@ const DashboardHome = () => {
               </div>
             )}
           </div>
-          <div className="flex items-center gap-3">
-            <Avatar className="h-12 w-12 ring-2 ring-primary/20 hover:ring-primary/40 transition-all duration-200">
-              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-semibold">
+          <div className="flex items-center gap-2 md:gap-3">
+            <Avatar className="h-10 w-10 md:h-12 md:w-12 ring-2 ring-primary/20 hover:ring-primary/40 transition-all duration-200">
+              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-semibold text-sm md:text-base">
                 {getUserInitials()}
               </AvatarFallback>
             </Avatar>
@@ -139,7 +139,7 @@ const DashboardHome = () => {
         </div>
       </div>
 
-      <div className="px-6 py-6 space-y-8">
+      <div className="px-4 md:px-6 py-4 md:py-6 space-y-6 md:space-y-8">
         {/* Search and Filter */}
         <div className="flex gap-3">
           <div className="relative flex-1">

@@ -48,12 +48,18 @@ export interface RecipeIngredient {
 }
 
 export interface Recipe {
-  id?: number;
+  id?: number | string;
   name: string;
   description: string;
   nutritionalInfo: string[];
   instructions: string[];
   ingredientsList: RecipeIngredient[];
+  createdAt?: string;
+  prepTime?: number;
+  servings?: number;
+  calories?: number;
+  difficulty?: 'Fácil' | 'Médio' | 'Difícil';
+  tags?: string[];
 }
 
 export interface User {
