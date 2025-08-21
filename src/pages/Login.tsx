@@ -70,12 +70,19 @@ const Login = () => {
     checkAuthStatus();
   }, [isAuthenticated, navigate, from, checkAuthentication]);
 
-  const handleGoogleLogin = () => {
-    // Marcar que estamos iniciando o processo de login OAuth
-    sessionStorage.setItem('oauth_login_in_progress', 'true');
-    // Marcar quando iniciamos o login
-    sessionStorage.setItem('oauth_login_started_at', new Date().toISOString());
-    redirectToLogin('google');
+  const handleGoogleLogin = async () => {
+    try {
+      // Marcar que estamos iniciando o processo de login OAuth
+      sessionStorage.setItem('oauth_login_in_progress', 'true');
+      // Marcar quando iniciamos o login
+      sessionStorage.setItem('oauth_login_started_at', new Date().toISOString());
+      await redirectToLogin('google');
+    } catch (error) {
+      console.error('🔑 Failed to start Google login:', error);
+      // Clear the OAuth markers if login failed
+      sessionStorage.removeItem('oauth_login_in_progress');
+      sessionStorage.removeItem('oauth_login_started_at');
+    }
   };
 
   return (
