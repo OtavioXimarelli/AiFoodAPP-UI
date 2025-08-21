@@ -6,6 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import SavedRecipes from "./SavedRecipes";
+import RecipeDetailModal from "@/components/RecipeDetailModal";
 import { 
   ChefHat, 
   Sparkles, 
@@ -18,7 +21,8 @@ import {
   Package,
   Eye,
   Trash2,
-  History
+  History,
+  BookOpen
 } from "lucide-react";
 import toast from "react-hot-toast";
 import NutritionAnalysisModal from "@/components/NutritionAnalysisModal";
@@ -35,6 +39,8 @@ const RecipeGenerator = () => {
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [analysisModalOpen, setAnalysisModalOpen] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [selectedSavedRecipe, setSelectedSavedRecipe] = useState<Recipe | null>(null);
+  const [recipeDetailModalOpen, setRecipeDetailModalOpen] = useState(false);
 
   const handleGenerateRecipes = async () => {
     try {
@@ -61,6 +67,11 @@ const RecipeGenerator = () => {
     } catch (error: any) {
       toast.error(error.message || "Falha ao analisar receita");
     }
+  };
+
+  const handleViewSavedRecipe = (recipe: Recipe) => {
+    setSelectedSavedRecipe(recipe);
+    setRecipeDetailModalOpen(true);
   };
 
   if (error) {
@@ -130,41 +141,53 @@ const RecipeGenerator = () => {
       </div>
 
       <div className="p-4 space-y-6">
-        
-        {/* Toggle between History and Ingredients */}
-        {showHistory ? (
-          <RecipeHistory onViewRecipe={(recipe) => {
-            setSelectedRecipe(recipe);
-            setAnalysisModalOpen(true);
-          }} />
-        ) : (
-          <>
-            {/* Ingredientes Disponíveis */}
-            {foodItems.length > 0 && (
-              <Card className="bg-card border-border/50">
-                <CardHeader>
-                  <CardTitle className="text-foreground flex items-center gap-2 text-lg">
-                    <div className="p-1.5 bg-primary/10 rounded-lg">
-                      <Package className="h-4 w-4 text-primary" />
-                    </div>
-                    Ingredientes Disponíveis ({foodItems.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ScrollArea className="h-24">
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-                      {foodItems.map((item) => (
-                        <Badge key={item.id} variant="outline" className="justify-center py-2 px-3 bg-background/50">
-                          {item.name} ({item.quantity})
-                        </Badge>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                </CardContent>
-              </Card>
+        <Tabs defaultValue="generate" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="generate" className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4" />
+              Gerar Receitas
+            </TabsTrigger>
+            <TabsTrigger value="saved" className="flex items-center gap-2">
+              <BookOpen className="h-4 w-4" />
+              Receitas Salvas
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="generate" className="space-y-6 mt-6">
+            {/* Toggle between History and Ingredients */}
+            {showHistory ? (
+              <RecipeHistory onViewRecipe={(recipe) => {
+                setSelectedRecipe(recipe);
+                setAnalysisModalOpen(true);
+              }} />
+            ) : (
+              <>
+                {/* Ingredientes Disponíveis */}
+                {foodItems.length > 0 && (
+                  <Card className="bg-card border-border/50">
+                    <CardHeader>
+                      <CardTitle className="text-foreground flex items-center gap-2 text-lg">
+                        <div className="p-1.5 bg-primary/10 rounded-lg">
+                          <Package className="h-4 w-4 text-primary" />
+                        </div>
+                        Ingredientes Disponíveis ({foodItems.length})
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ScrollArea className="h-24">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                          {foodItems.map((item) => (
+                            <Badge key={item.id} variant="outline" className="justify-center py-2 px-3 bg-background/50">
+                              {item.name} ({item.quantity})
+                            </Badge>
+                          ))}
+                        </div>
+                      </ScrollArea>
+                    </CardContent>
+                  </Card>
+                )}
+              </>
             )}
-          </>
-        )}
 
         {/* Estado de Carregamento */}
         {loading && !showHistory && (
@@ -341,6 +364,12 @@ const RecipeGenerator = () => {
             </CardContent>
           </Card>
         )}
+          </TabsContent>
+          
+          <TabsContent value="saved" className="mt-6">
+            <SavedRecipes onViewRecipe={handleViewSavedRecipe} />
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Modals */}
@@ -350,6 +379,14 @@ const RecipeGenerator = () => {
           onOpenChange={setAnalysisModalOpen}
           recipe={selectedRecipe}
           analysis={analysis}
+        />
+      )}
+      
+      {selectedSavedRecipe && (
+        <RecipeDetailModal
+          open={recipeDetailModalOpen}
+          onOpenChange={setRecipeDetailModalOpen}
+          recipe={selectedSavedRecipe}
         />
       )}
     </div>

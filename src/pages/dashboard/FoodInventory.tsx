@@ -7,13 +7,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Plus, Trash2, Pencil, Calendar, Package, AlertTriangle, Loader2 } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Plus, Trash2, Pencil, Calendar as CalendarIcon, Package, AlertTriangle, Loader2, Scale, Hash, CalendarDays, Info } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
-import { format, isAfter, differenceInDays } from "date-fns";
+import { format, isAfter, differenceInDays, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useEffect } from "react";
 
 const FoodInventory = () => {
   const { foodItems, loading, error, createFoodItem, updateFoodItem, deleteFoodItem, clearError } = useFoodItems();
@@ -23,6 +27,8 @@ const FoodInventory = () => {
 
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<FoodItem | null>(null);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [form, setForm] = useState<CreateFoodPayload>({
     name: "",
     quantity: 1,
@@ -55,11 +61,26 @@ const FoodInventory = () => {
     const daysUntilExpiration = differenceInDays(expirationDate, today);
 
     if (daysUntilExpiration < 0) {
-      return { status: 'expired', color: 'bg-red-500', text: 'Vencido' };
+      return { 
+        status: 'expired', 
+        color: 'bg-red-500', 
+        text: '⚠️ Vencido',
+        icon: '🚨'
+      };
     } else if (daysUntilExpiration <= 3) {
-      return { status: 'expiring', color: 'bg-yellow-500', text: `${daysUntilExpiration} ${daysUntilExpiration === 1 ? 'dia restante' : 'dias restantes'}` };
+      return { 
+        status: 'expiring', 
+        color: 'bg-yellow-500', 
+        text: `⏰ ${daysUntilExpiration} ${daysUntilExpiration === 1 ? 'dia restante' : 'dias restantes'}`,
+        icon: '⚠️'
+      };
     } else {
-      return { status: 'fresh', color: 'bg-green-500', text: `${daysUntilExpiration} dias restantes` };
+      return { 
+        status: 'fresh', 
+        color: 'bg-green-500', 
+        text: `✅ ${daysUntilExpiration} dias restantes`,
+        icon: '✅'
+      };
     }
   };
 
@@ -71,6 +92,19 @@ const FoodInventory = () => {
     });
     setFormErrors({});
     setEditing(null);
+  };
+
+  // Mostrar modal de boas-vindas na primeira visita
+  useEffect(() => {
+    const hasSeenWelcome = localStorage.getItem('food_inventory_welcome_seen');
+    if (!hasSeenWelcome) {
+      setShowWelcomeModal(true);
+    }
+  }, []);
+
+  const handleWelcomeModalClose = () => {
+    setShowWelcomeModal(false);
+    localStorage.setItem('food_inventory_welcome_seen', 'true');
   };
 
   const handleEdit = (item: FoodItem) => {
@@ -107,7 +141,12 @@ const FoodInventory = () => {
       } else {
         // Para criação, enviamos apenas nome, quantidade e data de validade
         // O backend calculará automaticamente as informações nutricionais
-        await createFoodItem(form);
+        const createPayload = {
+          name: form.name,
+          quantity: form.quantity,
+          expiration: form.expiration
+        };
+        await createFoodItem(createPayload);
         toast.success("Alimento criado com sucesso!");
       }
       setOpen(false);
@@ -164,90 +203,276 @@ const FoodInventory = () => {
                 Adicionar Alimento
               </Button>
             </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                {editing ? "Editar Alimento" : "Adicionar Novo Alimento"}
-                {!editing && (
-                  <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
-                    Nutrientes via IA
-                  </span>
-                )}
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-background/95 backdrop-blur-xl border border-border/20 shadow-2xl">
+            <DialogHeader className="space-y-4 pb-6 border-b border-border/10">
+              <DialogTitle className="flex items-center gap-3 text-xl">
+                <div className="p-2 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent rounded-xl border border-primary/20 shadow-sm">
+                  <Package className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1">
+                  {editing ? "Editar Alimento" : "Adicionar Novo Alimento"}
+                  {!editing && (
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="inline-flex items-center rounded-full bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 px-3 py-1 text-xs font-medium text-blue-700 dark:text-blue-300 ring-1 ring-inset ring-blue-200 dark:ring-blue-800">
+                        🤖 Nutrientes via IA
+                      </span>
+                    </div>
+                  )}
+                </div>
               </DialogTitle>
+              <DialogDescription className="text-sm text-muted-foreground">
+                {editing ? "Atualize as informações do alimento selecionado" : "Adicione um novo alimento ao seu inventário. Nossa IA identificará automaticamente os nutrientes."}
+              </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 gap-4">
-                <div>
-                  <Label htmlFor="name">Nome do Alimento *</Label>
-                  <Input
-                    id="name"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    placeholder="ex: Maçã, Peito de Frango, Arroz..."
-                  />
-                  {formErrors.name && (
-                    <p className="text-sm text-red-500 mt-1">{formErrors.name}</p>
-                  )}
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Nossa IA identificará automaticamente os nutrientes e grupo alimentar
+            
+            <form onSubmit={handleSubmit} className="space-y-6 pt-2">
+              {/* Campo Nome do Alimento */}
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <div className="p-1 bg-primary/10 rounded-md">
+                    <Package className="h-3 w-3 text-primary" />
+                  </div>
+                  Nome do Alimento *
+                </Label>
+                <Input
+                  id="name"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  placeholder="ex: Maçã, Peito de Frango, Arroz..."
+                  className="h-11 border-border/50 focus:border-primary/50 transition-colors"
+                />
+                {formErrors.name && (
+                  <p className="text-sm text-red-500 flex items-center gap-1 mt-1">
+                    <AlertTriangle className="h-3 w-3" />
+                    {formErrors.name}
                   </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="quantity">Quantidade *</Label>
-                  <Input
-                    id="quantity"
-                    type="number"
-                    min="1"
-                    value={form.quantity}
-                    onChange={(e) => setForm({ ...form, quantity: parseInt(e.target.value) || 1 })}
-                  />
-                  {formErrors.quantity && (
-                    <p className="text-sm text-red-500 mt-1">{formErrors.quantity}</p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="expiration">Data de Validade *</Label>
-                  <Input
-                    id="expiration"
-                    type="date"
-                    value={form.expiration}
-                    onChange={(e) => setForm({ ...form, expiration: e.target.value })}
-                  />
-                  {formErrors.expiration && (
-                    <p className="text-sm text-red-500 mt-1">{formErrors.expiration}</p>
-                  )}
-                </div>
-              </div>
-
-              <div className="bg-blue-50 p-4 rounded-md border border-blue-100 mt-4">
-                <div className="flex items-center gap-2 text-blue-700 mb-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
-                  <span className="font-medium">Informações Nutricionais Automáticas</span>
-                </div>
-                <p className="text-sm text-blue-600">
-                  Nossa IA analisará automaticamente o alimento para calcular:
+                )}
+                <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                  <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 16v-4"/>
+                    <path d="M12 8h.01"/>
+                  </svg>
+                  Nossa IA identificará automaticamente os nutrientes e grupo alimentar
                 </p>
-                <ul className="text-xs text-blue-600 mt-2 grid grid-cols-2 gap-1">
-                  <li>• Calorias</li>
-                  <li>• Proteínas</li>
-                  <li>• Gorduras</li>
-                  <li>• Carboidratos</li>
-                  <li>• Fibras</li>
-                  <li>• Açúcares</li>
-                  <li>• Sódio</li>
-                  <li>• Grupo alimentar</li>
-                </ul>
               </div>
 
-              <div className="flex justify-end gap-2 pt-4">
-                <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Campo Quantidade Simplificado */}
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium text-foreground flex items-center gap-2">
+                    <div className="p-1 bg-green-500/10 rounded-md">
+                      <Scale className="h-3 w-3 text-green-600" />
+                    </div>
+                    Quantidade *
+                  </Label>
+                  <div className="space-y-2">
+                    <Input
+                      type="number"
+                      min="1"
+                      value={form.quantity}
+                      onChange={(e) => setForm({ ...form, quantity: parseInt(e.target.value) || 1 })}
+                      className="h-11 border-border/50 focus:border-primary/50 transition-colors"
+                      placeholder="Ex: 500, 3, 1..."
+                    />
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 16v-4"/>
+                        <path d="M12 8h.01"/>
+                      </svg>
+                      Use números para quantidade (ex: 500g = 500, 3 unidades = 3)
+                    </p>
+                  </div>
+                  {formErrors.quantity && (
+                    <p className="text-sm text-red-500 flex items-center gap-1">
+                      <AlertTriangle className="h-3 w-3" />
+                      {formErrors.quantity}
+                    </p>
+                  )}
+                </div>
+
+                {/* Campo Data de Validade Melhorado */}
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium text-foreground flex items-center gap-2">
+                    <div className="p-1 bg-orange-500/10 rounded-md">
+                      <CalendarDays className="h-3 w-3 text-orange-600" />
+                    </div>
+                    Data de Validade *
+                  </Label>
+                  <div className="space-y-2">
+                    {/* Date Picker Customizado */}
+                    <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full h-11 justify-start text-left font-normal border-border/50 hover:border-primary/50 transition-all duration-200",
+                            !form.expiration && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4 text-orange-600" />
+                          {form.expiration ? (
+                            format(new Date(form.expiration), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
+                          ) : (
+                            <span>Selecione a data de validade</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 bg-background/98 backdrop-blur-xl border border-border/30 shadow-2xl rounded-xl overflow-hidden" align="start" sideOffset={4}>
+                        {/* Header do Calendário */}
+                        <div className="p-3 border-b border-border/10 bg-gradient-to-r from-orange-50/50 to-amber-50/30 dark:from-orange-950/20 dark:to-amber-950/10">
+                          <h4 className="font-medium text-foreground flex items-center gap-2 text-sm">
+                            <div className="p-1.5 bg-gradient-to-br from-orange-500/20 to-amber-500/20 rounded-lg">
+                              <CalendarIcon className="h-3.5 w-3.5 text-orange-600" />
+                            </div>
+                            Selecionar Data de Validade
+                          </h4>
+                        </div>
+                        
+                        {/* Calendário */}
+                        <div className="p-3">
+                          <Calendar
+                            mode="single"
+                            selected={form.expiration ? new Date(form.expiration) : undefined}
+                            onSelect={(date) => {
+                              if (date) {
+                                setForm({ ...form, expiration: date.toISOString().split('T')[0] });
+                                setCalendarOpen(false);
+                              }
+                            }}
+                            disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                            initialFocus
+                            className="rounded-md border-0"
+                          />
+                        </div>
+                        
+                        {/* Footer com Atalhos */}
+                        <div className="p-3 border-t border-border/10 bg-muted/20">
+                          <div className="flex gap-1 flex-wrap">
+                            {[
+                              { label: "Hoje", days: 0 },
+                              { label: "3 dias", days: 3 },
+                              { label: "1 semana", days: 7 },
+                              { label: "1 mês", days: 30 }
+                            ].map((option) => (
+                              <Button
+                                key={option.label}
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  const date = addDays(new Date(), option.days);
+                                  setForm({ ...form, expiration: date.toISOString().split('T')[0] });
+                                  setCalendarOpen(false);
+                                }}
+                                className="h-7 px-2 text-xs hover:bg-primary/10 hover:text-primary transition-colors"
+                              >
+                                {option.label}
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                    
+                    {/* Botões de Atalho Externa (mantida para compatibilidade) */}
+                    <div className="flex gap-1 flex-wrap">
+                      {[
+                        { label: "Hoje", days: 0 },
+                        { label: "3 dias", days: 3 },
+                        { label: "1 semana", days: 7 },
+                        { label: "1 mês", days: 30 }
+                      ].map((option) => (
+                        <Button
+                          key={option.label}
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const date = addDays(new Date(), option.days);
+                            setForm({ ...form, expiration: date.toISOString().split('T')[0] });
+                          }}
+                          className="h-7 px-2 text-xs border-border/50 hover:border-primary/50 hover:bg-primary/5"
+                        >
+                          {option.label}
+                        </Button>
+                      ))}
+                    </div>
+                    {formErrors.expiration && (
+                      <p className="text-sm text-red-500 flex items-center gap-1">
+                        <AlertTriangle className="h-3 w-3" />
+                        {formErrors.expiration}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Seção de Informações da IA Melhorada */}
+              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50/80 via-indigo-50/50 to-purple-50/30 dark:from-blue-950/20 dark:via-indigo-950/10 dark:to-purple-950/5 border border-blue-200/50 dark:border-blue-800/30 shadow-sm">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 opacity-50"></div>
+                <div className="relative p-6 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 rounded-xl shadow-sm">
+                      <svg className="h-5 w-5 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 16v-4"/>
+                        <path d="M12 8h.01"/>
+                      </svg>
+                    </div>
+                    <h3 className="font-semibold text-blue-700 dark:text-blue-300 text-base">
+                      🤖 Informações Nutricionais Automáticas
+                    </h3>
+                  </div>
+                  <p className="text-sm text-blue-600 dark:text-blue-400 leading-relaxed">
+                    Nossa IA analisará automaticamente o alimento "{form.name || 'nome do alimento'}" para calcular informações precisas:
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {[
+                      { icon: "🔥", label: "Calorias", color: "text-orange-600" },
+                      { icon: "💪", label: "Proteínas", color: "text-blue-600" },
+                      { icon: "🌾", label: "Carboidratos", color: "text-green-600" },
+                      { icon: "🥑", label: "Gorduras", color: "text-purple-600" },
+                      { icon: "🌿", label: "Fibras", color: "text-emerald-600" },
+                      { icon: "🍯", label: "Açúcares", color: "text-amber-600" },
+                      { icon: "🧂", label: "Sódio", color: "text-gray-600" },
+                      { icon: "📊", label: "Grupo alimentar", color: "text-indigo-600" }
+                    ].map((item, index) => (
+                      <div key={index} className="flex items-center gap-2 p-2 bg-white/60 dark:bg-gray-900/20 rounded-lg border border-blue-100/50 dark:border-blue-800/20">
+                        <span className="text-sm">{item.icon}</span>
+                        <span className={`text-xs font-medium ${item.color}`}>{item.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Botões de Ação Melhorados */}
+              <div className="flex justify-end gap-3 pt-6 border-t border-border/10">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setOpen(false)}
+                  className="h-11 px-6 border-border/50 hover:border-border hover:bg-muted/50 transition-all duration-200"
+                >
                   Cancelar
                 </Button>
-                <Button type="submit">
-                  {editing ? "Atualizar" : "Adicionar"} Alimento
+                <Button 
+                  type="submit"
+                  className="h-11 px-6 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
+                >
+                  {editing ? (
+                    <>
+                      <Pencil className="h-4 w-4" />
+                      Atualizar Alimento
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-4 w-4" />
+                      Adicionar Alimento
+                    </>
+                  )}
                 </Button>
               </div>
             </form>
@@ -293,7 +518,7 @@ const FoodInventory = () => {
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <CardTitle className="text-base text-foreground">{item.name}</CardTitle>
-                    <Badge className={`${expirationStatus.color} text-white text-xs`}>
+                    <Badge className={`${expirationStatus.color} text-white text-xs font-medium ${expirationStatus.status === 'expired' ? 'animate-pulse' : ''}`}>
                       {expirationStatus.text}
                     </Badge>
                   </div>
@@ -303,7 +528,7 @@ const FoodInventory = () => {
                       <span>Qtd: {item.quantity}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
+                      <CalendarIcon className="h-3 w-3" />
                       <span>{format(new Date(item.expiration), 'dd/MM/yyyy', { locale: ptBR })}</span>
                     </div>
                   </div>
@@ -378,6 +603,74 @@ const FoodInventory = () => {
         </div>
       )}
       </div>
+
+      {/* Modal de Boas-vindas */}
+      <Dialog open={showWelcomeModal} onOpenChange={setShowWelcomeModal}>
+        <DialogContent className="max-w-lg bg-background/95 backdrop-blur-xl border border-border/20 shadow-2xl">
+          <DialogHeader className="space-y-4 pb-6 border-b border-border/10">
+            <DialogTitle className="flex items-center gap-3 text-xl">
+              <div className="p-2 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 rounded-xl border border-blue-500/30 shadow-sm">
+                <Info className="h-5 w-5 text-blue-600" />
+              </div>
+              <div className="flex-1">
+                Bem-vindo à sua Despensa! 🥗
+              </div>
+            </DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground">
+              Sua despensa inteligente está pronta para uso!
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 pt-2">
+            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-amber-50/80 via-orange-50/50 to-red-50/30 dark:from-amber-950/20 dark:via-orange-950/10 dark:to-red-950/5 border border-amber-200/50 dark:border-amber-800/30 p-4">
+              <div className="flex items-start gap-3">
+                <div className="p-1 bg-amber-500/20 rounded-lg">
+                  <AlertTriangle className="h-4 w-4 text-amber-600" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="font-medium text-amber-800 dark:text-amber-300 text-sm">
+                    🚧 Em Desenvolvimento
+                  </h3>
+                  <p className="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
+                    <strong>Campos mais precisos</strong> para cadastro de alimentos (unidades, categorias detalhadas, informações nutricionais específicas) estão sendo desenvolvidos.
+                  </p>
+                  <p className="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
+                    Por enquanto, use o campo <strong>quantidade</strong> para números (ex: 500g = 500, 3 unidades = 3).
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-green-50/80 via-emerald-50/50 to-teal-50/30 dark:from-green-950/20 dark:via-emerald-950/10 dark:to-teal-950/5 border border-green-200/50 dark:border-green-800/30 p-4">
+              <div className="flex items-start gap-3">
+                <div className="p-1 bg-green-500/20 rounded-lg">
+                  <Package className="h-4 w-4 text-green-600" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="font-medium text-green-800 dark:text-green-300 text-sm">
+                    ✨ Já Disponível
+                  </h3>
+                  <ul className="text-xs text-green-700 dark:text-green-400 space-y-1">
+                    <li>• <strong>IA automática</strong> para cálculo nutricional</li>
+                    <li>• <strong>Alertas de validade</strong> com flags coloridas</li>
+                    <li>• <strong>Gestão completa</strong> dos seus alimentos</li>
+                    <li>• <strong>Interface intuitiva</strong> e responsiva</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end pt-4 border-t border-border/10">
+            <Button 
+              onClick={handleWelcomeModalClose}
+              className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200"
+            >
+              Entendi, vamos começar! 🚀
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

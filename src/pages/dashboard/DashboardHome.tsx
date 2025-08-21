@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useFoodItems } from "@/hooks/useFoodItems";
 import { useAuth } from "@/hooks/useAuth";
+import { useLocalRecipes } from "@/hooks/useLocalRecipes";
+import { useLocalNutritionAnalysis } from "@/hooks/useLocalNutritionAnalysis";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +20,9 @@ import {
   Calendar,
   Search,
   Filter,
-  User
+  User,
+  Save,
+  Database
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { format, differenceInDays } from "date-fns";
@@ -27,6 +31,8 @@ import { ptBR } from "date-fns/locale";
 const DashboardHome = () => {
   const { foodItems, loading } = useFoodItems();
   const { user } = useAuth();
+  const { totalRecipes } = useLocalRecipes();
+  const { totalAnalyses } = useLocalNutritionAnalysis();
   const [showUserInfo, setShowUserInfo] = useState(false);
   const [showWelcomeDialog, setShowWelcomeDialog] = useState(false);
   const [greeting] = useState(() => {
@@ -185,6 +191,33 @@ const DashboardHome = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Saved Data Summary */}
+        {(totalRecipes > 0 || totalAnalyses > 0) && (
+          <Card className="bg-gradient-to-r from-primary/5 to-secondary/5 border-border/30 hover:shadow-glow transition-all duration-300 hover-lift card-hover backdrop-blur-sm animate-slide-in-bottom animation-delay-500">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 rounded-2xl bg-primary/10 hover:scale-110 transition-transform duration-300">
+                    <Database className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-foreground text-lg">Dados Salvos</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {totalRecipes} receitas e {totalAnalyses} análises salvas
+                    </p>
+                  </div>
+                </div>
+                <Link to="/dashboard/saved">
+                  <Button variant="outline" size="sm" className="hover:scale-105 transition-transform duration-200">
+                    <Save className="h-4 w-4 mr-2" />
+                    Ver Todos
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Alerts */}
         {(expiringItems.length > 0 || expiredItems.length > 0) && (

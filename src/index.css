@@ -459,6 +459,18 @@ All colors MUST be HSL.
     touch-action: manipulation;
   }
 
+  .touch-feedback {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .touch-feedback:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease-in-out;
+  }
+
   /* Safe area support for mobile devices */
   .safe-area-inset-top {
     padding-top: env(safe-area-inset-top);
@@ -466,6 +478,10 @@ All colors MUST be HSL.
 
   .safe-area-inset-bottom {
     padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .h-safe-area-inset-bottom {
+    height: env(safe-area-inset-bottom);
   }
 
   /* Backdrop blur support */
