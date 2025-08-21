@@ -1,42 +1,53 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { 
   Home, 
   Package, 
   ChefHat, 
-  PieChart,
-  History
+  TrendingUp,
+  Save
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const DesktopSidebar = () => {
-  const location = useLocation();
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN' || user?.role === 'admin';
 
-  const navItems = [
+  const baseNavItems = [
     {
-      href: "/dashboard",
+      to: "/dashboard",
       icon: Home,
       label: "Início",
-      active: location.pathname === "/dashboard",
+      end: true
     },
     {
-      href: "/dashboard/inventory",
+      to: "/dashboard/food",
       icon: Package,
-      label: "Despensa", 
-      active: location.pathname === "/dashboard/inventory",
+      label: "Despensa"
     },
     {
-      href: "/dashboard/recipes",
+      to: "/dashboard/recipes",
       icon: ChefHat,
-      label: "Gerador de Receitas",
-      active: location.pathname === "/dashboard/recipes",
+      label: "Receitas"
     },
     {
-      href: "/dashboard/nutrition",
-      icon: PieChart,
-      label: "Análise Nutricional",
-      active: location.pathname === "/dashboard/nutrition",
-    },
+      to: "/dashboard/insights",
+      icon: TrendingUp,
+      label: "Insights"
+    }
   ];
+
+  // Add admin-only items
+  const navItems = isAdmin 
+    ? [
+        ...baseNavItems,
+        {
+          to: "/dashboard/saved",
+          icon: Save,
+          label: "Dados Salvos"
+        }
+      ]
+    : baseNavItems;
 
   return (
     <aside className="hidden lg:flex fixed left-0 top-0 z-40 h-full w-64 flex-col border-r border-border/50 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 dark:bg-background/90 dark:border-border/40">
@@ -59,22 +70,29 @@ const DesktopSidebar = () => {
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
-              <li key={item.href}>
-                <Link
-                  to={item.href}
-                  className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-accent/80 hover:text-accent-foreground group",
-                    item.active 
-                      ? "bg-primary text-primary-foreground shadow-md hover:bg-primary/90" 
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
+              <li key={item.to}>
+                <NavLink
+                  to={item.to}
+                  end={item.end}
+                  className={({ isActive }) =>
+                    cn(
+                      "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-accent/80 hover:text-accent-foreground group touch-feedback",
+                      isActive 
+                        ? "bg-primary text-primary-foreground shadow-md hover:bg-primary/90" 
+                        : "text-muted-foreground hover:text-foreground"
+                    )
+                  }
                 >
-                  <Icon className={cn(
-                    "h-5 w-5 transition-transform duration-200 group-hover:scale-110",
-                    item.active ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
-                  )} />
-                  {item.label}
-                </Link>
+                  {({ isActive }) => (
+                    <>
+                      <Icon className={cn(
+                        "h-5 w-5 transition-transform duration-200 group-hover:scale-110",
+                        isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
+                      )} />
+                      {item.label}
+                    </>
+                  )}
+                </NavLink>
               </li>
             );
           })}

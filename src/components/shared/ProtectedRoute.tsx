@@ -18,6 +18,13 @@ const ProtectedRoute = () => {
       try {
         console.log("🛡️ ProtectedRoute: Performing initial authentication check");
         
+        // Verificar se estamos em processo de logout
+        if (sessionStorage.getItem('logout_in_progress') === 'true') {
+          console.log("🛡️ ProtectedRoute: Logout in progress, skipping auth check");
+          setIsCheckingAuth(false);
+          return;
+        }
+        
         // First check if the user is marked as authenticated locally
         const isAuthLocal = localStorage.getItem('is_authenticated') === 'true';
         console.log("🛡️ ProtectedRoute: Local auth status:", isAuthLocal ? "authenticated" : "not authenticated");

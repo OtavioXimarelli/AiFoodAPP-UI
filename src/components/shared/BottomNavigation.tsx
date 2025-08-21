@@ -1,9 +1,13 @@
 import { NavLink } from "react-router-dom";
-import { Home, Package, ChefHat, TrendingUp } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { Home, Package, ChefHat, TrendingUp, Save } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const BottomNavigation = () => {
-  const navItems = [
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN' || user?.role === 'admin';
+
+  const baseNavItems = [
     {
       to: "/dashboard",
       icon: Home,
@@ -27,9 +31,24 @@ const BottomNavigation = () => {
     }
   ];
 
+  // Add admin-only items
+  const navItems = isAdmin 
+    ? [
+        ...baseNavItems,
+        {
+          to: "/dashboard/saved",
+          icon: Save,
+          label: "Salvos"
+        }
+      ]
+    : baseNavItems;
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-t border-border/50 lg:hidden shadow-2xl">
-      <div className="grid grid-cols-4 h-16">
+      <div className={cn(
+        "h-16",
+        isAdmin ? "grid grid-cols-5" : "grid grid-cols-4"
+      )}>
         {navItems.map((item, index) => (
           <NavLink
             key={item.to}

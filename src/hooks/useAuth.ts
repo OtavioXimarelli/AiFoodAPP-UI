@@ -173,22 +173,46 @@ export const useAuth = () => {
 
   const handleLogout = async () => {
     try {
-      // Limpar as informações locais de autenticação
+      console.log('🔑 Starting logout process...');
+      
+      // Primeiro: marcar que estamos fazendo logout para evitar reautenticação
+      sessionStorage.setItem('logout_in_progress', 'true');
+      
+      // Limpar TODOS os dados locais de autenticação
       localStorage.removeItem('is_authenticated');
       localStorage.removeItem('session_established_at');
+      sessionStorage.removeItem('oauth_login_in_progress');
+      sessionStorage.removeItem('oauth_login_started_at');
+      sessionStorage.removeItem('oauth_state');
+      
+      // Limpar cache de autenticação no estado local primeiro
+      logout();
+      console.log('🔑 Local auth state cleared');
       
       // Tentar fazer logout no servidor
       await authService.logout();
       console.log('🔑 Server logout successful');
+      
     } catch (error) {
       console.error('🔑 Server logout failed:', error);
+      // Mesmo com erro no servidor, já limpamos tudo localmente
     } finally {
-      // Sempre limpar o estado local independentemente do sucesso no servidor
-      logout();
-      console.log('🔑 Local auth state cleared');
+      // Forçar limpeza de cookies se possível
+      try {
+        // Tentar limpar cookies de domínio específicos
+        document.cookie.split(";").forEach(function(c) { 
+          document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+        });
+      } catch (e) {
+        console.warn('🔑 Could not clear cookies:', e);
+      }
       
-      // Redirecionar para a página inicial
-      window.location.href = '/';
+      // Remover o marcador de logout em progresso
+      sessionStorage.removeItem('logout_in_progress');
+      
+      // Redirecionar para a página inicial e forçar reload completo
+      console.log('🔑 Redirecting to home page...');
+      window.location.replace('/');
     }
   };
 
