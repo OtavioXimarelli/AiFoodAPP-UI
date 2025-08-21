@@ -21,19 +21,19 @@ const DesktopSidebar = () => {
     {
       href: "/dashboard/inventory",
       icon: Package,
-      label: "Despensa",
+      label: "Despensa", 
       active: location.pathname === "/dashboard/inventory",
     },
     {
       href: "/dashboard/recipes",
       icon: ChefHat,
-      label: "Receitas",
+      label: "Gerador de Receitas",
       active: location.pathname === "/dashboard/recipes",
     },
     {
       href: "/dashboard/nutrition",
       icon: PieChart,
-      label: "Nutrição",
+      label: "Análise Nutricional",
       active: location.pathname === "/dashboard/nutrition",
     },
   ];
