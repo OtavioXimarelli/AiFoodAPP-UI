@@ -64,8 +64,23 @@ const ProtectedRoute = () => {
 
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
+    // Check if user might be coming from OAuth2 flow
+    const recentOAuthActivity = sessionStorage.getItem('oauth_login_in_progress') || 
+                                localStorage.getItem('session_established_at');
+    
+    // If there's recent OAuth activity, give a bit more time before redirecting
+    if (recentOAuthActivity && isCheckingAuth) {
+      console.log("🛡️ ProtectedRoute: Recent OAuth activity detected, waiting for authentication...");
+      return (
+        <div className="flex items-center justify-center min-h-screen">
+          <Loader2 className="h-8 w-8 animate-spin" />
+          <span className="ml-2">Completando autenticação...</span>
+        </div>
+      );
+    }
+    
     console.log("🛡️ ProtectedRoute: Not authenticated, redirecting to login");
-    // Remover o marcador local de autenticação se o backend diz que não estamos autenticados
+    // Remove local authentication marker if backend says we're not authenticated
     localStorage.removeItem('is_authenticated');
     return <Navigate to="/login" replace state={{ from: location }} />;
   }

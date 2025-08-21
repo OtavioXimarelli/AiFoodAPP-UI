@@ -1,9 +1,10 @@
 import axios from "axios";
 
-// Garante que a URL não termine com /api para evitar duplicação
-const rawBaseURL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
-// Não removemos mais o /api do baseURL, pois isso causaria problemas com o ensureApiPath
-// Mantemos o URL original como está configurado no ambiente
+// With the proxy setup, we can use relative URLs for API requests
+// This ensures cookies work properly across domains
+const useProxy = true; // Set to true to use proxy setup
+const rawBaseURL = useProxy ? '' : (import.meta.env.VITE_API_BASE_URL || "http://localhost:8080");
+// No need to modify base URL with proxy - paths are relative
 const baseURL = rawBaseURL;
 
 // Função utilitária para garantir que os caminhos de API não tenham duplicação do prefixo /api
@@ -286,6 +287,43 @@ export class ApiClient {
     return response.data;
   }
   
+  // Private method for debugging cookies
+  #logCookiesForDebugging() {
+    const cookies = document.cookie;
+    if (!cookies) {
+      console.log('🍪 No cookies found');
+      return;
+    }
+    
+    const cookieList = cookies.split(';').map(c => c.trim());
+    console.log(`🍪 Total cookies: ${cookieList.length}`);
+    
+    // Look for session related cookies
+    const sessionCookies = cookieList.filter(cookie => 
+      cookie.toLowerCase().includes('session') || 
+      cookie.toLowerCase().includes('jsessionid') ||
+      cookie.toLowerCase().startsWith('remember-me=')
+    );
+    
+    if (sessionCookies.length > 0) {
+      console.log('🍪 Session cookies found:');
+      sessionCookies.forEach(cookie => {
+        const [name] = cookie.split('=');
+        // Don't log values for security, just names
+        console.log(`   → ${name}`);
+      });
+    } else {
+      console.log('🍪 No session cookies found');
+    }
+    
+    // Look for CSRF token
+    const csrfCookie = cookieList.find(cookie => cookie.toLowerCase().includes('xsrf'));
+    if (csrfCookie) {
+      const [name] = csrfCookie.split('=');
+      console.log(`🍪 CSRF cookie found: ${name}`);
+    }
+  }
+  
   // Cache para evitar chamadas repetidas em um curto período de tempo
   #authStatusCache: {
     data: any;
@@ -298,53 +336,71 @@ export class ApiClient {
   };
   
   async getAuthStatus() {
-    // Verificar se a página é de login - não precisa verificar status em páginas de login
+    // Check if the page is login - no need to check status on login pages
     if (window.location.pathname.includes('/login')) {
       return { authenticated: false };
     }
     
-    // Se já temos uma chamada pendente, reuse a promessa para evitar chamadas paralelas
-    if (this.#authStatusCache.pending) {
+    // Special handling for OAuth2 callback pages - allow fresh checks
+    const isOAuth2Callback = window.location.pathname.includes('/oauth2/callback') || 
+                            window.location.pathname.includes('/login/oauth2/code/');
+    
+    // Debug log cookies to help troubleshoot session issues
+    this.#logCookiesForDebugging();
+    
+    // If we have a pending call and it's not an OAuth2 callback, reuse the promise
+    if (this.#authStatusCache.pending && !isOAuth2Callback) {
       return this.#authStatusCache.pending;
     }
     
-    // Se temos um cache válido (menos de 10 segundos), retorne-o - aumentado o tempo
+    // If we have valid cache and it's not an OAuth2 callback, return it
     const now = Date.now();
-    if (this.#authStatusCache.data && now - this.#authStatusCache.timestamp < 10000) {
-      console.log('🔍 Returning cached auth status');
+    const cacheAge = now - this.#authStatusCache.timestamp;
+    const cacheValidTime = isOAuth2Callback ? 1000 : 10000; // 1s for OAuth2, 10s for normal
+    
+    if (this.#authStatusCache.data && cacheAge < cacheValidTime) {
+      console.log(`🔍 Returning cached auth status (${(cacheAge/1000).toFixed(1)}s old)`);
       return this.#authStatusCache.data;
     }
     
-    // Verificar se o marcador local diz que já estamos autenticados
+    // Check local authentication flag
     const localAuthFlag = localStorage.getItem('is_authenticated') === 'true';
     
     try {
-      // Criar uma nova promessa para esta chamada e armazenar como pendente
+      // Create new promise for this call and store as pending
       this.#authStatusCache.pending = (async () => {
         console.log('🔍 Calling auth status endpoint...');
         
         try {
-          // Com a nova implementação do backend, podemos esperar respostas JSON adequadas
-          // O código 401 será capturado pelo interceptor e transformado em {authenticated: false}
+          // For OAuth2 callbacks, add a longer delay to ensure cookies are properly set
+          if (isOAuth2Callback) {
+            console.log('🔍 OAuth2 callback detected, ensuring session cookies are established...');
+            // Increased delay to give the browser more time to process the redirect and cookies
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Check cookies again after the delay
+            console.log('🍪 Checking cookies after delay:');
+            this.#logCookiesForDebugging();
+          }
+          
           const response = await api.get(ensureApiPath('/auth/status'));
           
-          // Garantir que temos um objeto válido
+          // Ensure we have a valid object
           const statusData = typeof response.data === 'object' ? response.data : { authenticated: false };
           
-          // Verificar formato padrão da nova API (status 401 e message "Authentication required")
-          // O interceptor já deve ter tratado isso, mas verificamos aqui para garantir
+          // Check for standard API unauthorized response format
           if (statusData.status === 401 && statusData.error === "Unauthorized") {
             console.log('🔍 Received standard API unauthorized response');
             return { authenticated: false };
           }
           
-          // Se não temos um campo de autenticação explícito, verificar por outras indicações
+          // If we don't have an explicit authentication field, check for other indicators
           if (statusData.authenticated === undefined) {
-            // Se temos dados de usuário, provavelmente estamos autenticados
+            // If we have user data, probably authenticated
             statusData.authenticated = !!statusData.user || !!statusData.username || !!statusData.email;
           }
           
-          // Atualizar o cache
+          // Update cache
           this.#authStatusCache.data = statusData;
           this.#authStatusCache.timestamp = Date.now();
           
@@ -515,56 +571,68 @@ export class ApiClient {
    * Inicia o processo de login OAuth2 com o provedor especificado
    * @param provider O provedor OAuth2 (default: 'google')
    */
-  initiateOAuth2Login(provider: string = 'google') {
-    // Os endpoints OAuth2 estão na raiz do servidor, não sob /api
-    const url = new URL(baseURL);
-    
-    // Construir a URL do endpoint OAuth2
-    // O Spring Security OAuth2 espera: /oauth2/authorization/{provider}
-    const oauthUrl = `${url.protocol}//${url.host}/oauth2/authorization/${provider}`;
-    
-    console.log("🔑 Redirecionando para login OAuth2:", oauthUrl);
-    
-    // Marcar que um login OAuth está em andamento para evitar loops
-    sessionStorage.setItem('oauth_login_in_progress', 'true');
-    
-    // Redirecionar o navegador para a URL de autenticação
-    window.location.href = oauthUrl;
+  async initiateOAuth2Login(provider: string = 'google') {
+    try {
+      console.log("🔑 Starting OAuth2 login process...");
+      
+      // Mark OAuth login in progress
+      sessionStorage.setItem('oauth_login_in_progress', 'true');
+      sessionStorage.setItem('oauth_login_started_at', new Date().toISOString());
+      
+      // Clear any existing authentication state
+      localStorage.removeItem('is_authenticated');
+      
+      // With proxy setup, use relative URL to ensure same-origin OAuth2 flow
+      // This will be proxied to backend by Vite
+      const oauthUrl = `/oauth2/authorization/${provider}`;
+      
+      console.log("🔑 Redirecting to OAuth2 endpoint (via proxy):", oauthUrl);
+      
+      // Use window.location.href for proper redirect
+      window.location.href = oauthUrl;
+      
+    } catch (error) {
+      console.error("🔑 Error initiating OAuth2 login:", error);
+      sessionStorage.removeItem('oauth_login_in_progress');
+      sessionStorage.removeItem('oauth_login_started_at');
+      throw error;
+    }
   }
 
-  // Food endpoints - these will be proxied through nginx
+
+  // Food endpoints - corrigido para usar /api/foods
   async getFoodItems() {
-    const response = await api.get(ensureApiPath('/foods'));
+    const response = await api.get(ensureApiPath('/api/foods'));
     return response.data;
   }
 
   async getFoodItem(id: number) {
-    const response = await api.get(ensureApiPath(`/foods/${id}`));
+    const response = await api.get(ensureApiPath(`/api/foods/${id}`));
     return response.data;
   }
 
   async createFoodItem(foodItem: any) {
-    const response = await api.post(ensureApiPath('/foods/create'), foodItem);
+    const response = await api.post(ensureApiPath('/api/foods/create'), foodItem);
     return response.data;
   }
 
   async updateFoodItem(foodItem: any) {
-    const response = await api.put(ensureApiPath(`/foods/${foodItem.id}`), foodItem);
+    const response = await api.put(ensureApiPath(`/api/foods/${foodItem.id}`), foodItem);
     return response.data;
   }
 
   async deleteFoodItem(id: number) {
-    await api.delete(ensureApiPath(`/foods/${id}`));
+    await api.delete(ensureApiPath(`/api/foods/${id}`));
   }
 
-  // Recipe endpoints - these will be proxied through nginx
+  // Recipe endpoints
   async generateRecipes() {
-    const response = await api.get(ensureApiPath('/recipes/gen'));
+    const response = await api.get(ensureApiPath('/api/recipes/gen'));
     return response.data;
   }
 
   async analyzeRecipe(id: number) {
-    const response = await api.get(ensureApiPath(`/recipes/analyze/${id}`));
+    const response = await api.get(ensureApiPath(`/api/recipes/analyze/${id}`));
     return response.data;
   }
 }

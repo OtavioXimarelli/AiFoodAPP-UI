@@ -24,9 +24,46 @@ export const useAuth = () => {
   // Referência para uma promessa compartilhada (evita múltiplas chamadas simultâneas)
   const authCheckPromise = useRef<Promise<void> | null>(null);
 
+  // Helper to debug cookie issues
+  const logAuthCookies = () => {
+    const cookies = document.cookie;
+    if (!cookies) {
+      console.log('🍪 useAuth - No cookies found');
+      return;
+    }
+    
+    const cookieList = cookies.split(';').map(c => c.trim());
+    console.log(`🍪 useAuth - Total cookies: ${cookieList.length}`);
+    
+    // Look for session related cookies without logging values
+    const sessionCookies = cookieList.filter(cookie => 
+      cookie.toLowerCase().includes('session') || 
+      cookie.toLowerCase().includes('jsessionid') ||
+      cookie.toLowerCase().startsWith('remember-me=')
+    );
+    
+    if (sessionCookies.length > 0) {
+      console.log('🍪 useAuth - Session cookies found:');
+      sessionCookies.forEach(cookie => {
+        const [name] = cookie.split('=');
+        console.log(`   → ${name}`);
+      });
+    } else {
+      console.log('🍪 useAuth - No session cookies found');
+    }
+  };
+
   const checkAuthentication = async () => {
-    // Prevenção contra chamadas simultâneas
-    if (isCheckingAuth.current) {
+    // Check if we're on an OAuth2 callback page
+    const isOAuth2Callback = window.location.pathname.includes('/oauth2/callback') || 
+                            window.location.pathname.includes('/login/oauth2/code/');
+    
+    // Log cookies for debugging
+    console.log('🔍 useAuth checkAuthentication - checking cookies:');
+    logAuthCookies();
+    
+    // Prevenção contra chamadas simultâneas - allow for OAuth2 callbacks
+    if (isCheckingAuth.current && !isOAuth2Callback) {
       console.log('🔄 Auth check already in progress, waiting for it to complete');
       
       if (authCheckPromise.current) {
@@ -35,18 +72,19 @@ export const useAuth = () => {
       return;
     }
     
-    // Verificar se já estamos autenticados no estado global
-    if (isAuthenticated && user && hasCheckedAuth) {
+    // Verificar se já estamos autenticados no estado global (skip for OAuth2 callbacks)
+    if (isAuthenticated && user && hasCheckedAuth && !isOAuth2Callback) {
       console.log('✅ Already authenticated in global state, skipping check');
       return;
     }
     
-    // Limitação de taxa: no máximo uma chamada a cada 5 segundos
+    // Limitação de taxa: no máximo uma chamada a cada 5 segundos (reduced for OAuth2 callbacks)
     const now = Date.now();
     const timeSinceLastCheck = now - lastCheckTime.current;
+    const rateLimitTime = isOAuth2Callback ? 500 : 5000; // 0.5s for OAuth2, 5s for normal
     
-    if (timeSinceLastCheck < 5000 && hasCheckedAuth) {
-      console.log(`� Rate limiting auth check (last check ${(timeSinceLastCheck/1000).toFixed(1)}s ago)`);
+    if (timeSinceLastCheck < rateLimitTime && hasCheckedAuth && !isOAuth2Callback) {
+      console.log(`⏱️ Rate limiting auth check (last check ${(timeSinceLastCheck/1000).toFixed(1)}s ago)`);
       return;
     }
     
@@ -59,7 +97,7 @@ export const useAuth = () => {
       authCheckPromise.current = (async () => {
         try {
           setLoading(true);
-          console.log('🔍 Starting authentication check...');
+          console.log(`🔍 Starting authentication check... ${isOAuth2Callback ? '(OAuth2 callback)' : ''}`);
           
           // Verificar o marcador local de autenticação
           const localAuthFlag = localStorage.getItem('is_authenticated') === 'true';
@@ -86,8 +124,8 @@ export const useAuth = () => {
                 return;
               }
             }
-          } else if (localAuthFlag) {
-            // Se temos marcador local mas status diz não autenticado, tentar refresh
+          } else if (localAuthFlag && !isOAuth2Callback) {
+            // Se temos marcador local mas status diz não autenticado, tentar refresh (skip during OAuth2)
             try {
               await apiClient.refreshToken();
               
@@ -107,8 +145,11 @@ export const useAuth = () => {
             }
           } else {
             // Não autenticado e sem marcador local
-            localStorage.removeItem('is_authenticated');
-            logout();
+            console.log(`🔍 Not authenticated ${isOAuth2Callback ? '(waiting for OAuth2 to complete)' : ''}`);
+            if (!isOAuth2Callback) {
+              localStorage.removeItem('is_authenticated');
+              logout();
+            }
           }
         } finally {
           setLoading(false);
@@ -120,8 +161,10 @@ export const useAuth = () => {
       await authCheckPromise.current;
     } catch (error) {
       console.error('❌ Authentication check failed:', error);
-      localStorage.removeItem('is_authenticated');
-      logout();
+      if (!isOAuth2Callback) {
+        localStorage.removeItem('is_authenticated');
+        logout();
+      }
     } finally {
       isCheckingAuth.current = false;
       authCheckPromise.current = null;
@@ -149,8 +192,12 @@ export const useAuth = () => {
     }
   };
 
-  const redirectToLogin = (provider: string = 'google') => {
-    authService.redirectToLogin(provider);
+  const redirectToLogin = async (provider: string = 'google') => {
+    try {
+      await authService.redirectToLogin(provider);
+    } catch (error) {
+      console.error('🔑 Failed to redirect to login:', error);
+    }
   };
 
   // Check authentication on mount - but only if we haven't checked yet
