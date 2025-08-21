@@ -151,10 +151,10 @@ const FoodInventory = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background/80 to-background/60 pb-20 lg:pb-0">
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-card/70 backdrop-blur-xl border-b border-border/30 p-4 shadow-lg shadow-black/5">
-        <div className="flex justify-between items-center">
+      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-xl border-b border-border/30 p-4 shadow-lg shadow-black/5">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Despensa Inteligente</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground">Despensa Inteligente</h1>
             <p className="text-sm text-muted-foreground">Gerencie seus alimentos com IA</p>
           </div>
           <Dialog open={open} onOpenChange={setOpen}>
@@ -264,25 +264,25 @@ const FoodInventory = () => {
           <span className="ml-2">Carregando alimentos...</span>
         </div>
       ) : safeFoodItems.length === 0 ? (
-        <Card>
-          <CardContent className="p-12 text-center">
-            <Package className="h-12 w-12 text-blue-500 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Nenhum alimento ainda</h3>
-            <p className="text-gray-600 mb-4">Adicione seu primeiro alimento e nossa IA calculará automaticamente as informações nutricionais.</p>
-            <Button onClick={() => setOpen(true)} className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
+        <Card className="border-border bg-card">
+          <CardContent className="p-8 sm:p-12 text-center">
+            <Package className="h-12 w-12 text-primary mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-foreground mb-2">Nenhum alimento ainda</h3>
+            <p className="text-muted-foreground mb-4">Adicione seu primeiro alimento e nossa IA calculará automaticamente as informações nutricionais.</p>
+            <Button onClick={() => setOpen(true)} className="bg-primary hover:bg-primary/90 text-primary-foreground">
               <Plus className="h-4 w-4 mr-2" />
               Adicionar Alimento com IA
             </Button>
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {safeFoodItems.map((item) => {
             const expirationStatus = getExpirationStatus(item.expiration);
             const tags = item.tags ? item.tags.split(',').map(tag => tag.trim()).filter(Boolean) : [];
 
             return (
-              <Card key={item.id} className="bg-card/60 backdrop-blur-xl border-border/30 overflow-hidden hover:shadow-lg hover:shadow-primary/10 hover:scale-[1.02] transition-all duration-300">
+              <Card key={item.id} className="bg-card border-border/50 overflow-hidden hover:shadow-lg hover:shadow-primary/10 hover:scale-[1.02] transition-all duration-300">
                 <AspectRatio ratio={16 / 9}>
                   <img
                     src={getFoodImage(item.name)}
