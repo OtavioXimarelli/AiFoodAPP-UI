@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useFoodItems } from "@/hooks/useFoodItems";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocalRecipes } from "@/hooks/useLocalRecipes";
@@ -102,12 +103,24 @@ const DashboardHome = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-20 lg:pb-8">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+      className="min-h-screen bg-background pb-20 lg:pb-8"
+    >
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/50 px-4 md:px-6 py-4 md:py-5">
-        <div 
+      <motion.div 
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/50 px-4 md:px-6 py-4 md:py-5"
+      >
+        <motion.div 
           className="flex items-center justify-between cursor-pointer"
           onClick={() => setShowUserInfo(!showUserInfo)}
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.99 }}
         >
           <div className="flex-1">
             <h1 className="text-xl md:text-2xl font-bold text-foreground">
@@ -116,9 +129,21 @@ const DashboardHome = () => {
             <p className="text-xs md:text-sm text-muted-foreground mt-1">
               {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
             </p>
-            {showUserInfo && (
-              <div className="mt-4 p-3 md:p-4 bg-card/50 rounded-xl border border-border/30 backdrop-blur-sm">
-                <div className="space-y-2 md:space-y-3">
+            <AnimatePresence>
+              {showUserInfo && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0, y: -10 }}
+                  animate={{ opacity: 1, height: "auto", y: 0 }}
+                  exit={{ opacity: 0, height: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                  className="mt-4 p-3 md:p-4 bg-gradient-warm rounded-xl border border-border/30 backdrop-blur-sm shadow-warm"
+                >
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                    className="space-y-2 md:space-y-3"
+                  >
                   <div className="flex items-center gap-2">
                     <User className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
                     <span className="text-xs md:text-sm text-foreground">{user?.name || "Nome não informado"}</span>
@@ -131,66 +156,123 @@ const DashboardHome = () => {
                     <span className="text-xs text-muted-foreground">Total de itens:</span>
                     <span className="text-xs font-medium text-primary">{totalItems}</span>
                   </div>
-                </div>
-              </div>
-            )}
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
           <div className="flex items-center gap-2 md:gap-3">
-            <Avatar className="h-10 w-10 md:h-12 md:w-12 ring-2 ring-primary/20 hover:ring-primary/40 transition-all duration-200">
-              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-semibold text-sm md:text-base">
-                {getUserInitials()}
-              </AvatarFallback>
-            </Avatar>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Avatar className="h-10 w-10 md:h-12 md:w-12 ring-2 ring-primary/20 hover:ring-primary/40 transition-all duration-200">
+                <AvatarFallback className="bg-gradient-primary text-primary-foreground font-semibold text-sm md:text-base shadow-glow">
+                  {getUserInitials()}
+                </AvatarFallback>
+              </Avatar>
+            </motion.div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       <div className="px-4 md:px-6 py-4 md:py-6 space-y-6 md:space-y-8">
         {/* Search and Filter */}
-        <div className="flex gap-3">
-          <div className="relative flex-1">
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="flex gap-3"
+        >
+          <motion.div 
+            className="relative flex-1"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <input
               type="text"
               placeholder="Buscar alimentos, receitas..."
-              className="w-full pl-12 pr-4 py-4 rounded-2xl bg-card/50 border border-border/30 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all duration-200 backdrop-blur-sm"
+              className="w-full pl-12 pr-4 py-4 rounded-2xl bg-gradient-card border border-border/30 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all duration-200 backdrop-blur-sm shadow-card focus:shadow-glow"
             />
-          </div>
-          <Button variant="outline" size="lg" className="px-4 py-4 rounded-2xl border-border/30 hover:bg-card/50 transition-all duration-200">
-            <Filter className="h-5 w-5" />
-          </Button>
-        </div>
+          </motion.div>
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Button variant="outline" size="lg" className="px-4 py-4 rounded-2xl border-border/30 hover:bg-gradient-warm transition-all duration-200 shadow-soft hover:shadow-card">
+              <Filter className="h-5 w-5" />
+            </Button>
+          </motion.div>
+        </motion.div>
 
         {/* Status Cards */}
-        <div className="grid grid-cols-2 gap-4 animate-slide-in-bottom animation-delay-400">
-          <Card className="bg-gradient-card border-border/30 hover:shadow-glow transition-all duration-300 hover-lift card-hover backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-2xl bg-primary/10 hover:scale-110 transition-transform duration-300">
-                  <Package className="h-6 w-6 text-primary" />
+        <motion.div 
+          initial={{ y: 30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="grid grid-cols-2 gap-4"
+        >
+          <motion.div
+            whileHover={{ scale: 1.03, y: -5 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <Card className="bg-gradient-success border-border/30 hover:shadow-success transition-all duration-300 backdrop-blur-sm">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <motion.div 
+                    className="p-3 rounded-2xl bg-primary/15 shadow-soft"
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    transition={{ type: "spring", stiffness: 400 }}
+                  >
+                    <Package className="h-6 w-6 text-primary" />
+                  </motion.div>
+                  <div>
+                    <motion.p 
+                      className="text-3xl font-bold text-foreground"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+                    >
+                      {totalItems}
+                    </motion.p>
+                    <p className="text-sm text-muted-foreground mt-1 font-medium">Total de Itens</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-3xl font-bold text-foreground">{totalItems}</p>
-                  <p className="text-sm text-muted-foreground mt-1">Total de Itens</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card className="bg-gradient-card border-border/30 hover:shadow-glow transition-all duration-300 hover-lift card-hover backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-2xl bg-yellow-500/10 hover:scale-110 transition-transform duration-300">
-                  <Clock className="h-6 w-6 text-yellow-500" />
+          <motion.div
+            whileHover={{ scale: 1.03, y: -5 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <Card className="bg-gradient-warm border-border/30 hover:shadow-warm transition-all duration-300 backdrop-blur-sm">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <motion.div 
+                    className="p-3 rounded-2xl bg-warning/15 shadow-soft"
+                    whileHover={{ scale: 1.1, rotate: -5 }}
+                    transition={{ type: "spring", stiffness: 400 }}
+                  >
+                    <Clock className="h-6 w-6 text-warning" />
+                  </motion.div>
+                  <div>
+                    <motion.p 
+                      className="text-3xl font-bold text-foreground"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.6, type: "spring", stiffness: 200 }}
+                    >
+                      {expiringItems.length}
+                    </motion.p>
+                    <p className="text-sm text-muted-foreground mt-1 font-medium">Vencendo</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-3xl font-bold text-foreground">{expiringItems.length}</p>
-                  <p className="text-sm text-muted-foreground mt-1">Vencendo</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </motion.div>
 
         {/* Saved Data Summary */}
         {(totalRecipes > 0 || totalAnalyses > 0) && (
@@ -244,28 +326,52 @@ const DashboardHome = () => {
         )}
 
         {/* Quick Actions */}
-        <div className="animate-slide-in-bottom animation-delay-600">
-          <h2 className="text-xl font-bold text-foreground mb-5">Ações Rápidas</h2>
+        <motion.div 
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+        >
+          <motion.h2 
+            className="text-xl font-bold text-foreground mb-5"
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            Ações Rápidas
+          </motion.h2>
           <div className="space-y-4">
             {quickActions.map((action, index) => (
-              <Link key={index} to={action.to} className={`stagger-${index + 1} block`}>
-                <Card className="bg-gradient-card border-border/30 hover:shadow-glow hover:scale-[1.02] transition-all duration-300 card-hover touch-feedback backdrop-blur-sm group">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-5">
-                      <div className={`p-4 rounded-2xl ${action.color} ${action.textColor} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                        <action.icon className="h-7 w-7" />
+              <motion.div
+                key={index}
+                initial={{ x: -30, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.7 + index * 0.1, duration: 0.5 }}
+                whileHover={{ scale: 1.02, x: 10 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Link to={action.to} className="block">
+                  <Card className="bg-gradient-card border-border/30 hover:shadow-glow transition-all duration-300 backdrop-blur-sm group overflow-hidden">
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-5">
+                        <motion.div 
+                          className={`p-4 rounded-2xl ${action.color} ${action.textColor} shadow-lg`}
+                          whileHover={{ scale: 1.1, rotate: 5 }}
+                          transition={{ type: "spring", stiffness: 400 }}
+                        >
+                          <action.icon className="h-7 w-7" />
+                        </motion.div>
+                        <div className="flex-1">
+                          <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors duration-200">{action.title}</h3>
+                          <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{action.description}</p>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <h3 className="font-bold text-foreground text-lg">{action.title}</h3>
-                        <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{action.description}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* Recent Items Preview */}
         {safeFoodItems.length > 0 && (
@@ -346,7 +452,7 @@ const DashboardHome = () => {
         onOpenChange={setShowWelcomeDialog}
         userName={getUserName()}
       />
-    </div>
+    </motion.div>
   );
 };
 

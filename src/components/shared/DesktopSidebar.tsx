@@ -1,4 +1,5 @@
 import { Link, NavLink } from "react-router-dom";
+import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { 
   Home, 
@@ -50,62 +51,116 @@ const DesktopSidebar = () => {
     : baseNavItems;
 
   return (
-    <aside className="hidden lg:flex fixed left-0 top-0 z-40 h-full w-64 flex-col border-r border-border/50 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 dark:bg-background/90 dark:border-border/40">
+    <motion.aside 
+      initial={{ x: -64, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="hidden lg:flex fixed left-0 top-0 z-40 h-full w-64 flex-col border-r border-border/50 bg-background/90 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70 dark:bg-background/90 dark:border-border/40 shadow-card"
+    >
       {/* Logo */}
-      <div className="p-6 border-b border-border/50">
-        <Link
-          to="/dashboard"
-          className="flex items-center gap-3 font-bold text-lg bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent hover:from-primary/80 hover:to-primary transition-all duration-300"
+      <motion.div 
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+        className="p-6 border-b border-border/50"
+      >
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
         >
-          <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-primary/80 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-            <ChefHat className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <span>AI Food App</span>
-        </Link>
-      </div>
+          <Link
+            to="/dashboard"
+            className="flex items-center gap-3 font-bold text-lg bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent hover:from-primary/80 hover:to-primary transition-all duration-300"
+          >
+            <motion.div 
+              className="p-2 rounded-lg bg-gradient-primary shadow-glow hover:shadow-xl transition-all duration-300"
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              transition={{ type: "spring", stiffness: 400 }}
+            >
+              <ChefHat className="h-5 w-5 text-primary-foreground" />
+            </motion.div>
+            <span>AI Food App</span>
+          </Link>
+        </motion.div>
+      </motion.div>
 
       {/* Navigation */}
       <nav className="flex-1 px-4 py-6">
-        <ul className="space-y-2">
-          {navItems.map((item) => {
+        <motion.ul 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          className="space-y-2"
+        >
+          {navItems.map((item, index) => {
             const Icon = item.icon;
             return (
-              <li key={item.to}>
+              <motion.li 
+                key={item.to}
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.4 + index * 0.1, duration: 0.5 }}
+              >
                 <NavLink
                   to={item.to}
                   end={item.end}
                   className={({ isActive }) =>
                     cn(
-                      "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-accent/80 hover:text-accent-foreground group touch-feedback",
+                      "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gradient-warm hover:text-foreground group touch-feedback relative overflow-hidden",
                       isActive 
-                        ? "bg-primary text-primary-foreground shadow-md hover:bg-primary/90" 
-                        : "text-muted-foreground hover:text-foreground"
+                        ? "bg-gradient-primary text-primary-foreground shadow-glow hover:shadow-xl" 
+                        : "text-muted-foreground hover:text-foreground hover:shadow-soft"
                     )
                   }
                 >
                   {({ isActive }) => (
-                    <>
-                      <Icon className={cn(
-                        "h-5 w-5 transition-transform duration-200 group-hover:scale-110",
-                        isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
-                      )} />
-                      {item.label}
-                    </>
+                    <motion.div
+                      className="flex items-center gap-3 w-full"
+                      whileHover={{ x: 5 }}
+                      transition={{ type: "spring", stiffness: 400 }}
+                    >
+                      <motion.div
+                        whileHover={{ scale: 1.2, rotate: 10 }}
+                        transition={{ type: "spring", stiffness: 600 }}
+                      >
+                        <Icon className={cn(
+                          "h-5 w-5 transition-all duration-200",
+                          isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
+                        )} />
+                      </motion.div>
+                      <span className="font-medium">{item.label}</span>
+                      {isActive && (
+                        <motion.div
+                          layoutId="activeIndicator"
+                          className="absolute inset-0 bg-gradient-primary rounded-lg -z-10"
+                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        />
+                      )}
+                    </motion.div>
                   )}
                 </NavLink>
-              </li>
+              </motion.li>
             );
           })}
-        </ul>
+        </motion.ul>
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-border/50">
-        <p className="text-xs text-muted-foreground text-center">
+      <motion.div 
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.8, duration: 0.5 }}
+        className="p-4 border-t border-border/50 bg-gradient-card"
+      >
+        <motion.p 
+          className="text-xs text-muted-foreground text-center font-medium"
+          whileHover={{ scale: 1.05, color: "hsl(var(--foreground))" }}
+          transition={{ duration: 0.2 }}
+        >
           AI Food App v1.0
-        </p>
-      </div>
-    </aside>
+        </motion.p>
+      </motion.div>
+    </motion.aside>
   );
 };
 

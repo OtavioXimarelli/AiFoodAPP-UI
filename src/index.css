@@ -86,42 +86,37 @@ All colors MUST be HSL.
   }
 
   .light {
-    /* Modern light theme with improved contrast and warmth */
-    --background: 0 0% 98%;
-    --foreground: 220 13% 18%;
-    
-    /* Cards with subtle warmth and depth */
+    /* Enhanced light theme colors - better visibility and modern design */
+    --background: 220 15% 97%;
+    --foreground: 215 25% 15%;
     --card: 0 0% 100%;
-    --card-foreground: 220 13% 18%;
-    
+    --card-foreground: 215 25% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 18%;
+    --popover-foreground: 215 25% 15%;
+    --primary: 220 90% 56%;
+    --primary-foreground: 210 40% 98%;
+    --primary-hover: 220 85% 52%;
+    --primary-glow: 220 85% 70%;
+    --secondary: 210 40% 94%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 92%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214 31% 91%;
+    --input: 214 31% 91%;
+    --ring: 220 90% 56%;
     
-    /* Primary - vibrant orange/yellow with better contrast */
-    --primary: 47 96% 53%;
-    --primary-foreground: 0 0% 98%;
-    --primary-hover: 47 96% 48%;
-    
-    /* Secondary - warm neutral tones */
-    --secondary: 47 20% 93%;
-    --secondary-foreground: 220 13% 18%;
-    
-    /* Muted - subtle warm grays */
-    --muted: 47 15% 95%;
-    --muted-foreground: 220 9% 46%;
-    
-    /* Accent - warm cream tones */
-    --accent: 47 25% 92%;
-    --accent-foreground: 220 13% 18%;
-    
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
-    
-    /* Borders with warmth */
-    --border: 47 15% 88%;
-    --input: 47 15% 88%;
-    --ring: 47 96% 53%;
-    
+    /* Enhanced colors for light theme */
+    --success: 142 76% 36%;
+    --success-foreground: 355 100% 97%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 48 96% 89%;
+    --info: 199 89% 48%;
+    --info-foreground: 210 40% 98%;
+
     --radius: 1rem;
     
     /* Chart colors - warm and vibrant */
@@ -131,30 +126,29 @@ All colors MUST be HSL.
     --chart-4: 197 37% 24%;
     --chart-5: 350 100% 50%;
 
-    /* Beautiful gradients for light mode */
-    --gradient-primary: linear-gradient(135deg, hsl(47 96% 53%), hsl(45 93% 58%));
-    --gradient-secondary: linear-gradient(135deg, hsl(47 25% 92%), hsl(47 20% 88%));
-    --gradient-accent: linear-gradient(135deg, hsl(47 25% 92%), hsl(47 20% 95%));
-    --gradient-hero: linear-gradient(135deg, hsl(0 0% 98%) 0%, hsl(47 25% 96%) 50%, hsl(47 20% 94%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(47 15% 98%));
+    /* Enhanced gradients for light theme */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(var(--accent)) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--muted)) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-hover)) 50%, hsl(var(--secondary)) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(var(--muted) / 0.2) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(var(--warning) / 0.1) 0%, hsl(var(--info) / 0.1) 100%);
+    --gradient-success: linear-gradient(135deg, hsl(var(--success) / 0.1) 0%, hsl(var(--primary) / 0.1) 100%);
     --gradient-orange: linear-gradient(135deg, hsl(47 96% 53%), hsl(45 93% 58%));
     
-    /* Premium shadows for light mode - more sophisticated */
-    --shadow-soft: 0 2px 8px -2px hsl(220 43% 11% / 0.08), 0 1px 3px -1px hsl(220 43% 11% / 0.04);
-    --shadow-card: 0 4px 16px -4px hsl(220 43% 11% / 0.1), 0 2px 8px -2px hsl(220 43% 11% / 0.06);
-    --shadow-glow: 0 0 32px hsl(47 96% 53% / 0.25);
-    --shadow-hover: 0 8px 32px -8px hsl(220 43% 11% / 0.15), 0 4px 16px -4px hsl(220 43% 11% / 0.1);
-    --shadow-orange: 0 8px 32px -4px hsl(47 96% 53% / 0.2);
+    /* Enhanced shadows for light theme */
+    --shadow-soft: 0 1px 3px hsl(var(--foreground) / 0.12), 0 1px 2px hsl(var(--foreground) / 0.08);
+    --shadow-card: 0 4px 6px -1px hsl(var(--foreground) / 0.15), 0 2px 4px -1px hsl(var(--foreground) / 0.1);
+    --shadow-glow: 0 10px 25px -3px hsl(var(--primary) / 0.15), 0 4px 6px -2px hsl(var(--primary) / 0.08);
+    --shadow-hover: 0 20px 25px -5px hsl(var(--foreground) / 0.15), 0 10px 10px -5px hsl(var(--foreground) / 0.08);
+    --shadow-orange: 0 10px 25px -3px hsl(25 95% 53% / 0.25), 0 4px 6px -2px hsl(25 95% 53% / 0.15);
+    --shadow-success: 0 10px 25px -3px hsl(var(--success) / 0.2), 0 4px 6px -2px hsl(var(--success) / 0.1);
+    --shadow-warm: 0 8px 20px -2px hsl(var(--warning) / 0.2), 0 3px 6px -1px hsl(var(--warning) / 0.12);
     
     /* Enhanced transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
-    /* Status colors - warmer tones */
-    --success: 142 76% 36%;
-    --warning: 45 93% 47%;
-    --error: 0 84% 60%;
-    
     /* Food category colors - more vibrant in light mode */
     --vegetables: 120 60% 35%;
     --fruits: 350 80% 50%;
