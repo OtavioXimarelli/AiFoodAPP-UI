@@ -55,11 +55,36 @@ export interface Recipe {
   instructions: string[];
   ingredientsList: RecipeIngredient[];
   createdAt?: string;
-  prepTime?: number;
+  prepTime?: number | string;
   servings?: number;
   calories?: number;
   difficulty?: 'Fácil' | 'Médio' | 'Difícil';
   tags?: string[];
+}
+
+export interface NutritionAnalysis {
+  id?: number | string;
+  title: string;
+  foodItems: string[];
+  analysis: {
+    calories: number;
+    protein: number;
+    carbohydrates: number;
+    fat: number;
+    fiber: number;
+    sugar: number;
+    sodium: number;
+  };
+  recommendations: string[];
+  insights: string[];
+  createdAt?: string;
+  period?: 'daily' | 'weekly' | 'monthly';
+}
+
+export interface CachedData<T> {
+  data: T;
+  timestamp: number;
+  expiryTime?: number; // Optional expiry time in milliseconds
 }
 
 export interface User {

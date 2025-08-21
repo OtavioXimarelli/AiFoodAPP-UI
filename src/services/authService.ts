@@ -79,6 +79,11 @@ export const authService = {
     try {
       console.log("🔑 Logging out user...");
       await apiClient.logout();
+      
+      // Importar e limpar cache do sessionService
+      const { sessionService } = await import('./sessionService');
+      sessionService.clearSessionCache();
+      
       console.log("🔑 User logged out successfully");
     } catch (error: any) {
       console.error("🔑 Failed to logout:", error);

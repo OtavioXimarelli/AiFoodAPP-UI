@@ -1,83 +1,70 @@
-import { useState, useEffect } from 'react';
 import { Recipe } from '@/lib/types';
+import { useLocalStorage } from './useLocalStorage';
 
 const STORAGE_KEY = 'ai_food_app_recipes';
 
 export const useLocalRecipes = () => {
-  const [storedRecipes, setStoredRecipes] = useState<Recipe[]>([]);
-  const [loading, setLoading] = useState(false);
+  const {
+    data: storedRecipes,
+    loading,
+    error,
+    saveData: saveRecipes,
+    updateItem: updateRecipe,
+    deleteItem: deleteRecipe,
+    clearAll: clearAllRecipes,
+    searchData: searchRecipes,
+    getSortedData,
+    getStorageInfo,
+    totalItems: totalRecipes
+  } = useLocalStorage<Recipe>(STORAGE_KEY, {
+    maxItems: 50, // Keep last 50 recipes
+    expiryDays: 90 // Recipes expire after 90 days
+  });
 
-  // Load recipes from localStorage on mount
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const recipes = JSON.parse(stored);
-        setStoredRecipes(recipes);
-      }
-    } catch (error) {
-      console.error('Erro ao carregar receitas do localStorage:', error);
-    }
-  }, []);
-
-  // Save recipes to localStorage
-  const saveRecipes = (recipes: Recipe[]) => {
-    try {
-      // Add timestamp to each recipe if not exists
-      const recipesWithTimestamp = recipes.map(recipe => ({
-        ...recipe,
-        createdAt: recipe.createdAt || new Date().toISOString(),
-        id: recipe.id || Date.now() + Math.random()
-      }));
-
-      const allRecipes = [...storedRecipes, ...recipesWithTimestamp];
-      
-      // Keep only the last 50 recipes to avoid storage bloat
-      const limitedRecipes = allRecipes.slice(-50);
-      
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(limitedRecipes));
-      setStoredRecipes(limitedRecipes);
-    } catch (error) {
-      console.error('Erro ao salvar receitas no localStorage:', error);
-    }
+  // Get recipes by difficulty
+  const getRecipesByDifficulty = (difficulty: 'Fácil' | 'Médio' | 'Difícil') => {
+    return storedRecipes.filter(recipe => recipe.difficulty === difficulty);
   };
 
-  // Delete a specific recipe
-  const deleteRecipe = (recipeId: number | string) => {
-    try {
-      const updatedRecipes = storedRecipes.filter(recipe => recipe.id !== recipeId);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedRecipes));
-      setStoredRecipes(updatedRecipes);
-    } catch (error) {
-      console.error('Erro ao deletar receita:', error);
-    }
+  // Get recipes by tags
+  const getRecipesByTags = (tags: string[]) => {
+    return storedRecipes.filter(recipe => 
+      recipe.tags?.some(tag => tags.includes(tag))
+    );
   };
 
-  // Clear all recipes
-  const clearAllRecipes = () => {
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-      setStoredRecipes([]);
-    } catch (error) {
-      console.error('Erro ao limpar receitas:', error);
-    }
+  // Get recent recipes (last 7 days)
+  const getRecentRecipes = () => {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    
+    return storedRecipes.filter(recipe => 
+      recipe.createdAt && new Date(recipe.createdAt) > sevenDaysAgo
+    );
   };
 
-  // Get recipes sorted by creation date (newest first)
-  const getSortedRecipes = () => {
-    return storedRecipes.sort((a, b) => {
-      const dateA = new Date(a.createdAt || 0).getTime();
-      const dateB = new Date(b.createdAt || 0).getTime();
-      return dateB - dateA;
-    });
+  // Get favorite recipes (based on how often they're accessed - we could add a viewCount field)
+  const getFavoriteRecipes = () => {
+    // For now, return recipes sorted by creation date
+    // In the future, we could add view count or rating functionality
+    return getSortedData('createdAt').slice(0, 10);
   };
 
   return {
-    storedRecipes: getSortedRecipes(),
+    storedRecipes,
     loading,
+    error,
     saveRecipes,
+    updateRecipe,
     deleteRecipe,
     clearAllRecipes,
-    totalRecipes: storedRecipes.length
+    searchRecipes,
+    getRecipesByDifficulty,
+    getRecipesByTags,
+    getRecentRecipes,
+    getFavoriteRecipes,
+    getSortedData,
+    getStorageInfo,
+    totalRecipes
   };
 };

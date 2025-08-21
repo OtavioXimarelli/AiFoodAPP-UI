@@ -564,7 +564,22 @@ export class ApiClient {
   }
 
   async logout() {
-    await api.post(ensureApiPath('/auth/logout'));
+    try {
+      console.log('🔑 Calling server logout endpoint...');
+      await api.post(ensureApiPath('/auth/logout'));
+      console.log('🔑 Server logout completed');
+      
+      // Limpar cache de status de autenticação
+      this.#authStatusCache = {
+        data: null,
+        timestamp: 0,
+        pending: null
+      };
+      
+    } catch (error) {
+      console.error('🔑 Error during server logout:', error);
+      // Não falhar o logout por erro do servidor
+    }
   }
 
   /**
@@ -612,11 +627,16 @@ export class ApiClient {
   }
 
   async createFoodItem(foodItem: any) {
+    console.log('🍕 Creating food item with data:', foodItem);
+    console.log('🍕 Data keys:', Object.keys(foodItem));
+    console.log('🍕 Request headers will include:', api.defaults.headers);
     const response = await api.post(ensureApiPath('/api/foods/create'), foodItem);
     return response.data;
   }
 
   async updateFoodItem(foodItem: any) {
+    console.log('🔄 Updating food item with data:', foodItem);
+    console.log('🔄 Data keys:', Object.keys(foodItem));
     const response = await api.put(ensureApiPath(`/api/foods/${foodItem.id}`), foodItem);
     return response.data;
   }

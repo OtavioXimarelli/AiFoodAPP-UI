@@ -17,6 +17,12 @@ export const sessionService = {
   
   // Check if we have a persistent session
   async checkPersistentSession(): Promise<boolean> {
+    // Verificar se estamos em processo de logout
+    if (sessionStorage.getItem('logout_in_progress') === 'true') {
+      console.log("🔒 Logout in progress, skipping session check");
+      return false;
+    }
+    
     // Evitar chamadas múltiplas simultâneas
     if (this._checkingSession && this._checkPromise) {
       console.log("🔒 Session check already in progress, reusing promise");
@@ -126,6 +132,23 @@ export const sessionService = {
     const result = await this._checkPromise;
     this._checkPromise = null;
     return result;
+  },
+  
+  // Clear session cache and state - used during logout
+  clearSessionCache(): void {
+    console.log("🗑️ Clearing session cache...");
+    this._checkingSession = false;
+    this._lastCheckTime = 0;
+    this._checkPromise = null;
+    this._checkAttempts = 0;
+    this._lastError = null;
+    
+    // Limpar todos os dados de autenticação
+    localStorage.removeItem('is_authenticated');
+    localStorage.removeItem('session_established_at');
+    sessionStorage.removeItem('oauth_login_in_progress');
+    sessionStorage.removeItem('oauth_login_started_at');
+    sessionStorage.removeItem('oauth_state');
   },
   
   // Initialize the session service
