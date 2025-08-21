@@ -29,3 +29,13 @@ dist-ssr
 rsync.txt
 deploy-frontend.sh
 deploy.sh
+CACHE_SYSTEM_README.md
+ENDPOINTS_SUMMARY.md
+OAUTH2_FIX_SUMMARY.md
+update-nginx-mime-types.sh
+.gitignore
+OAUTH2_LOGIN_FLOW.md
+OAUTH2_CROSS_DOMAIN_SOLUTION.md
+OAUTH2_PERMISSION_FIX.md
+nginx.conf
+nginx.conf
