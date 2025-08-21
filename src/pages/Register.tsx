@@ -16,8 +16,12 @@ const Register = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleGoogleSignup = () => {
-    redirectToLogin('google');
+  const handleGoogleSignup = async () => {
+    try {
+      await redirectToLogin('google');
+    } catch (error) {
+      console.error('🔑 Failed to start Google signup:', error);
+    }
   };
 
   return (

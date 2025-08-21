@@ -86,17 +86,27 @@ export const authService = {
     }
   },
 
-  // Redirect to OAuth2 login - OAuth2 endpoints are at root level, not under /api
-  redirectToLogin(provider: string = 'google'): void {
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+  // Redirect to OAuth2 login - using the API client for proper handling
+  async redirectToLogin(provider: string = 'google'): Promise<void> {
+    try {
+      console.log("🔑 Initiating OAuth2 login via API client...");
+      await apiClient.initiateOAuth2Login(provider);
+    } catch (error) {
+      console.error("🔑 Failed to initiate OAuth2 login:", error);
+      
+      // Fallback to direct redirect if API client fails
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+      const url = new URL(apiBaseUrl);
+      const oauthUrl = `${url.protocol}//${url.host}/oauth2/authorization/${provider}`;
 
-    // The Spring Boot OAuth2 endpoint is at the root of the server, not under /api.
-    // We construct the URL from the base of the API URL to be safe.
-    const url = new URL(apiBaseUrl);
-    const oauthUrl = `${url.protocol}//${url.host}/oauth2/authorization/${provider}`;
-
-    console.log("🔑 Redirecting to OAuth2 login:", oauthUrl);
-    window.location.href = oauthUrl;
+      console.log("🔑 Fallback - redirecting directly to OAuth2 login:", oauthUrl);
+      
+      // Mark OAuth login in progress
+      sessionStorage.setItem('oauth_login_in_progress', 'true');
+      sessionStorage.setItem('oauth_login_started_at', new Date().toISOString());
+      
+      window.location.href = oauthUrl;
+    }
   },
 
   // Get current authentication status
