@@ -1,6 +1,11 @@
 import RecipeCard from "./RecipeCard";
+import { useLocalRecipes } from "@/hooks/useLocalRecipes";
+import { useEffect } from "react";
+import { Recipe } from "@/lib/types";
 
 const RecipeResults = () => {
+  const { saveRecipes } = useLocalRecipes();
+
   // Mock data - em produção virá da API
   const mockRecipes = [
     {
@@ -40,6 +45,31 @@ const RecipeResults = () => {
       instructions: ["Marine o frango", "Prepare o molho", "Refogue tudo junto"]
     }
   ];
+
+  // Salvar receitas automaticamente quando geradas
+  useEffect(() => {
+    const recipesToSave: Recipe[] = mockRecipes.map(recipe => ({
+      id: recipe.id,
+      name: recipe.title,
+      description: recipe.description,
+      nutritionalInfo: [`${recipe.calories} calorias`, `${recipe.servings} porções`],
+      instructions: recipe.instructions,
+      ingredientsList: recipe.ingredients.map(ingredient => ({
+        name: ingredient,
+        quantity: 1,
+        unit: "unidade"
+      })),
+      prepTime: recipe.prepTime, // Keep as string to match the interface
+      servings: recipe.servings,
+      calories: recipe.calories,
+      difficulty: recipe.difficulty,
+      tags: recipe.tags,
+      createdAt: new Date().toISOString()
+    }));
+
+    // Salvar automaticamente as receitas geradas
+    saveRecipes(recipesToSave);
+  }, [saveRecipes]); // Remove mockRecipes dependency to avoid infinite loop
 
   return (
     <section id="receitas" className="py-16">

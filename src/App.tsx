@@ -16,6 +16,7 @@ import FoodInventory from "./pages/dashboard/FoodInventory";
 import RecipeGenerator from "./pages/dashboard/RecipeGenerator";
 import DashboardHome from "./pages/dashboard/DashboardHome";
 import NutritionInsights from "./pages/dashboard/NutritionInsights";
+import SavedData from "./pages/dashboard/SavedData";
 import { sessionService } from "./services/sessionService";
 
 const queryClient = new QueryClient();
@@ -117,6 +118,7 @@ const App = () => {
                   <Route path="food" element={<FoodInventory />} />
                   <Route path="recipes" element={<RecipeGenerator />} />
                   <Route path="insights" element={<NutritionInsights />} />
+                  <Route path="saved" element={<SavedData />} />
                 </Route>
               </Route>
               <Route path="*" element={<NotFound />} />
