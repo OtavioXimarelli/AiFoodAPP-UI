@@ -93,8 +93,8 @@ const Login = () => {
       
       {/* Floating decorative elements */}
       <div className="absolute top-20 left-20 w-32 h-32 bg-primary/5 rounded-full blur-xl animate-float"></div>
-      <div className="absolute bottom-20 right-20 w-24 h-24 bg-accent/5 rounded-full blur-xl animate-float" style={{ animationDelay: '2s' }}></div>
-      <div className="absolute top-1/2 left-10 w-16 h-16 bg-primary/10 rounded-full blur-lg animate-float" style={{ animationDelay: '4s' }}></div>
+      <div className="absolute bottom-20 right-20 w-24 h-24 bg-accent/5 rounded-full blur-xl animate-float animate-delay-2s"></div>
+      <div className="absolute top-1/2 left-10 w-16 h-16 bg-primary/10 rounded-full blur-lg animate-float animate-delay-4s"></div>
       
       <div className="relative z-10 w-full max-w-md mx-auto p-6">
         {/* Header section */}
@@ -166,7 +166,7 @@ const Login = () => {
         </Card>
 
         {/* Bottom text */}
-        <div className="text-center mt-6 animate-fade-in" style={{ animationDelay: '300ms' }}>
+        <div className="text-center mt-6 animate-fade-in animate-delay-300ms">
           <p className="text-sm text-muted-foreground">
             Primeira vez aqui? O login com Google já cria sua conta automaticamente! 🎉
           </p>

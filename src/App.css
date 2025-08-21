@@ -1,3 +1,13 @@
+/* Animation delay utility classes for Login page */
+.animate-delay-2s {
+  animation-delay: 2s !important;
+}
+.animate-delay-4s {
+  animation-delay: 4s !important;
+}
+.animate-delay-300ms {
+  animation-delay: 300ms !important;
+}
 #root {
   max-width: 100%;
   margin: 0;
