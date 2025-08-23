@@ -32,7 +32,16 @@ const FoodInventory = () => {
   const [form, setForm] = useState<CreateFoodPayload>({
     name: "",
     quantity: 1,
-    expiration: ""
+    expiration: "",
+    calories: 0,
+    protein: 0,
+    fat: 0,
+    carbohydrates: 0,
+    fiber: 0,
+    sugar: 0,
+    sodium: 0,
+    foodGroup: FoodGroup.VEGETABLES, // default value
+    tags: ""
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
@@ -88,7 +97,16 @@ const FoodInventory = () => {
     setForm({
       name: "",
       quantity: 1,
-      expiration: ""
+      expiration: "",
+      calories: 0,
+      protein: 0,
+      fat: 0,
+      carbohydrates: 0,
+      fiber: 0,
+      sugar: 0,
+      sodium: 0,
+      foodGroup: FoodGroup.VEGETABLES,
+      tags: ""
     });
     setFormErrors({});
     setEditing(null);
@@ -112,7 +130,16 @@ const FoodInventory = () => {
     setForm({
       name: item.name,
       quantity: item.quantity,
-      expiration: item.expiration
+      expiration: item.expiration,
+      calories: item.calories || 0,
+      protein: item.protein || 0,
+      fat: item.fat || 0,
+      carbohydrates: item.carbohydrates || 0,
+      fiber: item.fiber || 0,
+      sugar: item.sugar || 0,
+      sodium: item.sodium || 0,
+      foodGroup: item.foodGroup,
+      tags: item.tags || ""
     });
     setOpen(true);
   };
@@ -129,7 +156,7 @@ const FoodInventory = () => {
 
     try {
       if (editing) {
-        // Para atualização, enviamos apenas nome, quantidade e data de validade
+        // Para atualização, enviamos todos os campos
         const updatePayload = {
           id: editing.id!,
           name: form.name,
@@ -139,12 +166,20 @@ const FoodInventory = () => {
         await updateFoodItem(updatePayload);
         toast.success("Alimento atualizado com sucesso!");
       } else {
-        // Para criação, enviamos apenas nome, quantidade e data de validade
-        // O backend calculará automaticamente as informações nutricionais
-        const createPayload = {
+        // Para criação, enviamos todos os campos conforme esperado pela API
+        const createPayload: CreateFoodPayload = {
           name: form.name,
           quantity: form.quantity,
-          expiration: form.expiration
+          expiration: form.expiration,
+          calories: form.calories,
+          protein: form.protein,
+          fat: form.fat,
+          carbohydrates: form.carbohydrates,
+          fiber: form.fiber,
+          sugar: form.sugar,
+          sodium: form.sodium,
+          foodGroup: form.foodGroup,
+          tags: form.tags
         };
         await createFoodItem(createPayload);
         toast.success("Alimento criado com sucesso!");
@@ -405,6 +440,193 @@ const FoodInventory = () => {
                         {formErrors.expiration}
                       </p>
                     )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Seção de Informações Nutricionais (Opcional) */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-1 bg-blue-500/10 rounded-md">
+                    <svg className="h-4 w-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M3 3h18v18H3z"/>
+                      <path d="M9 9h6v6H9z"/>
+                    </svg>
+                  </div>
+                  <Label className="text-sm font-medium text-foreground">
+                    Informações Nutricionais (por 100g/ml)
+                  </Label>
+                </div>
+                
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 bg-muted/20 rounded-lg border border-border/30">
+                  <div className="space-y-2">
+                    <Label htmlFor="calories" className="text-xs font-medium text-foreground flex items-center gap-1">
+                      🔥 Calorias (kcal)
+                    </Label>
+                    <Input
+                      id="calories"
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={form.calories}
+                      onChange={(e) => setForm({ ...form, calories: parseFloat(e.target.value) || 0 })}
+                      className="h-9"
+                      placeholder="0"
+                    />
+                    {formErrors.calories && (
+                      <p className="text-xs text-red-500">{formErrors.calories}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="protein" className="text-xs font-medium text-foreground flex items-center gap-1">
+                      💪 Proteínas (g)
+                    </Label>
+                    <Input
+                      id="protein"
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={form.protein}
+                      onChange={(e) => setForm({ ...form, protein: parseFloat(e.target.value) || 0 })}
+                      className="h-9"
+                      placeholder="0"
+                    />
+                    {formErrors.protein && (
+                      <p className="text-xs text-red-500">{formErrors.protein}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="fat" className="text-xs font-medium text-foreground flex items-center gap-1">
+                      🥑 Gorduras (g)
+                    </Label>
+                    <Input
+                      id="fat"
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={form.fat}
+                      onChange={(e) => setForm({ ...form, fat: parseFloat(e.target.value) || 0 })}
+                      className="h-9"
+                      placeholder="0"
+                    />
+                    {formErrors.fat && (
+                      <p className="text-xs text-red-500">{formErrors.fat}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="carbohydrates" className="text-xs font-medium text-foreground flex items-center gap-1">
+                      🌾 Carboidratos (g)
+                    </Label>
+                    <Input
+                      id="carbohydrates"
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={form.carbohydrates}
+                      onChange={(e) => setForm({ ...form, carbohydrates: parseFloat(e.target.value) || 0 })}
+                      className="h-9"
+                      placeholder="0"
+                    />
+                    {formErrors.carbohydrates && (
+                      <p className="text-xs text-red-500">{formErrors.carbohydrates}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="fiber" className="text-xs font-medium text-foreground flex items-center gap-1">
+                      🌿 Fibras (g)
+                    </Label>
+                    <Input
+                      id="fiber"
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={form.fiber}
+                      onChange={(e) => setForm({ ...form, fiber: parseFloat(e.target.value) || 0 })}
+                      className="h-9"
+                      placeholder="0"
+                    />
+                    {formErrors.fiber && (
+                      <p className="text-xs text-red-500">{formErrors.fiber}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="sugar" className="text-xs font-medium text-foreground flex items-center gap-1">
+                      🍯 Açúcares (g)
+                    </Label>
+                    <Input
+                      id="sugar"
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={form.sugar}
+                      onChange={(e) => setForm({ ...form, sugar: parseFloat(e.target.value) || 0 })}
+                      className="h-9"
+                      placeholder="0"
+                    />
+                    {formErrors.sugar && (
+                      <p className="text-xs text-red-500">{formErrors.sugar}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="sodium" className="text-xs font-medium text-foreground flex items-center gap-1">
+                      🧂 Sódio (g)
+                    </Label>
+                    <Input
+                      id="sodium"
+                      type="number"
+                      min="0"
+                      step="0.001"
+                      value={form.sodium}
+                      onChange={(e) => setForm({ ...form, sodium: parseFloat(e.target.value) || 0 })}
+                      className="h-9"
+                      placeholder="0"
+                    />
+                    {formErrors.sodium && (
+                      <p className="text-xs text-red-500">{formErrors.sodium}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="foodGroup" className="text-xs font-medium text-foreground flex items-center gap-1">
+                      📊 Grupo Alimentar
+                    </Label>
+                    <select
+                      id="foodGroup"
+                      title="Selecionar grupo alimentar"
+                      value={form.foodGroup}
+                      onChange={(e) => setForm({ ...form, foodGroup: e.target.value as FoodGroup })}
+                      className="h-9 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    >
+                      {Object.entries(FOOD_GROUP_LABELS).map(([value, label]) => (
+                        <option key={value} value={value}>{label}</option>
+                      ))}
+                    </select>
+                    {formErrors.foodGroup && (
+                      <p className="text-xs text-red-500">{formErrors.foodGroup}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2 md:col-span-1">
+                    <Label htmlFor="tags" className="text-xs font-medium text-foreground flex items-center gap-1">
+                      🏷️ Tags
+                    </Label>
+                    <Input
+                      id="tags"
+                      value={form.tags}
+                      onChange={(e) => setForm({ ...form, tags: e.target.value })}
+                      className="h-9"
+                      placeholder="ex: carne branca,magro,versatil"
+                    />
+                    {formErrors.tags && (
+                      <p className="text-xs text-red-500">{formErrors.tags}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground">Separe por vírgulas</p>
                   </div>
                 </div>
               </div>

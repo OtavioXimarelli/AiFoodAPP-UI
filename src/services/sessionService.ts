@@ -17,10 +17,27 @@ export const sessionService = {
   
   // Check if we have a persistent session
   async checkPersistentSession(): Promise<boolean> {
-    // Verificar se estamos em processo de logout
-    if (sessionStorage.getItem('logout_in_progress') === 'true') {
-      console.log("🔒 Logout in progress, skipping session check");
-      return false;
+    // Verificar e limpar marcadores de logout órfãos
+    const logoutInProgress = sessionStorage.getItem('logout_in_progress') === 'true';
+    const logoutTimestamp = sessionStorage.getItem('logout_timestamp');
+    
+    if (logoutInProgress) {
+      if (logoutTimestamp) {
+        const timeSinceLogout = Date.now() - parseInt(logoutTimestamp);
+        if (timeSinceLogout > 30000) {
+          // Logout muito antigo, limpar marcadores órfãos
+          console.log("🔒 Clearing old logout markers in sessionService");
+          sessionStorage.removeItem('logout_in_progress');
+          sessionStorage.removeItem('logout_timestamp');
+        } else {
+          console.log("🔒 Logout in progress, skipping session check");
+          return false;
+        }
+      } else {
+        // Logout marker sem timestamp = órfão
+        console.log("🔒 Clearing orphaned logout marker in sessionService");
+        sessionStorage.removeItem('logout_in_progress');
+      }
     }
     
     // Evitar chamadas múltiplas simultâneas
