@@ -1,5 +1,6 @@
 import { apiClient } from "@/lib/api";
-import { FoodItem, CreateFoodPayload, UpdateFoodPayload } from "@/lib/types";
+import { FoodItem, CreateFoodPayload, UpdateFoodPayload, BasicFoodPayload } from "@/lib/types";
+import { nutritionAIService } from "./nutritionAIService";
 
 export const foodService = {
   // Get all food items for the current user

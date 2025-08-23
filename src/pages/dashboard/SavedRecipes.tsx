@@ -84,7 +84,7 @@ const SavedRecipes = ({ onViewRecipe }: SavedRecipesProps) => {
       </div>
 
       {/* Recipes Grid */}
-      <ScrollArea className="h-[600px]">
+      <ScrollArea className="h-[600px] scrollbar-accent">
         {filteredRecipes.length === 0 ? (
           <Card>
             <CardContent className="pt-6">
