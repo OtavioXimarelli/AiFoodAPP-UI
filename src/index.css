@@ -219,18 +219,34 @@ All colors MUST be HSL.
 
   /* Hide scrollbar but keep functionality */
   .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
 
   .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+    display: none; /* Chrome, Safari, Opera */
   }
 
-  /* Firefox scrollbar styling */
+  /* Firefox scrollbar styling with fallbacks */
   * {
+    /* Modern browsers */
     scrollbar-width: thin;
     scrollbar-color: hsl(var(--muted-foreground) / 0.3) hsl(var(--background));
+  }
+  
+  /* Fallback for older Firefox versions */
+  @supports not (scrollbar-width: thin) {
+    /* Use webkit scrollbar styles as fallback for browsers that don't support scrollbar-width */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: hsl(var(--muted-foreground) / 0.3);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: hsl(var(--background));
+    }
   }
 
   /* Enhanced scrollbar for dark theme */
@@ -602,7 +618,13 @@ All colors MUST be HSL.
   /* Smooth scrolling for mobile */
   .scroll-smooth {
     scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Legacy iOS smooth scrolling support */
+  @supports (-webkit-overflow-scrolling: touch) {
+    .scroll-smooth {
+      -webkit-overflow-scrolling: touch;
+    }
   }
 
   /* Reduced motion support */
