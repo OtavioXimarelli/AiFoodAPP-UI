@@ -54,6 +54,44 @@ export const useAuth = () => {
   };
 
   const checkAuthentication = async () => {
+    // Verificar e limpar marcadores de logout antigos/órfãos
+    const logoutInProgress = sessionStorage.getItem('logout_in_progress') === 'true';
+    const logoutTimestamp = sessionStorage.getItem('logout_timestamp');
+    
+    // Se há timestamp de logout, verificar se é muito antigo (>30 segundos) e limpar
+    if (logoutTimestamp) {
+      const timeSinceLogout = Date.now() - parseInt(logoutTimestamp);
+      
+      if (timeSinceLogout > 30000) {
+        // Logout muito antigo, limpar marcadores órfãos
+        console.log('🔑 Clearing old logout markers (>30s ago)');
+        sessionStorage.removeItem('logout_in_progress');
+        sessionStorage.removeItem('logout_timestamp');
+      } else if (timeSinceLogout < 5000) {
+        // Logout recente, ainda bloquear
+        console.log('🔑 Recent logout detected, preventing automatic reauthentication');
+        return;
+      }
+    }
+    
+    // Verificar logout em progresso apenas se não for órfão
+    if (logoutInProgress && logoutTimestamp) {
+      const timeSinceLogout = Date.now() - parseInt(logoutTimestamp);
+      if (timeSinceLogout < 10000) { // Só bloquear por 10 segundos max
+        console.log('🔑 Logout in progress, skipping auth check');
+        return;
+      } else {
+        // Logout marker órfão, limpar
+        console.log('🔑 Clearing orphaned logout marker');
+        sessionStorage.removeItem('logout_in_progress');
+        sessionStorage.removeItem('logout_timestamp');
+      }
+    } else if (logoutInProgress && !logoutTimestamp) {
+      // Logout marker sem timestamp = órfão, limpar
+      console.log('🔑 Clearing logout marker without timestamp');
+      sessionStorage.removeItem('logout_in_progress');
+    }
+    
     // Check if we're on an OAuth2 callback page
     const isOAuth2Callback = window.location.pathname.includes('/oauth2/callback') || 
                             window.location.pathname.includes('/login/oauth2/code/');
@@ -177,6 +215,7 @@ export const useAuth = () => {
       
       // Primeiro: marcar que estamos fazendo logout para evitar reautenticação
       sessionStorage.setItem('logout_in_progress', 'true');
+      sessionStorage.setItem('logout_timestamp', Date.now().toString());
       
       // Limpar TODOS os dados locais de autenticação
       localStorage.removeItem('is_authenticated');
@@ -203,16 +242,52 @@ export const useAuth = () => {
         document.cookie.split(";").forEach(function(c) { 
           document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
         });
+        
+        // Limpar cookies específicos do OAuth2/Spring Security
+        const cookiesToClear = [
+          'JSESSIONID',
+          'remember-me', 
+          'XSRF-TOKEN',
+          'SESSION',
+          'SPRING_SECURITY_REMEMBER_ME_COOKIE'
+        ];
+        
+        cookiesToClear.forEach(cookieName => {
+          // Para diferentes domínios e paths
+          const domains = [window.location.hostname, `.${window.location.hostname}`, 'localhost', '.localhost'];
+          const paths = ['/', '/api', '/oauth2'];
+          
+          domains.forEach(domain => {
+            paths.forEach(path => {
+              document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${path}; domain=${domain}; secure; samesite=strict`;
+              document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${path}; domain=${domain}`;
+              document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${path}`;
+            });
+          });
+        });
       } catch (e) {
         console.warn('🔑 Could not clear cookies:', e);
       }
       
-      // Remover o marcador de logout em progresso
-      sessionStorage.removeItem('logout_in_progress');
+      // Aguardar um pouco para garantir que o logout foi processado
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Remover o marcador de logout em progresso após um delay
+      setTimeout(() => {
+        sessionStorage.removeItem('logout_in_progress');
+        sessionStorage.removeItem('logout_timestamp');
+      }, 2000);
       
       // Redirecionar para a página inicial e forçar reload completo
       console.log('🔑 Redirecting to home page...');
+      
+      // Usar replace para evitar que o usuário volte para a página autenticada
       window.location.replace('/');
+      
+      // Forçar reload da página após um delay para garantir limpeza completa
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
     }
   };
 

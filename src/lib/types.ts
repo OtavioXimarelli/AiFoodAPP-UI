@@ -31,6 +31,15 @@ export interface CreateFoodPayload {
   name: string;
   quantity: number;
   expiration: string;
+  calories: number;
+  protein: number;
+  fat: number;
+  carbohydrates: number;
+  fiber: number;
+  sugar: number;
+  sodium: number;
+  foodGroup: FoodGroup;
+  tags: string; // Comma-separated values
 }
 
 export interface UpdateFoodPayload {
@@ -113,6 +122,42 @@ export const validateFoodItem = (item: Partial<CreateFoodPayload>) => {
     if (expirationDate < new Date()) {
       errors.expiration = 'Expiration date must be in the future';
     }
+  }
+
+  if (item.calories === undefined || item.calories < 0) {
+    errors.calories = 'Calories must be zero or positive';
+  }
+
+  if (item.protein === undefined || item.protein < 0) {
+    errors.protein = 'Protein must be zero or positive';
+  }
+
+  if (item.fat === undefined || item.fat < 0) {
+    errors.fat = 'Fat must be zero or positive';
+  }
+
+  if (item.carbohydrates === undefined || item.carbohydrates < 0) {
+    errors.carbohydrates = 'Carbohydrates must be zero or positive';
+  }
+
+  if (item.fiber === undefined || item.fiber < 0) {
+    errors.fiber = 'Fiber must be zero or positive';
+  }
+
+  if (item.sugar === undefined || item.sugar < 0) {
+    errors.sugar = 'Sugar must be zero or positive';
+  }
+
+  if (item.sodium === undefined || item.sodium < 0) {
+    errors.sodium = 'Sodium must be zero or positive';
+  }
+
+  if (!item.foodGroup) {
+    errors.foodGroup = 'Food group is required';
+  }
+
+  if (!item.tags?.trim()) {
+    errors.tags = 'Tags are required';
   }
   
   return {

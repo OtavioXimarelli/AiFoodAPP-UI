@@ -566,7 +566,13 @@ export class ApiClient {
   async logout() {
     try {
       console.log('🔑 Calling server logout endpoint...');
-      await api.post(ensureApiPath('/auth/logout'));
+      
+      // Fazer logout no servidor
+      await api.post(ensureApiPath('/auth/logout'), {}, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
       console.log('🔑 Server logout completed');
       
       // Limpar cache de status de autenticação
@@ -576,9 +582,32 @@ export class ApiClient {
         pending: null
       };
       
+      // Tentar limpar cookies específicos do Spring Security
+      const cookiesToClear = [
+        'JSESSIONID',
+        'remember-me',
+        'XSRF-TOKEN',
+        'SESSION'
+      ];
+      
+      cookiesToClear.forEach(cookieName => {
+        // Limpar para o domínio atual
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+        // Limpar para subdomínios
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${window.location.hostname};`;
+        // Limpar sem domínio
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      });
+      
     } catch (error) {
       console.error('🔑 Error during server logout:', error);
-      // Não falhar o logout por erro do servidor
+      
+      // Mesmo com erro, limpar cache local
+      this.#authStatusCache = {
+        data: null,
+        timestamp: 0,
+        pending: null
+      };
     }
   }
 
