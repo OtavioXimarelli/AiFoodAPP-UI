@@ -3,7 +3,8 @@ import { Link, Outlet } from "react-router-dom";
 import { 
   LogOut, 
   User, 
-  ChefHat
+  ChefHat,
+  Info
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -12,6 +13,7 @@ import { cn } from "@/lib/utils";
 import BottomNavigation from "./BottomNavigation";
 import DesktopSidebar from "./DesktopSidebar";
 import { ThemeToggle } from "./ThemeToggle";
+import AppStatusDialog from "./AppStatusDialog";
 
 interface DashboardLayoutProps {
   children?: ReactNode;
@@ -19,6 +21,7 @@ interface DashboardLayoutProps {
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [mounted, setMounted] = useState(false);
+  const [showAppStatus, setShowAppStatus] = useState(false);
   const { user, logout } = useAuth();
 
   useEffect(() => {
@@ -58,6 +61,15 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             
             {/* Right side - Theme toggle, User info and logout */}
             <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowAppStatus(true)}
+                className="p-2 hover:bg-primary/10 hover:text-primary transition-all duration-200"
+                title="Status do App"
+              >
+                <Info className="h-4 w-4" />
+              </Button>
               <ThemeToggle />
               {user && (
                 <Avatar className="h-8 w-8 ring-2 ring-primary/20 transition-all duration-200 hover:ring-primary/40 hover:scale-105 cursor-pointer">
@@ -88,6 +100,15 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       )}>
         <div className="px-6 py-4">
           <div className="flex items-center justify-end gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowAppStatus(true)}
+              className="gap-2 hover:bg-primary/10 hover:text-primary transition-all duration-200"
+            >
+              <Info className="h-4 w-4" />
+              Status
+            </Button>
             <ThemeToggle />
             {user && (
               <div className="flex items-center gap-3">
@@ -129,6 +150,13 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <div className="lg:hidden">
         <BottomNavigation />
       </div>
+
+      {/* App Status Dialog */}
+      <AppStatusDialog 
+        open={showAppStatus}
+        onOpenChange={setShowAppStatus}
+        userName={user?.name}
+      />
     </div>
   );
 };

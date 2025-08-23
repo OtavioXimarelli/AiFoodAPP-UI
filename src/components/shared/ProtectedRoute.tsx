@@ -18,11 +18,26 @@ const ProtectedRoute = () => {
       try {
         console.log("🛡️ ProtectedRoute: Performing initial authentication check");
         
-        // Verificar se estamos em processo de logout
-        if (sessionStorage.getItem('logout_in_progress') === 'true') {
-          console.log("🛡️ ProtectedRoute: Logout in progress, skipping auth check");
-          setIsCheckingAuth(false);
-          return;
+        // Verificar e limpar marcadores de logout órfãos
+        const logoutInProgress = sessionStorage.getItem('logout_in_progress') === 'true';
+        const logoutTimestamp = sessionStorage.getItem('logout_timestamp');
+        
+        if (logoutInProgress) {
+          if (logoutTimestamp) {
+            const timeSinceLogout = Date.now() - parseInt(logoutTimestamp);
+            if (timeSinceLogout > 30000) {
+              console.log("🛡️ ProtectedRoute: Clearing old logout markers");
+              sessionStorage.removeItem('logout_in_progress');
+              sessionStorage.removeItem('logout_timestamp');
+            } else {
+              console.log("🛡️ ProtectedRoute: Logout in progress, skipping auth check");
+              setIsCheckingAuth(false);
+              return;
+            }
+          } else {
+            console.log("🛡️ ProtectedRoute: Clearing orphaned logout marker");
+            sessionStorage.removeItem('logout_in_progress');
+          }
         }
         
         // First check if the user is marked as authenticated locally

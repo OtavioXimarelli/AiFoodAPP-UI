@@ -1,17 +1,21 @@
 import { Link, NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { 
   Home, 
   Package, 
   ChefHat, 
   TrendingUp,
-  Save
+  Save,
+  Info
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import AppStatusDialog from "./AppStatusDialog";
 
 const DesktopSidebar = () => {
   const { user } = useAuth();
+  const [showAppStatus, setShowAppStatus] = useState(false);
   const isAdmin = user?.role === 'ADMIN' || user?.role === 'admin';
 
   const baseNavItems = [
@@ -150,8 +154,19 @@ const DesktopSidebar = () => {
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.8, duration: 0.5 }}
-        className="p-4 border-t border-border/50 bg-gradient-card"
+        className="p-4 border-t border-border/50 bg-gradient-card space-y-3"
       >
+        {/* App Status Button */}
+        <motion.button
+          onClick={() => setShowAppStatus(true)}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary/90 transition-all duration-200 border border-primary/20 hover:border-primary/30"
+        >
+          <Info className="h-4 w-4" />
+          <span>Status do App</span>
+        </motion.button>
+        
         <motion.p 
           className="text-xs text-muted-foreground text-center font-medium"
           whileHover={{ scale: 1.05, color: "hsl(var(--foreground))" }}
@@ -160,6 +175,13 @@ const DesktopSidebar = () => {
           AI Food App v1.0
         </motion.p>
       </motion.div>
+
+      {/* App Status Dialog */}
+      <AppStatusDialog 
+        open={showAppStatus}
+        onOpenChange={setShowAppStatus}
+        userName={user?.name}
+      />
     </motion.aside>
   );
 };

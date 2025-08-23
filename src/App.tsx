@@ -13,6 +13,7 @@ import OAuth2Callback from "./pages/OAuth2Callback";
 import DashboardLayout from "./components/shared/DashboardLayout";
 import ProtectedRoute from "./components/shared/ProtectedRoute";
 import FoodInventory from "./pages/dashboard/FoodInventory";
+import './utils/logoutDebug'; // Import debug utilities
 import RecipeGenerator from "./pages/dashboard/RecipeGenerator";
 import DashboardHome from "./pages/dashboard/DashboardHome";
 import NutritionInsights from "./pages/dashboard/NutritionInsights";
@@ -34,6 +35,21 @@ const App = () => {
     
     const initApp = async () => {
       try {
+        // Limpar marcadores de logout órfãos no início da aplicação
+        const logoutTimestamp = sessionStorage.getItem('logout_timestamp');
+        if (logoutTimestamp) {
+          const timeSinceLogout = Date.now() - parseInt(logoutTimestamp);
+          if (timeSinceLogout > 30000) {
+            console.log("🚀 App: Clearing old logout markers on startup");
+            sessionStorage.removeItem('logout_in_progress');
+            sessionStorage.removeItem('logout_timestamp');
+          }
+        } else if (sessionStorage.getItem('logout_in_progress') === 'true') {
+          // Logout marker sem timestamp = órfão
+          console.log("🚀 App: Clearing orphaned logout marker on startup");
+          sessionStorage.removeItem('logout_in_progress');
+        }
+        
         if (!shouldInitSession) {
           console.log("🚀 App: Skipping session initialization on login/callback page");
           return;
