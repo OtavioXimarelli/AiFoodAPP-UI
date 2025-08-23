@@ -40,3 +40,9 @@ OAUTH2_PERMISSION_FIX.md
 nginx.conf
 nginx.conf
 nginx.conf
+BACKEND_TABLE_NAME_FIX.md
+.gitignore
+LOGIN_PRODUCTION_FIX.md
+.gitignore
+FOOD_JSON_UPDATE.md
+LOGOUT_FIX_SUMMARY.md
