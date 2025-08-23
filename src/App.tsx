@@ -1,26 +1,54 @@
-import { useEffect } from "react";
+import { useEffect, Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import OAuth2Callback from "./pages/OAuth2Callback";
-import DashboardLayout from "./components/shared/DashboardLayout";
-import ProtectedRoute from "./components/shared/ProtectedRoute";
-import FoodInventory from "./pages/dashboard/FoodInventory";
-import './utils/logoutDebug'; // Import debug utilities
-import RecipeGenerator from "./pages/dashboard/RecipeGenerator";
-import DashboardHome from "./pages/dashboard/DashboardHome";
-import NutritionInsights from "./pages/dashboard/NutritionInsights";
-import SavedData from "./pages/dashboard/SavedData";
 import { sessionService } from "./services/sessionService";
+import { LoadingAnimation } from "@/components/ui/animated";
+import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
+import './utils/logoutDebug'; // Import debug utilities
 
-const queryClient = new QueryClient();
+// Lazy load pages for better performance
+const Index = lazy(() => import("./pages/Index"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const OAuth2Callback = lazy(() => import("./pages/OAuth2Callback"));
+const DashboardLayout = lazy(() => import("./components/shared/DashboardLayout"));
+const ProtectedRoute = lazy(() => import("./components/shared/ProtectedRoute"));
+const FoodInventory = lazy(() => import("./pages/dashboard/FoodInventory"));
+const RecipeGenerator = lazy(() => import("./pages/dashboard/RecipeGenerator"));
+const DashboardHome = lazy(() => import("./pages/dashboard/DashboardHome"));
+const NutritionInsights = lazy(() => import("./pages/dashboard/NutritionInsights"));
+const SavedData = lazy(() => import("./pages/dashboard/SavedData"));
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 10 * 60 * 1000, // 10 minutes
+      retry: (failureCount, error) => {
+        // Don't retry on 4xx errors
+        if ((error as any)?.response?.status >= 400 && (error as any)?.response?.status < 500) {
+          return false;
+        }
+        return failureCount < 3;
+      },
+    },
+  },
+});
+
+// Loading fallback component
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="text-center">
+      <LoadingAnimation size="lg" />
+      <p className="mt-4 text-muted-foreground">Carregando...</p>
+    </div>
+  </div>
+);
 
 const App = () => {
   // Initialize session service
@@ -122,23 +150,27 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/oauth2/callback" element={<OAuth2Callback />} />
-              <Route path="/login/oauth2/code/google" element={<OAuth2Callback />} />
-              <Route element={<ProtectedRoute />}>
-                <Route path="/dashboard" element={<DashboardLayout />}>
-                  <Route index element={<DashboardHome />} />
-                  <Route path="food" element={<FoodInventory />} />
-                  <Route path="recipes" element={<RecipeGenerator />} />
-                  <Route path="insights" element={<NutritionInsights />} />
-                  <Route path="saved" element={<SavedData />} />
-                </Route>
-              </Route>
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <ErrorBoundary>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/oauth2/callback" element={<OAuth2Callback />} />
+                  <Route path="/login/oauth2/code/google" element={<OAuth2Callback />} />
+                  <Route element={<ProtectedRoute />}>
+                    <Route path="/dashboard" element={<DashboardLayout />}>
+                      <Route index element={<DashboardHome />} />
+                      <Route path="food" element={<FoodInventory />} />
+                      <Route path="recipes" element={<RecipeGenerator />} />
+                      <Route path="insights" element={<NutritionInsights />} />
+                      <Route path="saved" element={<SavedData />} />
+                    </Route>
+                  </Route>
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+            </ErrorBoundary>
           </BrowserRouter>
         </TooltipProvider>
       </ThemeProvider>
