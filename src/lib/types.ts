@@ -42,6 +42,12 @@ export interface CreateFoodPayload {
   tags: string; // Comma-separated values
 }
 
+export interface BasicFoodPayload {
+  name: string;
+  quantity: number;
+  expiration: string;
+}
+
 export interface UpdateFoodPayload {
   id: number;
   name: string;

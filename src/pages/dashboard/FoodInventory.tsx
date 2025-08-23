@@ -223,7 +223,7 @@ const FoodInventory = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/80 to-background/60 pb-20 lg:pb-0">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/80 to-background/60 pb-20 lg:pb-0 scrollbar-default">
       {/* Header */}
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-xl border-b border-border/30 p-4 shadow-lg shadow-black/5">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -238,7 +238,7 @@ const FoodInventory = () => {
                 Adicionar Alimento
               </Button>
             </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-background/95 backdrop-blur-xl border border-border/20 shadow-2xl">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto custom-scrollbar bg-background/95 backdrop-blur-xl border border-border/20 shadow-2xl">
             <DialogHeader className="space-y-4 pb-6 border-b border-border/10">
               <DialogTitle className="flex items-center gap-3 text-xl">
                 <div className="p-2 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent rounded-xl border border-primary/20 shadow-sm">

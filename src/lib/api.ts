@@ -674,6 +674,13 @@ export class ApiClient {
     await api.delete(ensureApiPath(`/api/foods/${id}`));
   }
 
+  // Nutrition AI analysis endpoint
+  async analyzeFoodNutrition(request: { name: string; quantity?: number }) {
+    console.log('🤖 Analyzing food nutrition with AI:', request);
+    const response = await api.post(ensureApiPath('/api/nutrition/analyze'), request);
+    return response.data;
+  }
+
   // Recipe endpoints
   async generateRecipes() {
     const response = await api.get(ensureApiPath('/api/recipes/gen'));

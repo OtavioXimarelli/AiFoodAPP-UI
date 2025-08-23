@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
+import CustomScrollbar from "@/components/ui/custom-scrollbar";
 import { useLocalRecipes } from "@/hooks/useLocalRecipes";
 import { useLocalNutritionAnalysis } from "@/hooks/useLocalNutritionAnalysis";
 import { useAppCache } from "@/hooks/useAppCache";
@@ -305,8 +306,13 @@ const SavedDataPage = () => {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredRecipes.map((recipe) => (
+            <CustomScrollbar 
+              height="600px" 
+              variant="default"
+              className="border rounded-lg p-4"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredRecipes.map((recipe) => (
                 <Card key={recipe.id} className="hover:shadow-lg transition-shadow">
                   <CardHeader>
                     <div className="flex items-start justify-between">
@@ -362,7 +368,8 @@ const SavedDataPage = () => {
                   </CardContent>
                 </Card>
               ))}
-            </div>
+              </div>
+            </CustomScrollbar>
           )}
         </TabsContent>
 
@@ -377,8 +384,13 @@ const SavedDataPage = () => {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredAnalyses.map((analysis) => (
+            <CustomScrollbar 
+              height="600px" 
+              variant="thin"
+              className="border rounded-lg p-4"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {filteredAnalyses.map((analysis) => (
                 <Card key={analysis.id} className="hover:shadow-lg transition-shadow">
                   <CardHeader>
                     <div className="flex items-start justify-between">
@@ -434,7 +446,8 @@ const SavedDataPage = () => {
                   </CardContent>
                 </Card>
               ))}
-            </div>
+              </div>
+            </CustomScrollbar>
           )}
         </TabsContent>
       </Tabs>

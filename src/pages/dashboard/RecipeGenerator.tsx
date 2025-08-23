@@ -174,7 +174,7 @@ const RecipeGenerator = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <ScrollArea className="h-24">
+                      <ScrollArea className="h-24 scrollbar-primary">
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                           {foodItems.map((item) => (
                             <Badge key={item.id} variant="outline" className="justify-center py-2 px-3 bg-background/50">
