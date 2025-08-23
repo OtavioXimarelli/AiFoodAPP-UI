@@ -23,6 +23,7 @@ const RecipeGenerator = lazy(() => import("./pages/dashboard/RecipeGenerator"));
 const DashboardHome = lazy(() => import("./pages/dashboard/DashboardHome"));
 const NutritionInsights = lazy(() => import("./pages/dashboard/NutritionInsights"));
 const SavedData = lazy(() => import("./pages/dashboard/SavedData"));
+const ScrollbarDemo = lazy(() => import("./components/ScrollbarDemo"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -158,6 +159,7 @@ const App = () => {
                   <Route path="/register" element={<Register />} />
                   <Route path="/oauth2/callback" element={<OAuth2Callback />} />
                   <Route path="/login/oauth2/code/google" element={<OAuth2Callback />} />
+                  <Route path="/demo/scrollbar" element={<ScrollbarDemo />} />
                   <Route element={<ProtectedRoute />}>
                     <Route path="/dashboard" element={<DashboardLayout />}>
                       <Route index element={<DashboardHome />} />

@@ -137,7 +137,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       </header>
 
       {/* Main content */}
-      <main className="flex-1 min-h-screen pb-20 lg:pb-6 lg:pl-64 lg:pt-20">
+      <main className="flex-1 min-h-screen pb-20 lg:pb-6 lg:pl-64 lg:pt-20 scrollbar-default">
         <div className={cn(
           "container mx-auto px-4 py-4 md:py-6 lg:px-6",
           mounted && "animate-fade-in"

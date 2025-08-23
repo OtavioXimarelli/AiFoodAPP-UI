@@ -74,7 +74,7 @@ const RecipeDetailModal = ({ open, onOpenChange, recipe }: RecipeDetailModalProp
           </div>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(95vh-180px)] px-1">
+        <ScrollArea className="max-h-[calc(95vh-180px)] px-1 scrollbar-success">
           <div className="space-y-8 p-1">
             {/* Recipe Overview Card */}
             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/5 via-secondary/5 to-background border border-border/30 shadow-lg">
