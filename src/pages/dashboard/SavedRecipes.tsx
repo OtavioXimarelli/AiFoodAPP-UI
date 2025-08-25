@@ -7,6 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useLocalRecipes } from '@/hooks/useLocalRecipes';
 import { useToast } from '@/hooks/use-toast';
 import { Recipe } from '@/lib/types';
+import { EnhancedClickSpark } from '@/components/ui/enhanced-click-spark';
 import {
   Search,
   Clock,
@@ -105,30 +106,31 @@ const SavedRecipes = ({ onViewRecipe }: SavedRecipesProps) => {
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {filteredRecipes.map((recipe) => (
-              <Card key={recipe.id} className="hover:shadow-md transition-shadow duration-200">
-                <CardHeader className="pb-3">
-                  <div className="flex justify-between items-start">
-                    <CardTitle className="text-lg line-clamp-2">{recipe.name}</CardTitle>
-                    <div className="flex gap-1 ml-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onViewRecipe(recipe)}
-                        className="h-8 w-8 p-0"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteRecipe(recipe.id!)}
-                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+              <EnhancedClickSpark key={recipe.id} sparkColor="hsl(var(--primary))" sparkCount={6}>
+                <Card className="hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                  <CardHeader className="pb-3">
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-lg line-clamp-2">{recipe.name}</CardTitle>
+                      <div className="flex gap-1 ml-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => onViewRecipe(recipe)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteRecipe(recipe.id!)}
+                          className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                </CardHeader>
+                  </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-sm text-muted-foreground line-clamp-2">
                     {recipe.description}
@@ -181,6 +183,7 @@ const SavedRecipes = ({ onViewRecipe }: SavedRecipesProps) => {
                   )}
                 </CardContent>
               </Card>
+              </EnhancedClickSpark>
             ))}
           </div>
         )}

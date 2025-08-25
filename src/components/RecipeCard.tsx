@@ -6,8 +6,7 @@ import { useLocalRecipes } from "@/hooks/useLocalRecipes";
 import { Recipe } from "@/lib/types";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { ClickSpark } from "@/components/ui/click-spark";
-import { SpotlightCard } from "@/components/ui/spotlight-card";
+import { EnhancedClickSpark } from "@/components/ui/enhanced-click-spark";
 
 interface RecipeCardProps {
   recipe: Partial<Recipe> & {
@@ -94,13 +93,13 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
   };
 
   return (
-    <SpotlightCard className="h-full p-0 overflow-hidden">
-      <CardHeader>
-        <div className="flex justify-between items-start">
-          <CardTitle className="text-xl font-bold text-foreground line-clamp-2">
-            {recipe.title || "Receita sem nome"}
+    <EnhancedClickSpark sparkColor="hsl(var(--primary))" sparkCount={8}>
+      <Card className="h-full overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+        <CardHeader>
+          <div className="flex justify-between items-start">
+            <CardTitle className="text-xl font-bold text-foreground line-clamp-2">
+              {recipe.title || "Receita sem nome"}
           </CardTitle>
-          <ClickSpark count={4} color="hsl(var(--primary))">
             <Button 
               variant="ghost" 
               size="sm" 
@@ -118,7 +117,6 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
                 <BookmarkPlus className="h-4 w-4" />
               )}
             </Button>
-          </ClickSpark>
         </div>
         <p className="text-muted-foreground line-clamp-2">{recipe.description}</p>
       </CardHeader>
@@ -159,14 +157,13 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
             </p>
           </div>
 
-          <ClickSpark count={6} color="hsl(var(--primary))">
-            <Button className="w-full bg-primary hover:bg-primary-hover">
-              Ver Receita Completa
-            </Button>
-          </ClickSpark>
+          <Button className="w-full bg-primary hover:bg-primary-hover">
+            Ver Receita Completa
+          </Button>
         </div>
       </CardContent>
-    </SpotlightCard>
+    </Card>
+    </EnhancedClickSpark>
   );
 };
 

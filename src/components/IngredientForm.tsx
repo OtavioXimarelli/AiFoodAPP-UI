@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Plus, X, Apple, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { EnhancedClickSpark } from "@/components/ui/enhanced-click-spark";
 
 interface Ingredient {
   id: string;

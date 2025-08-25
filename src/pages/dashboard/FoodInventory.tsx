@@ -18,6 +18,7 @@ import toast from "react-hot-toast";
 import { format, isAfter, differenceInDays, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useEffect } from "react";
+import { EnhancedClickSpark } from "@/components/ui/enhanced-click-spark";
 
 const FoodInventory = () => {
   const { foodItems, loading, error, createFoodItem, updateFoodItem, deleteFoodItem, clearError } = useFoodItems();

@@ -27,6 +27,7 @@ import {
 import toast from "react-hot-toast";
 import NutritionAnalysisModal from "@/components/NutritionAnalysisModal";
 import RecipeHistory from "@/components/RecipeHistory";
+import { EnhancedClickSpark } from "@/components/ui/enhanced-click-spark";
 import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { format } from "date-fns";

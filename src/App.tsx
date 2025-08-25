@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
+import { ClickSparkProvider } from "@/components/ClickSparkProvider";
 import { sessionService } from "./services/sessionService";
 import { LoadingAnimation } from "@/components/ui/animated";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
@@ -23,7 +24,6 @@ const RecipeGenerator = lazy(() => import("./pages/dashboard/RecipeGenerator"));
 const DashboardHome = lazy(() => import("./pages/dashboard/DashboardHome"));
 const NutritionInsights = lazy(() => import("./pages/dashboard/NutritionInsights"));
 const SavedData = lazy(() => import("./pages/dashboard/SavedData"));
-const ScrollbarDemo = lazy(() => import("./components/ScrollbarDemo"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -147,7 +147,8 @@ const App = () => {
         enableSystem={false}
         disableTransitionOnChange={false}
       >
-        <TooltipProvider>
+        <ClickSparkProvider>
+          <TooltipProvider>
           <Toaster />
           <Sonner />
           <BrowserRouter>
@@ -159,7 +160,6 @@ const App = () => {
                   <Route path="/register" element={<Register />} />
                   <Route path="/oauth2/callback" element={<OAuth2Callback />} />
                   <Route path="/login/oauth2/code/google" element={<OAuth2Callback />} />
-                  <Route path="/demo/scrollbar" element={<ScrollbarDemo />} />
                   <Route element={<ProtectedRoute />}>
                     <Route path="/dashboard" element={<DashboardLayout />}>
                       <Route index element={<DashboardHome />} />
@@ -175,6 +175,7 @@ const App = () => {
             </ErrorBoundary>
           </BrowserRouter>
         </TooltipProvider>
+        </ClickSparkProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
