@@ -31,6 +31,7 @@ import {
   ScrollTriggeredSection,
   RippleButton 
 } from "@/components/ui/reactbits-components";
+import { FluidGlass, FluidGlassCard, AnimatedFluidGlass } from "@/components/ui/fluid-glass";
 
 const DashboardHome = () => {
   const { user } = useAuth();
@@ -162,48 +163,102 @@ const DashboardHome = () => {
         </SpringCard>
       </StaggeredList>
 
-      {/* Quick Actions */}
+      {/* Quick Actions with FluidGlass */}
       <ScrollTriggeredSection animation="slideLeft" className="space-y-4">
         <TextReveal className="text-xl font-semibold text-foreground">Ações Rápidas</TextReveal>
         <StaggeredList stagger={100} className="grid gap-4 md:grid-cols-3">
           {quickActions.map((action, index) => {
             const Icon = action.icon;
             return (
-              <ReactBitsCard 
+              <AnimatedFluidGlass 
                 key={action.title}
-                variant="magnetic"
-                className={cn(
-                  "transition-all duration-300 hover:shadow-lg cursor-pointer group border-transparent",
-                  action.bgColor
-                )}
+                variant="default"
+                intensity="medium"
+                className="cursor-pointer group"
               >
-                <NavLink to={action.to} className="block h-full">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center gap-3">
-                      <div className={cn(
-                        "p-2 rounded-lg bg-gradient-to-r transition-transform duration-300 group-hover:scale-110",
-                        action.color
-                      )}>
-                        <Icon className="h-5 w-5 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <CardTitle className="text-base font-semibold text-foreground group-hover:text-primary transition-colors">
-                          {action.title}
-                        </CardTitle>
-                      </div>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all duration-300" />
+                <NavLink to={action.to} className="block h-full p-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className={cn(
+                      "p-2 rounded-lg bg-gradient-to-r transition-transform duration-300 group-hover:scale-110",
+                      action.color
+                    )}>
+                      <Icon className="h-5 w-5 text-white" />
                     </div>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <p className="text-sm text-muted-foreground">
-                      {action.description}
-                    </p>
-                  </CardContent>
+                    <div className="flex-1">
+                      <h3 className="text-base font-semibold text-foreground group-hover:text-primary transition-colors">
+                        {action.title}
+                      </h3>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all duration-300" />
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {action.description}
+                  </p>
                 </NavLink>
-              </ReactBitsCard>
+              </AnimatedFluidGlass>
             );
           })}
         </StaggeredList>
+      </ScrollTriggeredSection>
+
+      {/* FluidGlass Showcase Section */}
+      <ScrollTriggeredSection animation="fadeUp" className="space-y-6">
+        <TextReveal className="text-xl font-semibold text-foreground">Componentes FluidGlass</TextReveal>
+        
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <FluidGlassCard 
+            title="Glass Sutil"
+            description="Efeito de vidro com baixa intensidade"
+            variant="subtle"
+            intensity="low"
+          >
+            <div className="flex items-center gap-2 mt-4">
+              <Activity className="h-4 w-4 text-primary" />
+              <span className="text-sm text-foreground">Componente ativo</span>
+            </div>
+          </FluidGlassCard>
+
+          <FluidGlassCard 
+            title="Glass Padrão"
+            description="Efeito de vidro com intensidade média"
+            variant="default"
+            intensity="medium"
+          >
+            <div className="flex items-center gap-2 mt-4">
+              <Star className="h-4 w-4 text-yellow-500" />
+              <span className="text-sm text-foreground">Recomendado</span>
+            </div>
+          </FluidGlassCard>
+
+          <FluidGlassCard 
+            title="Glass Forte"
+            description="Efeito de vidro com alta intensidade"
+            variant="strong"
+            intensity="high"
+          >
+            <div className="flex items-center gap-2 mt-4">
+              <Plus className="h-4 w-4 text-green-500" />
+              <span className="text-sm text-foreground">Premium</span>
+            </div>
+          </FluidGlassCard>
+        </div>
+
+        <FluidGlass variant="default" intensity="medium" className="p-8">
+          <div className="text-center space-y-4">
+            <h3 className="text-2xl font-bold text-foreground">FluidGlass Container</h3>
+            <p className="text-muted-foreground">
+              Este é um exemplo de container com efeito de vidro fluido. 
+              Perfeito para destacar conteúdo importante com um visual moderno e elegante.
+            </p>
+            <RippleButton 
+              variant="primary" 
+              className="mt-4"
+              onClick={() => console.log('FluidGlass button clicked!')}
+            >
+              Botão Interativo
+            </RippleButton>
+          </div>
+        </FluidGlass>
       </ScrollTriggeredSection>
     </ScrollTriggeredSection>
   );
