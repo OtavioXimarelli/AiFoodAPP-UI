@@ -644,34 +644,35 @@ export class ApiClient {
   }
 
 
-  // Food endpoints - corrigido para usar /api/foods
+  // Food endpoints - using unified /api/food-items as per ENDPOINTS_SUMMARY.md
   async getFoodItems() {
-    const response = await api.get(ensureApiPath('/api/foods'));
+    const response = await api.get(ensureApiPath('/api/food-items'));
     return response.data;
   }
 
   async getFoodItem(id: number) {
-    const response = await api.get(ensureApiPath(`/api/foods/${id}`));
+    const response = await api.get(ensureApiPath(`/api/food-items/${id}`));
     return response.data;
   }
 
   async createFoodItem(foodItem: any) {
-    console.log('🍕 Creating food item with data:', foodItem);
+    console.log('🍕 Creating food item with AI-enhanced data:', foodItem);
     console.log('🍕 Data keys:', Object.keys(foodItem));
     console.log('🍕 Request headers will include:', api.defaults.headers);
-    const response = await api.post(ensureApiPath('/api/foods/create'), foodItem);
+    // Use POST /api/food-items for AI-enhanced food creation
+    const response = await api.post(ensureApiPath('/api/food-items'), foodItem);
     return response.data;
   }
 
   async updateFoodItem(foodItem: any) {
     console.log('🔄 Updating food item with data:', foodItem);
     console.log('🔄 Data keys:', Object.keys(foodItem));
-    const response = await api.put(ensureApiPath(`/api/foods/${foodItem.id}`), foodItem);
+    const response = await api.put(ensureApiPath(`/api/food-items/${foodItem.id}`), foodItem);
     return response.data;
   }
 
   async deleteFoodItem(id: number) {
-    await api.delete(ensureApiPath(`/api/foods/${id}`));
+    await api.delete(ensureApiPath(`/api/food-items/${id}`));
   }
 
   // Nutrition AI analysis endpoint
@@ -681,12 +682,18 @@ export class ApiClient {
     return response.data;
   }
 
-  // Recipe endpoints
+  // Recipe endpoints - integrated with FoodController as per ENDPOINTS_SUMMARY.md
   async generateRecipes() {
     const response = await api.get(ensureApiPath('/api/recipes/gen'));
     return response.data;
   }
 
+  async getRecipe(id: number) {
+    const response = await api.get(ensureApiPath(`/api/recipes/${id}`));
+    return response.data;
+  }
+
+  // Legacy recipe analysis endpoint - kept for compatibility
   async analyzeRecipe(id: number) {
     const response = await api.get(ensureApiPath(`/api/recipes/analyze/${id}`));
     return response.data;

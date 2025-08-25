@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { foodService } from '@/services/foodService';
-import { FoodItem, CreateFoodPayload, UpdateFoodPayload } from '@/lib/types';
+import { FoodItem, BasicFoodPayload, CreateFoodPayload, UpdateFoodPayload } from '@/lib/types';
 import { useAuth } from './useAuth';
 
 export const useFoodItems = () => {
@@ -28,7 +28,8 @@ export const useFoodItems = () => {
     }
   };
 
-  const createFoodItem = async (payload: CreateFoodPayload): Promise<FoodItem> => {
+  // AI-enhanced food creation (minimal input)
+  const createFoodItem = async (payload: BasicFoodPayload): Promise<FoodItem> => {
     try {
       setError(null);
       const newItem = await foodService.createFoodItem(payload);
@@ -41,7 +42,7 @@ export const useFoodItems = () => {
     }
   };
 
-  const createMultipleFoodItems = async (payloads: CreateFoodPayload[]): Promise<FoodItem[]> => {
+  const createMultipleFoodItems = async (payloads: BasicFoodPayload[]): Promise<FoodItem[]> => {
     try {
       setError(null);
       const newItems = await Promise.all(

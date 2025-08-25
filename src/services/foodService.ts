@@ -42,12 +42,12 @@ export const foodService = {
     }
   },
 
-  // Create a new food item
-  async createFoodItem(payload: CreateFoodPayload): Promise<FoodItem> {
+  // Create a new food item with AI enhancement (minimal input approach)
+  async createFoodItem(payload: BasicFoodPayload): Promise<FoodItem> {
     try {
-      console.log("🥗 Creating food item:", payload);
+      console.log("🥗 Creating AI-enhanced food item:", payload);
       
-      // Verificar se o usuário está autenticado primeiro
+      // Check authentication first
       const authStatus = await apiClient.getAuthStatus();
       if (!authStatus.authenticated) {
         console.error("🥗 User not authenticated, cannot create food item");
@@ -55,7 +55,7 @@ export const foodService = {
       }
       
       const item = await apiClient.createFoodItem(payload);
-      console.log("🥗 Food item created:", item);
+      console.log("🥗 AI-enhanced food item created:", item);
       return item;
     } catch (error: any) {
       console.error("🥗 Failed to create food item:", error);

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useFoodItems } from "@/hooks/useFoodItems";
-import { FoodItem, CreateFoodPayload, UpdateFoodPayload, FoodGroup, FOOD_GROUP_LABELS, validateFoodItem } from "@/lib/types";
+import { FoodItem, BasicFoodPayload, UpdateFoodPayload, FoodGroup, FOOD_GROUP_LABELS, validateFoodItem } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,19 +29,11 @@ const FoodInventory = () => {
   const [editing, setEditing] = useState<FoodItem | null>(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
-  const [form, setForm] = useState<CreateFoodPayload>({
+  // Use simplified form for AI-enhanced food creation (per ENDPOINTS_SUMMARY.md)
+  const [form, setForm] = useState<BasicFoodPayload>({
     name: "",
     quantity: 1,
-    expiration: "",
-    calories: 0,
-    protein: 0,
-    fat: 0,
-    carbohydrates: 0,
-    fiber: 0,
-    sugar: 0,
-    sodium: 0,
-    foodGroup: FoodGroup.VEGETABLES, // default value
-    tags: ""
+    expiration: ""
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
@@ -55,6 +47,11 @@ const FoodInventory = () => {
       'bread': 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=300&fit=crop',
     };
     
+    // Safety check to prevent undefined/null errors
+    if (!name || typeof name !== 'string') {
+      return 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=300&fit=crop';
+    }
+    
     const lowerName = name.toLowerCase();
     for (const [food, image] of Object.entries(foodImages)) {
       if (lowerName.includes(food)) {
@@ -65,7 +62,28 @@ const FoodInventory = () => {
   };
 
   const getExpirationStatus = (expiration: string) => {
+    // Safety check for undefined/invalid expiration
+    if (!expiration || typeof expiration !== 'string') {
+      return { 
+        status: 'unknown', 
+        color: 'bg-gray-500', 
+        text: '❓ Sem data',
+        icon: '❓'
+      };
+    }
+
     const expirationDate = new Date(expiration);
+    
+    // Check if the date is valid
+    if (isNaN(expirationDate.getTime())) {
+      return { 
+        status: 'invalid', 
+        color: 'bg-gray-500', 
+        text: '❓ Data inválida',
+        icon: '❓'
+      };
+    }
+
     const today = new Date();
     const daysUntilExpiration = differenceInDays(expirationDate, today);
 
@@ -97,16 +115,7 @@ const FoodInventory = () => {
     setForm({
       name: "",
       quantity: 1,
-      expiration: "",
-      calories: 0,
-      protein: 0,
-      fat: 0,
-      carbohydrates: 0,
-      fiber: 0,
-      sugar: 0,
-      sodium: 0,
-      foodGroup: FoodGroup.VEGETABLES,
-      tags: ""
+      expiration: ""
     });
     setFormErrors({});
     setEditing(null);
@@ -127,19 +136,11 @@ const FoodInventory = () => {
 
   const handleEdit = (item: FoodItem) => {
     setEditing(item);
+    // Only populate basic fields for editing (AI enhancement not needed for updates)
     setForm({
-      name: item.name,
-      quantity: item.quantity,
-      expiration: item.expiration,
-      calories: item.calories || 0,
-      protein: item.protein || 0,
-      fat: item.fat || 0,
-      carbohydrates: item.carbohydrates || 0,
-      fiber: item.fiber || 0,
-      sugar: item.sugar || 0,
-      sodium: item.sodium || 0,
-      foodGroup: item.foodGroup,
-      tags: item.tags || ""
+      name: item.name || '',
+      quantity: item.quantity || 1,
+      expiration: item.expiration || ''
     });
     setOpen(true);
   };
@@ -147,17 +148,21 @@ const FoodInventory = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate form
-    const validation = validateFoodItem(form);
-    if (!validation.isValid) {
-      setFormErrors(validation.errors);
+    // Basic validation for minimal fields
+    const errors: Record<string, string> = {};
+    if (!form.name.trim()) errors.name = "Nome é obrigatório";
+    if (form.quantity <= 0) errors.quantity = "Quantidade deve ser maior que 0";
+    if (!form.expiration) errors.expiration = "Data de validade é obrigatória";
+    
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
       return;
     }
 
     try {
       if (editing) {
-        // Para atualização, enviamos todos os campos
-        const updatePayload = {
+        // For updates, send the basic fields
+        const updatePayload: UpdateFoodPayload = {
           id: editing.id!,
           name: form.name,
           quantity: form.quantity,
@@ -166,23 +171,17 @@ const FoodInventory = () => {
         await updateFoodItem(updatePayload);
         toast.success("Alimento atualizado com sucesso!");
       } else {
-        // Para criação, enviamos todos os campos conforme esperado pela API
-        const createPayload: CreateFoodPayload = {
+        // For creation, use AI-enhanced approach (minimal input)
+        // Backend will automatically add nutrition facts via AI
+        const createPayload: BasicFoodPayload = {
           name: form.name,
           quantity: form.quantity,
-          expiration: form.expiration,
-          calories: form.calories,
-          protein: form.protein,
-          fat: form.fat,
-          carbohydrates: form.carbohydrates,
-          fiber: form.fiber,
-          sugar: form.sugar,
-          sodium: form.sodium,
-          foodGroup: form.foodGroup,
-          tags: form.tags
+          expiration: form.expiration
         };
+        
+        toast.success("Criando alimento com IA... ⚡");
         await createFoodItem(createPayload);
-        toast.success("Alimento criado com sucesso!");
+        toast.success("Alimento criado com informações nutricionais da IA! 🤖");
       }
       setOpen(false);
       resetForm();
@@ -347,7 +346,7 @@ const FoodInventory = () => {
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4 text-orange-600" />
-                          {form.expiration ? (
+                          {form.expiration && !isNaN(new Date(form.expiration).getTime()) ? (
                             format(new Date(form.expiration), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
                           ) : (
                             <span>Selecione a data de validade</span>
@@ -369,7 +368,7 @@ const FoodInventory = () => {
                         <div className="p-3">
                           <Calendar
                             mode="single"
-                            selected={form.expiration ? new Date(form.expiration) : undefined}
+                            selected={form.expiration && !isNaN(new Date(form.expiration).getTime()) ? new Date(form.expiration) : undefined}
                             onSelect={(date) => {
                               if (date) {
                                 setForm({ ...form, expiration: date.toISOString().split('T')[0] });
@@ -444,228 +443,70 @@ const FoodInventory = () => {
                 </div>
               </div>
 
-              {/* Seção de Informações Nutricionais (Opcional) */}
+              {/* AI Enhancement Information */}
               <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-1 bg-blue-500/10 rounded-md">
-                    <svg className="h-4 w-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M3 3h18v18H3z"/>
-                      <path d="M9 9h6v6H9z"/>
-                    </svg>
-                  </div>
-                  <Label className="text-sm font-medium text-foreground">
-                    Informações Nutricionais (por 100g/ml)
-                  </Label>
-                </div>
-                
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 bg-muted/20 rounded-lg border border-border/30">
-                  <div className="space-y-2">
-                    <Label htmlFor="calories" className="text-xs font-medium text-foreground flex items-center gap-1">
-                      🔥 Calorias (kcal)
-                    </Label>
-                    <Input
-                      id="calories"
-                      type="number"
-                      min="0"
-                      step="0.1"
-                      value={form.calories}
-                      onChange={(e) => setForm({ ...form, calories: parseFloat(e.target.value) || 0 })}
-                      className="h-9"
-                      placeholder="0"
-                    />
-                    {formErrors.calories && (
-                      <p className="text-xs text-red-500">{formErrors.calories}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="protein" className="text-xs font-medium text-foreground flex items-center gap-1">
-                      💪 Proteínas (g)
-                    </Label>
-                    <Input
-                      id="protein"
-                      type="number"
-                      min="0"
-                      step="0.1"
-                      value={form.protein}
-                      onChange={(e) => setForm({ ...form, protein: parseFloat(e.target.value) || 0 })}
-                      className="h-9"
-                      placeholder="0"
-                    />
-                    {formErrors.protein && (
-                      <p className="text-xs text-red-500">{formErrors.protein}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="fat" className="text-xs font-medium text-foreground flex items-center gap-1">
-                      🥑 Gorduras (g)
-                    </Label>
-                    <Input
-                      id="fat"
-                      type="number"
-                      min="0"
-                      step="0.1"
-                      value={form.fat}
-                      onChange={(e) => setForm({ ...form, fat: parseFloat(e.target.value) || 0 })}
-                      className="h-9"
-                      placeholder="0"
-                    />
-                    {formErrors.fat && (
-                      <p className="text-xs text-red-500">{formErrors.fat}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="carbohydrates" className="text-xs font-medium text-foreground flex items-center gap-1">
-                      🌾 Carboidratos (g)
-                    </Label>
-                    <Input
-                      id="carbohydrates"
-                      type="number"
-                      min="0"
-                      step="0.1"
-                      value={form.carbohydrates}
-                      onChange={(e) => setForm({ ...form, carbohydrates: parseFloat(e.target.value) || 0 })}
-                      className="h-9"
-                      placeholder="0"
-                    />
-                    {formErrors.carbohydrates && (
-                      <p className="text-xs text-red-500">{formErrors.carbohydrates}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="fiber" className="text-xs font-medium text-foreground flex items-center gap-1">
-                      🌿 Fibras (g)
-                    </Label>
-                    <Input
-                      id="fiber"
-                      type="number"
-                      min="0"
-                      step="0.1"
-                      value={form.fiber}
-                      onChange={(e) => setForm({ ...form, fiber: parseFloat(e.target.value) || 0 })}
-                      className="h-9"
-                      placeholder="0"
-                    />
-                    {formErrors.fiber && (
-                      <p className="text-xs text-red-500">{formErrors.fiber}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="sugar" className="text-xs font-medium text-foreground flex items-center gap-1">
-                      🍯 Açúcares (g)
-                    </Label>
-                    <Input
-                      id="sugar"
-                      type="number"
-                      min="0"
-                      step="0.1"
-                      value={form.sugar}
-                      onChange={(e) => setForm({ ...form, sugar: parseFloat(e.target.value) || 0 })}
-                      className="h-9"
-                      placeholder="0"
-                    />
-                    {formErrors.sugar && (
-                      <p className="text-xs text-red-500">{formErrors.sugar}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="sodium" className="text-xs font-medium text-foreground flex items-center gap-1">
-                      🧂 Sódio (g)
-                    </Label>
-                    <Input
-                      id="sodium"
-                      type="number"
-                      min="0"
-                      step="0.001"
-                      value={form.sodium}
-                      onChange={(e) => setForm({ ...form, sodium: parseFloat(e.target.value) || 0 })}
-                      className="h-9"
-                      placeholder="0"
-                    />
-                    {formErrors.sodium && (
-                      <p className="text-xs text-red-500">{formErrors.sodium}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="foodGroup" className="text-xs font-medium text-foreground flex items-center gap-1">
-                      📊 Grupo Alimentar
-                    </Label>
-                    <select
-                      id="foodGroup"
-                      title="Selecionar grupo alimentar"
-                      value={form.foodGroup}
-                      onChange={(e) => setForm({ ...form, foodGroup: e.target.value as FoodGroup })}
-                      className="h-9 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    >
-                      {Object.entries(FOOD_GROUP_LABELS).map(([value, label]) => (
-                        <option key={value} value={value}>{label}</option>
-                      ))}
-                    </select>
-                    {formErrors.foodGroup && (
-                      <p className="text-xs text-red-500">{formErrors.foodGroup}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2 md:col-span-1">
-                    <Label htmlFor="tags" className="text-xs font-medium text-foreground flex items-center gap-1">
-                      🏷️ Tags
-                    </Label>
-                    <Input
-                      id="tags"
-                      value={form.tags}
-                      onChange={(e) => setForm({ ...form, tags: e.target.value })}
-                      className="h-9"
-                      placeholder="ex: carne branca,magro,versatil"
-                    />
-                    {formErrors.tags && (
-                      <p className="text-xs text-red-500">{formErrors.tags}</p>
-                    )}
-                    <p className="text-xs text-muted-foreground">Separe por vírgulas</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Seção de Informações da IA Melhorada */}
-              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50/80 via-indigo-50/50 to-purple-50/30 dark:from-blue-950/20 dark:via-indigo-950/10 dark:to-purple-950/5 border border-blue-200/50 dark:border-blue-800/30 shadow-sm">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 opacity-50"></div>
-                <div className="relative p-6 space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 rounded-xl shadow-sm">
-                      <svg className="h-5 w-5 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M12 16v-4"/>
-                        <path d="M12 8h.01"/>
+                <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 rounded-lg border border-border/30">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg">
+                      <svg className="h-5 w-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
                       </svg>
                     </div>
-                    <h3 className="font-semibold text-blue-700 dark:text-blue-300 text-base">
-                      🤖 Informações Nutricionais Automáticas
-                    </h3>
-                  </div>
-                  <p className="text-sm text-blue-600 dark:text-blue-400 leading-relaxed">
-                    Nossa IA analisará automaticamente o alimento "{form.name || 'nome do alimento'}" para calcular informações precisas:
-                  </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {[
-                      { icon: "🔥", label: "Calorias", color: "text-orange-600" },
-                      { icon: "💪", label: "Proteínas", color: "text-blue-600" },
-                      { icon: "🌾", label: "Carboidratos", color: "text-green-600" },
-                      { icon: "🥑", label: "Gorduras", color: "text-purple-600" },
-                      { icon: "🌿", label: "Fibras", color: "text-emerald-600" },
-                      { icon: "🍯", label: "Açúcares", color: "text-amber-600" },
-                      { icon: "🧂", label: "Sódio", color: "text-gray-600" },
-                      { icon: "📊", label: "Grupo alimentar", color: "text-indigo-600" }
-                    ].map((item, index) => (
-                      <div key={index} className="flex items-center gap-2 p-2 bg-white/60 dark:bg-gray-900/20 rounded-lg border border-blue-100/50 dark:border-blue-800/20">
-                        <span className="text-sm">{item.icon}</span>
-                        <span className={`text-xs font-medium ${item.color}`}>{item.label}</span>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                        🤖 Criação Inteligente com IA
+                        <Badge variant="secondary" className="text-xs">Automático</Badge>
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Nossa IA analisará automaticamente as informações nutricionais do alimento que você está adicionando:
+                      </p>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                        <div className="flex items-center gap-2 text-orange-600">
+                          <span>🔥</span>
+                          <span>Calorias</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-blue-600">
+                          <span>💪</span>
+                          <span>Proteínas</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-green-600">
+                          <span>🌾</span>
+                          <span>Carboidratos</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-purple-600">
+                          <span>🥑</span>
+                          <span>Gorduras</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-emerald-600">
+                          <span>🌿</span>
+                          <span>Fibras</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-amber-600">
+                          <span>🍯</span>
+                          <span>Açúcares</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-slate-600">
+                          <span>🧂</span>
+                          <span>Sódio</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-indigo-600">
+                          <span>📊</span>
+                          <span>Grupo Alimentar</span>
+                        </div>
                       </div>
-                    ))}
+                      <div className="mt-3 p-2 bg-blue-100/50 dark:bg-blue-900/20 rounded border border-blue-200/50 dark:border-blue-800/50">
+                        <p className="text-xs text-blue-700 dark:text-blue-400 flex items-center gap-1">
+                          <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 16v-4"/>
+                            <path d="M12 8h.01"/>
+                          </svg>
+                          Processamento de 2-3 segundos após criação - informações completas serão adicionadas automaticamente!
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -732,14 +573,14 @@ const FoodInventory = () => {
               <Card key={item.id} className="bg-card border-border/50 overflow-hidden hover:shadow-lg hover:shadow-primary/10 hover:scale-[1.02] transition-all duration-300">
                 <AspectRatio ratio={16 / 9}>
                   <img
-                    src={getFoodImage(item.name)}
-                    alt={item.name}
+                    src={getFoodImage(item.name || 'Unknown')}
+                    alt={item.name || 'Alimento'}
                     className="object-cover w-full h-full"
                   />
                 </AspectRatio>
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
-                    <CardTitle className="text-base text-foreground">{item.name}</CardTitle>
+                    <CardTitle className="text-base text-foreground">{item.name || 'Alimento sem nome'}</CardTitle>
                     <Badge className={`${expirationStatus.color} text-white text-xs font-medium ${expirationStatus.status === 'expired' ? 'animate-pulse' : ''}`}>
                       {expirationStatus.text}
                     </Badge>
@@ -751,7 +592,12 @@ const FoodInventory = () => {
                     </div>
                     <div className="flex items-center gap-1">
                       <CalendarIcon className="h-3 w-3" />
-                      <span>{format(new Date(item.expiration), 'dd/MM/yyyy', { locale: ptBR })}</span>
+                      <span>
+                        {item.expiration && !isNaN(new Date(item.expiration).getTime()) 
+                          ? format(new Date(item.expiration), 'dd/MM/yyyy', { locale: ptBR })
+                          : 'Data inválida'
+                        }
+                      </span>
                     </div>
                   </div>
                 </CardHeader>
@@ -807,7 +653,7 @@ const FoodInventory = () => {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Excluir Alimento</AlertDialogTitle>
                           </AlertDialogHeader>
-                          <p>Tem certeza que deseja excluir "{item.name}"? Esta ação não pode ser desfeita.</p>
+                          <p>Tem certeza que deseja excluir "{item.name || 'este alimento'}"? Esta ação não pode ser desfeita.</p>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancelar</AlertDialogCancel>
                             <AlertDialogAction onClick={() => handleDelete(item.id!)}>
