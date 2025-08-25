@@ -29,11 +29,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minutes
-<<<<<<< HEAD
-      gcTime: 10 * 60 * 1000, // 10 minutes
-=======
       gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
->>>>>>> 3960944 (fix: update queryClient options and enhance scrollbar styles for better compatibility)
       retry: (failureCount, error) => {
         // Don't retry on 4xx errors
         if ((error as any)?.response?.status >= 400 && (error as any)?.response?.status < 500) {

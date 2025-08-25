@@ -229,12 +229,15 @@ All colors MUST be HSL.
 
   /* Firefox scrollbar styling with fallbacks */
   * {
-    /* Modern browsers */
+    /* Fallback for older browsers */
+    -ms-overflow-style: auto;
+    
+    /* Modern browsers with feature detection */
     scrollbar-width: thin;
     scrollbar-color: hsl(var(--muted-foreground) / 0.3) hsl(var(--background));
   }
   
-  /* Fallback for older Firefox versions */
+  /* Support check for browsers that don't support modern scrollbar properties */
   @supports not (scrollbar-width: thin) {
     /* Use webkit scrollbar styles as fallback for browsers that don't support scrollbar-width */
     ::-webkit-scrollbar {

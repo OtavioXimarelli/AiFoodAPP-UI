@@ -46,3 +46,5 @@ LOGIN_PRODUCTION_FIX.md
 .gitignore
 FOOD_JSON_UPDATE.md
 LOGOUT_FIX_SUMMARY.md
+AiFoodAPP-Frontend.code-workspace
+.vscode/extensions.json
