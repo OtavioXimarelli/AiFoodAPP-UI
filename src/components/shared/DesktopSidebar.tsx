@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import AppStatusDialog from "./AppStatusDialog";
+import { ClickSpark } from "@/components/ui/click-spark";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
 
 const DesktopSidebar = () => {
   const { user } = useAuth();
@@ -68,24 +70,26 @@ const DesktopSidebar = () => {
         transition={{ delay: 0.2, duration: 0.5 }}
         className="p-6 border-b border-border/50"
       >
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <Link
-            to="/dashboard"
-            className="flex items-center gap-3 font-bold text-lg bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent hover:from-primary/80 hover:to-primary transition-all duration-300"
+        <ClickSpark count={8} color="hsl(var(--primary))">
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
-            <motion.div 
-              className="p-2 rounded-lg bg-gradient-primary shadow-glow hover:shadow-xl transition-all duration-300"
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              transition={{ type: "spring", stiffness: 400 }}
+            <Link
+              to="/dashboard"
+              className="flex items-center gap-3 font-bold text-lg bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent hover:from-primary/80 hover:to-primary transition-all duration-300"
             >
-              <ChefHat className="h-5 w-5 text-primary-foreground" />
-            </motion.div>
-            <span>AI Food App</span>
-          </Link>
-        </motion.div>
+              <motion.div 
+                className="p-2 rounded-lg bg-gradient-primary shadow-glow hover:shadow-xl transition-all duration-300"
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ type: "spring", stiffness: 400 }}
+              >
+                <ChefHat className="h-5 w-5 text-primary-foreground" />
+              </motion.div>
+              <span>AI Food App</span>
+            </Link>
+          </motion.div>
+        </ClickSpark>
       </motion.div>
 
       {/* Navigation */}
@@ -105,18 +109,19 @@ const DesktopSidebar = () => {
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: 0.4 + index * 0.1, duration: 0.5 }}
               >
-                <NavLink
-                  to={item.to}
-                  end={item.end}
-                  className={({ isActive }) =>
-                    cn(
-                      "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gradient-warm hover:text-foreground group touch-feedback relative overflow-hidden",
-                      isActive 
-                        ? "bg-gradient-primary text-primary-foreground shadow-glow hover:shadow-xl" 
-                        : "text-muted-foreground hover:text-foreground hover:shadow-soft"
-                    )
-                  }
-                >
+                <ClickSpark count={6} color="hsl(var(--primary))">
+                  <NavLink
+                    to={item.to}
+                    end={item.end}
+                    className={({ isActive }) =>
+                      cn(
+                        "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gradient-warm hover:text-foreground group touch-feedback relative overflow-hidden",
+                        isActive 
+                          ? "bg-gradient-primary text-primary-foreground shadow-glow hover:shadow-xl" 
+                          : "text-muted-foreground hover:text-foreground hover:shadow-soft"
+                      )
+                    }
+                  >
                   {({ isActive }) => (
                     <div className="flex items-center gap-3 w-full">
                       <Icon className={cn(
@@ -133,7 +138,8 @@ const DesktopSidebar = () => {
                       )}
                     </div>
                   )}
-                </NavLink>
+                  </NavLink>
+                </ClickSpark>
               </motion.li>
             );
           })}
@@ -148,15 +154,17 @@ const DesktopSidebar = () => {
         className="p-4 border-t border-border/50 bg-gradient-card space-y-3"
       >
         {/* App Status Button */}
-        <motion.button
-          onClick={() => setShowAppStatus(true)}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary/90 transition-all duration-200 border border-primary/20 hover:border-primary/30"
-        >
-          <Info className="h-4 w-4" />
-          <span>Status do App</span>
-        </motion.button>
+        <ClickSpark count={4} color="hsl(var(--primary))">
+          <motion.button
+            onClick={() => setShowAppStatus(true)}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary/90 transition-all duration-200 border border-primary/20 hover:border-primary/30"
+          >
+            <Info className="h-4 w-4" />
+            <span>Status do App</span>
+          </motion.button>
+        </ClickSpark>
         
         <motion.p 
           className="text-xs text-muted-foreground text-center font-medium"

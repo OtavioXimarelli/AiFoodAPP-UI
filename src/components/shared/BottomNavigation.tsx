@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Home, Package, ChefHat, TrendingUp, Save } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { memo, useCallback } from "react";
+import { ClickSpark } from "@/components/ui/click-spark";
 
 const BottomNavigation = memo(() => {
   const { user } = useAuth();
@@ -51,19 +52,24 @@ const BottomNavigation = memo(() => {
         isAdmin ? "grid grid-cols-5" : "grid grid-cols-4"
       )}>
         {navItems.map((item, index) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={item.end}
-            className={({ isActive }) =>
-              cn(
-                "flex flex-col items-center justify-center gap-1 text-xs font-medium transition-all duration-200 relative group touch-feedback",
-                isActive
-                  ? "text-primary bg-primary/5"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-              )
-            }
+          <ClickSpark 
+            key={item.to} 
+            count={4} 
+            color="hsl(var(--primary))"
+            className="h-full"
           >
+            <NavLink
+              to={item.to}
+              end={item.end}
+              className={({ isActive }) =>
+                cn(
+                  "flex flex-col items-center justify-center gap-1 text-xs font-medium transition-all duration-200 relative group touch-feedback h-full",
+                  isActive
+                    ? "text-primary bg-primary/5"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                )
+              }
+            >
             {({ isActive }) => (
               <>
                 {/* Active indicator */}
@@ -97,7 +103,8 @@ const BottomNavigation = memo(() => {
                 </span>
               </>
             )}
-          </NavLink>
+            </NavLink>
+          </ClickSpark>
         ))}
       </div>
       

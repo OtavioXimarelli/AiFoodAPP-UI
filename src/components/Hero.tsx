@@ -4,6 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { AnimatedElement, StaggerContainer, HoverAnimation } from "@/components/ui/animated";
 import { useOptimizedAnimation } from "@/hooks/usePerformance";
 import { memo } from "react";
+import { ClickSpark } from "@/components/ui/click-spark";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
+import { FluidGlass } from "@/components/ui/fluid-glass";
 
 const Hero = memo(() => {
   const { shouldReduceMotion } = useOptimizedAnimation();
@@ -37,32 +40,36 @@ const Hero = memo(() => {
             
             <AnimatedElement variant="slideUp" delay={0.5}>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
-                <HoverAnimation scale={1.05}>
-                  <Button 
-                    onClick={() => {
-                      window.location.href = '/register';
-                    }}
-                    size="lg" 
-                    className="w-full sm:w-auto bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-lg hover:shadow-xl px-8 py-4 text-base font-semibold transition-all duration-300"
-                  >
-                    <Sparkles className="mr-2 h-5 w-5" />
-                    Começar Grátis Agora
-                  </Button>
-                </HoverAnimation>
-                <HoverAnimation scale={1.02}>
-                  <Button 
-                    onClick={() => {
-                      const featuresSection = document.querySelector('[data-section="features"]');
-                      featuresSection?.scrollIntoView({ behavior: 'smooth' });
-                    }}
-                    variant="outline" 
-                    size="lg"
-                    className="w-full sm:w-auto border-primary/30 text-primary hover:bg-primary/10 hover:border-primary transition-all duration-300 px-8 py-4 text-base font-semibold backdrop-blur-sm"
-                  >
-                    <Play className="mr-2 h-4 w-4" />
-                    Ver Demonstração
-                  </Button>
-                </HoverAnimation>
+                <ClickSpark count={8} color="hsl(var(--primary))">
+                  <HoverAnimation scale={1.05}>
+                    <Button 
+                      onClick={() => {
+                        window.location.href = '/register';
+                      }}
+                      size="lg" 
+                      className="w-full sm:w-auto bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-lg hover:shadow-xl px-8 py-4 text-base font-semibold transition-all duration-300"
+                    >
+                      <Sparkles className="mr-2 h-5 w-5" />
+                      Começar Grátis Agora
+                    </Button>
+                  </HoverAnimation>
+                </ClickSpark>
+                <ClickSpark count={6} color="hsl(var(--accent))">
+                  <HoverAnimation scale={1.02}>
+                    <Button 
+                      onClick={() => {
+                        const featuresSection = document.querySelector('[data-section="features"]');
+                        featuresSection?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      variant="outline" 
+                      size="lg"
+                      className="w-full sm:w-auto border-primary/30 text-primary hover:bg-primary/10 hover:border-primary transition-all duration-300 px-8 py-4 text-base font-semibold backdrop-blur-sm"
+                    >
+                      <Play className="mr-2 h-4 w-4" />
+                      Ver Demonstração
+                    </Button>
+                  </HoverAnimation>
+                </ClickSpark>
               </div>
             </AnimatedElement>
 
@@ -79,24 +86,26 @@ const Hero = memo(() => {
             {/* Floating Cards/Mockup Area */}
             <div className="relative w-full max-w-lg mx-auto">
               {/* Main Card - Recipe Generator */}
-              <HoverAnimation scale={1.02} y={-5}>
-                <div className="bg-card/80 backdrop-blur-xl rounded-3xl border border-border/50 shadow-2xl p-6 transform rotate-2 hover:rotate-0 transition-transform duration-500 will-change-transform">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-primary to-accent rounded-xl flex items-center justify-center">
-                      <Sparkles className="w-6 h-6 text-white" />
+              <ClickSpark count={10} color="hsl(var(--primary))">
+                <HoverAnimation scale={1.02} y={-5}>
+                  <FluidGlass variant="default" intensity="medium" className="rounded-3xl p-6 transform rotate-2 hover:rotate-0 transition-transform duration-500 will-change-transform">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-12 h-12 bg-gradient-to-r from-primary to-accent rounded-xl flex items-center justify-center">
+                        <Sparkles className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-foreground">Receita Gerada</h3>
+                        <p className="text-sm text-muted-foreground">Baseada em seus ingredientes</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground">Receita Gerada</h3>
-                      <p className="text-sm text-muted-foreground">Baseada em seus ingredientes</p>
+                    <div className="space-y-2">
+                      <div className="h-3 bg-gradient-to-r from-primary/20 to-primary/40 rounded-full"></div>
+                      <div className="h-3 bg-gradient-to-r from-primary/10 to-primary/30 rounded-full w-3/4"></div>
+                      <div className="h-3 bg-gradient-to-r from-primary/5 to-primary/20 rounded-full w-1/2"></div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="h-3 bg-gradient-to-r from-primary/20 to-primary/40 rounded-full"></div>
-                    <div className="h-3 bg-gradient-to-r from-primary/10 to-primary/30 rounded-full w-3/4"></div>
-                    <div className="h-3 bg-gradient-to-r from-primary/5 to-primary/20 rounded-full w-1/2"></div>
-                  </div>
-                </div>
-              </HoverAnimation>
+                  </FluidGlass>
+                </HoverAnimation>
+              </ClickSpark>
 
               {/* Floating Nutrition Card */}
               <AnimatedElement 
