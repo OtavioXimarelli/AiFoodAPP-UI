@@ -19,6 +19,18 @@ import { useLocalRecipes } from "@/hooks/useLocalRecipes";
 import { cn } from "@/lib/utils";
 import { OptimizedImage } from "@/components/ui/optimized-image";
 import { NavLink } from "react-router-dom";
+import { 
+  SpringCard, 
+  StaggeredList, 
+  MagneticButton, 
+  RevealAnimation 
+} from "@/components/ui/reactbits-animations";
+import { 
+  ReactBitsCard, 
+  TextReveal, 
+  ScrollTriggeredSection,
+  RippleButton 
+} from "@/components/ui/reactbits-components";
 
 const DashboardHome = () => {
   const { user } = useAuth();
@@ -85,35 +97,20 @@ const DashboardHome = () => {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-8"
-    >
+    <ScrollTriggeredSection animation="fadeUp" className="space-y-8">
       {/* Welcome Section */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.1 }}
-        className="space-y-2"
-      >
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+      <RevealAnimation direction="up" className="space-y-2">
+        <TextReveal className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
           Olá, {user?.name || 'Usuário'}! 👋
-        </h1>
+        </TextReveal>
         <p className="text-muted-foreground text-lg">
           Bem-vindo ao seu painel de controle alimentar
         </p>
-      </motion.div>
+      </RevealAnimation>
 
       {/* Stats Overview */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.2 }}
-        className="grid gap-6 md:grid-cols-3"
-      >
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 border-blue-200 dark:border-blue-800/50 hover:scale-105 transition-transform duration-200">
+      <StaggeredList stagger={150} className="grid gap-6 md:grid-cols-3">
+        <SpringCard hover className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 border-blue-200 dark:border-blue-800/50">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-blue-700 dark:text-blue-300">
               Total de Ingredientes
@@ -128,9 +125,9 @@ const DashboardHome = () => {
               itens em sua despensa
             </p>
           </CardContent>
-        </Card>
+        </SpringCard>
 
-        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950/30 dark:to-orange-900/20 border-orange-200 dark:border-orange-800/50 hover:scale-105 transition-transform duration-200">
+        <SpringCard delay={100} hover className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950/30 dark:to-orange-900/20 border-orange-200 dark:border-orange-800/50">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-orange-700 dark:text-orange-300">
               Itens Expirando
@@ -145,9 +142,9 @@ const DashboardHome = () => {
               expiram em 3 dias
             </p>
           </CardContent>
-        </Card>
+        </SpringCard>
 
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/30 dark:to-green-900/20 border-green-200 dark:border-green-800/50 hover:scale-105 transition-transform duration-200">
+        <SpringCard delay={200} hover className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/30 dark:to-green-900/20 border-green-200 dark:border-green-800/50">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-green-700 dark:text-green-300">
               Receitas Salvas
@@ -162,65 +159,53 @@ const DashboardHome = () => {
               receitas criadas
             </p>
           </CardContent>
-        </Card>
-      </motion.div>
+        </SpringCard>
+      </StaggeredList>
 
       {/* Quick Actions */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.3 }}
-        className="space-y-4"
-      >
-        <h2 className="text-xl font-semibold text-foreground">Ações Rápidas</h2>
-        <div className="grid gap-4 md:grid-cols-3">
+      <ScrollTriggeredSection animation="slideLeft" className="space-y-4">
+        <TextReveal className="text-xl font-semibold text-foreground">Ações Rápidas</TextReveal>
+        <StaggeredList stagger={100} className="grid gap-4 md:grid-cols-3">
           {quickActions.map((action, index) => {
             const Icon = action.icon;
             return (
-              <motion.div
+              <ReactBitsCard 
                 key={action.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.4 + index * 0.1 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="cursor-pointer"
+                variant="magnetic"
+                className={cn(
+                  "transition-all duration-300 hover:shadow-lg cursor-pointer group border-transparent",
+                  action.bgColor
+                )}
               >
-                <NavLink to={action.to} className="block">
-                  <Card className={cn(
-                    "transition-all duration-300 hover:shadow-lg group border-transparent",
-                    action.bgColor
-                  )}>
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center gap-3">
-                        <div className={cn(
-                          "p-2 rounded-lg bg-gradient-to-r transition-transform duration-300 group-hover:scale-110",
-                          action.color
-                        )}>
-                          <Icon className="h-5 w-5 text-white" />
-                        </div>
-                        <div className="flex-1">
-                          <CardTitle className="text-base font-semibold text-foreground group-hover:text-primary transition-colors">
-                            {action.title}
-                          </CardTitle>
-                        </div>
-                        <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all duration-300" />
+                <NavLink to={action.to} className="block h-full">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "p-2 rounded-lg bg-gradient-to-r transition-transform duration-300 group-hover:scale-110",
+                        action.color
+                      )}>
+                        <Icon className="h-5 w-5 text-white" />
                       </div>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <p className="text-sm text-muted-foreground">
-                        {action.description}
-                      </p>
-                    </CardContent>
-                  </Card>
+                      <div className="flex-1">
+                        <CardTitle className="text-base font-semibold text-foreground group-hover:text-primary transition-colors">
+                          {action.title}
+                        </CardTitle>
+                      </div>
+                      <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all duration-300" />
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <p className="text-sm text-muted-foreground">
+                      {action.description}
+                    </p>
+                  </CardContent>
                 </NavLink>
-              </motion.div>
+              </ReactBitsCard>
             );
           })}
-        </div>
-      </motion.div>
-
-    </motion.div>
+        </StaggeredList>
+      </ScrollTriggeredSection>
+    </ScrollTriggeredSection>
   );
 };
 
