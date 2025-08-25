@@ -98,7 +98,12 @@ export default defineConfig(({ mode }) => ({
     },
   },
   esbuild: {
-    logOverride: { 'this-is-undefined-in-esm': 'silent' }
+    logOverride: { 'this-is-undefined-in-esm': 'silent' },
+    target: 'esnext',
+    jsx: 'automatic',
+  },
+  define: {
+    global: 'globalThis',
   },
   build: {
     rollupOptions: {
@@ -109,9 +114,11 @@ export default defineConfig(({ mode }) => ({
     chunkSizeWarningLimit: 1000,
     target: 'esnext',
     minify: 'esbuild',
+    sourcemap: false,
+    emptyOutDir: true,
   },
-  typescript: {
-    incremental: false,
+  worker: {
+    format: 'es',
   },
   optimizeDeps: {
     include: [
@@ -122,5 +129,8 @@ export default defineConfig(({ mode }) => ({
       '@tanstack/react-query',
     ],
     exclude: ['lovable-tagger'],
+    force: true,
   },
+  clearScreen: false,
+  logLevel: 'warn',
 }));
