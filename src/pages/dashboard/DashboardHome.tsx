@@ -32,6 +32,8 @@ import {
   RippleButton 
 } from "@/components/ui/reactbits-components";
 import { FluidGlass, FluidGlassCard, AnimatedFluidGlass } from "@/components/ui/fluid-glass";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
+import { ClickSpark } from "@/components/ui/click-spark";
 
 const DashboardHome = () => {
   const { user } = useAuth();
@@ -201,62 +203,175 @@ const DashboardHome = () => {
         </StaggeredList>
       </ScrollTriggeredSection>
 
-      {/* FluidGlass Showcase Section */}
+      {/* ReactBits Components Showcase */}
       <ScrollTriggeredSection animation="fadeUp" className="space-y-6">
-        <TextReveal className="text-xl font-semibold text-foreground">Componentes FluidGlass</TextReveal>
+        <TextReveal className="text-xl font-semibold text-foreground">Componentes ReactBits</TextReveal>
         
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <FluidGlassCard 
-            title="Glass Sutil"
-            description="Efeito de vidro com baixa intensidade"
-            variant="subtle"
-            intensity="low"
-          >
-            <div className="flex items-center gap-2 mt-4">
-              <Activity className="h-4 w-4 text-primary" />
-              <span className="text-sm text-foreground">Componente ativo</span>
-            </div>
-          </FluidGlassCard>
+        {/* SpotlightCard Section */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium text-foreground">SpotlightCard</h3>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <SpotlightCard className="p-6">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Star className="h-5 w-5 text-primary" />
+                  <h4 className="font-semibold text-foreground">Spotlight Padrão</h4>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Passe o mouse para ver o efeito de spotlight interativo
+                </p>
+              </div>
+            </SpotlightCard>
 
-          <FluidGlassCard 
-            title="Glass Padrão"
-            description="Efeito de vidro com intensidade média"
-            variant="default"
-            intensity="medium"
-          >
-            <div className="flex items-center gap-2 mt-4">
-              <Star className="h-4 w-4 text-yellow-500" />
-              <span className="text-sm text-foreground">Recomendado</span>
-            </div>
-          </FluidGlassCard>
+            <SpotlightCard 
+              className="p-6"
+              spotlightColor="hsl(var(--chart-2))"
+              fromColor="hsl(var(--chart-2))"
+            >
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-green-500" />
+                  <h4 className="font-semibold text-foreground">Spotlight Verde</h4>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Spotlight personalizado com cor verde
+                </p>
+              </div>
+            </SpotlightCard>
 
-          <FluidGlassCard 
-            title="Glass Forte"
-            description="Efeito de vidro com alta intensidade"
-            variant="strong"
-            intensity="high"
-          >
-            <div className="flex items-center gap-2 mt-4">
-              <Plus className="h-4 w-4 text-green-500" />
-              <span className="text-sm text-foreground">Premium</span>
-            </div>
-          </FluidGlassCard>
+            <SpotlightCard 
+              className="p-6"
+              spotlightColor="hsl(var(--chart-1))"
+              fromColor="hsl(var(--chart-1))"
+            >
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Plus className="h-5 w-5 text-blue-500" />
+                  <h4 className="font-semibold text-foreground">Spotlight Azul</h4>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Spotlight personalizado com cor azul
+                </p>
+              </div>
+            </SpotlightCard>
+          </div>
         </div>
 
+        {/* ClickSpark Section */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium text-foreground">ClickSpark</h3>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <ClickSpark className="rounded-lg border border-border bg-card p-6">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <ChefHat className="h-5 w-5 text-primary" />
+                  <h4 className="font-semibold text-foreground">Spark Padrão</h4>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Clique para ver as partículas de spark
+                </p>
+              </div>
+            </ClickSpark>
+
+            <ClickSpark 
+              className="rounded-lg border border-border bg-card p-6"
+              color="hsl(var(--chart-2))"
+              count={8}
+            >
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Package className="h-5 w-5 text-green-500" />
+                  <h4 className="font-semibold text-foreground">Spark Verde</h4>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Spark personalizado com mais partículas
+                </p>
+              </div>
+            </ClickSpark>
+
+            <ClickSpark 
+              className="rounded-lg border border-border bg-card p-6"
+              color="hsl(var(--chart-1))"
+              count={12}
+            >
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-blue-500" />
+                  <h4 className="font-semibold text-foreground">Spark Intenso</h4>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Spark com ainda mais partículas azuis
+                </p>
+              </div>
+            </ClickSpark>
+          </div>
+        </div>
+
+        {/* FluidGlass Section */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium text-foreground">FluidGlass</h3>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <FluidGlassCard 
+              title="Glass Sutil"
+              description="Efeito de vidro com baixa intensidade"
+              variant="subtle"
+              intensity="low"
+            >
+              <div className="flex items-center gap-2 mt-4">
+                <Activity className="h-4 w-4 text-primary" />
+                <span className="text-sm text-foreground">Componente ativo</span>
+              </div>
+            </FluidGlassCard>
+
+            <FluidGlassCard 
+              title="Glass Padrão"
+              description="Efeito de vidro com intensidade média"
+              variant="default"
+              intensity="medium"
+            >
+              <div className="flex items-center gap-2 mt-4">
+                <Star className="h-4 w-4 text-yellow-500" />
+                <span className="text-sm text-foreground">Recomendado</span>
+              </div>
+            </FluidGlassCard>
+
+            <FluidGlassCard 
+              title="Glass Forte"
+              description="Efeito de vidro com alta intensidade"
+              variant="strong"
+              intensity="high"
+            >
+              <div className="flex items-center gap-2 mt-4">
+                <Plus className="h-4 w-4 text-green-500" />
+                <span className="text-sm text-foreground">Premium</span>
+              </div>
+            </FluidGlassCard>
+          </div>
+        </div>
+
+        {/* Combined Components Demo */}
         <FluidGlass variant="default" intensity="medium" className="p-8">
           <div className="text-center space-y-4">
-            <h3 className="text-2xl font-bold text-foreground">FluidGlass Container</h3>
+            <h3 className="text-2xl font-bold text-foreground">Componentes Combinados</h3>
             <p className="text-muted-foreground">
-              Este é um exemplo de container com efeito de vidro fluido. 
-              Perfeito para destacar conteúdo importante com um visual moderno e elegante.
+              Demonstração dos três componentes ReactBits trabalhando juntos
             </p>
-            <RippleButton 
-              variant="primary" 
-              className="mt-4"
-              onClick={() => console.log('FluidGlass button clicked!')}
-            >
-              Botão Interativo
-            </RippleButton>
+            <div className="flex flex-wrap gap-4 justify-center mt-6">
+              <ClickSpark className="inline-block">
+                <RippleButton 
+                  variant="primary" 
+                  onClick={() => console.log('FluidGlass + ClickSpark + RippleButton!')}
+                >
+                  Clique para Sparks
+                </RippleButton>
+              </ClickSpark>
+              
+              <SpotlightCard className="p-4">
+                <Button variant="outline" className="w-full">
+                  Spotlight Button
+                </Button>
+              </SpotlightCard>
+            </div>
           </div>
         </FluidGlass>
       </ScrollTriggeredSection>
