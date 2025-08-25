@@ -8,7 +8,7 @@ import { visualizer } from "rollup-plugin-visualizer";
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 8082,
+    port: 8080,
     headers: {
       'Vary': 'Origin, Accept-Encoding, Authorization',
       'Access-Control-Allow-Origin': '*',
@@ -109,6 +109,9 @@ export default defineConfig(({ mode }) => ({
     chunkSizeWarningLimit: 1000,
     target: 'esnext',
     minify: 'esbuild',
+  },
+  typescript: {
+    incremental: false,
   },
   optimizeDeps: {
     include: [

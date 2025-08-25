@@ -11,15 +11,15 @@ const Header = () => {
   const logout = useAuthStore((s) => s.logout);
   
   return (
-    <header className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-5xl">
+    <header className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-6xl">
       <GlassSurface
-        borderRadius={20}
-        blur={12}
-        opacity={0.15}
-        backgroundOpacity={0.85}
-        className="w-full shadow-2xl"
+        borderRadius={24}
+        blur={16}
+        opacity={0.1}
+        backgroundOpacity={0.95}
+        className="w-full shadow-2xl backdrop-blur-xl"
       >
-        <div className="flex h-16 items-center justify-between px-8">
+        <div className="flex h-18 items-center justify-between px-6 md:px-8">
           <EnhancedClickSpark className="flex items-center">
             <Link 
               to="/" 
