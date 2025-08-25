@@ -64,8 +64,8 @@ const useDarkMode = () => {
 
 const GlassSurface: React.FC<GlassSurfaceProps> = ({
   children,
-  width = 200,
-  height = 80,
+  width,
+  height,
   borderRadius = 20,
   borderWidth = 0.07,
   brightness = 50,
@@ -220,12 +220,21 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   const getContainerStyles = (): React.CSSProperties => {
     const baseStyles: React.CSSProperties = {
       ...style,
-      width: typeof width === "number" ? `${width}px` : width,
-      height: typeof height === "number" ? `${height}px` : height,
       borderRadius: `${borderRadius}px`,
       "--glass-frost": backgroundOpacity,
       "--glass-saturation": saturation,
     } as React.CSSProperties;
+
+    // Only set explicit width/height when props are provided. This allows
+    // utility classes (e.g. `w-full`, `h-16`) to control sizing when no
+    // width/height props are passed.
+    if (width !== undefined) {
+      baseStyles.width = typeof width === "number" ? `${width}px` : width;
+    }
+    if (height !== undefined) {
+      baseStyles.height = typeof height === "number" ? `${height}px` : height;
+    }
+    
 
     const svgSupported = supportsSVGFilters();
     const backdropFilterSupported = supportsBackdropFilter();
@@ -303,7 +312,7 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   };
 
   const glassSurfaceClasses =
-    "relative flex items-center justify-center overflow-hidden transition-opacity duration-[260ms] ease-out";
+    "relative flex items-center justify-center overflow-hidden transition-opacity duration-300 ease-out";
 
   const focusVisibleClasses = isDarkMode
     ? "focus-visible:outline-2 focus-visible:outline-[#0A84FF] focus-visible:outline-offset-2"
@@ -400,7 +409,7 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
         </defs>
       </svg>
 
-      <div className="w-full h-full flex items-center justify-center p-2 rounded-[inherit] relative z-10">
+  <div className="w-full h-full flex items-center justify-center p-3 sm:p-4 rounded-[inherit] relative z-10">
         {children}
       </div>
     </div>

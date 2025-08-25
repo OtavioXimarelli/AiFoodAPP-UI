@@ -8,14 +8,14 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Modern coffee app inspired theme */
-    --background: 24 9% 10%;
+    /* Modern coffee app inspired theme (dark) - slightly adjusted for improved contrast/visibility */
+    --background: 24 9% 14%; /* was 10% - lift slightly so UI elements stand out */
     --foreground: 36 100% 96%;
 
-    --card: 24 9% 12%;
+    --card: 24 9% 16%; /* was 12% - increase card separation from background */
     --card-foreground: 36 100% 96%;
 
-    --popover: 24 9% 12%;
+    --popover: 24 9% 16%; /* was 12% - match card contrast */
     --popover-foreground: 36 100% 96%;
 
     /* Primary - warm yellow/orange like the original */
@@ -86,10 +86,10 @@ All colors MUST be HSL.
   }
 
   .light {
-    /* Enhanced light theme colors - better visibility and modern design */
-    --background: 220 15% 97%;
+    /* Enhanced light theme colors - improved readability by reducing extreme brightness */
+    --background: 220 12% 96%; /* was 97% - slightly darker to reduce glare */
     --foreground: 215 25% 15%;
-    --card: 0 0% 100%;
+    --card: 0 0% 98%; /* was 100% - soften card white to reduce contrast shock */
     --card-foreground: 215 25% 15%;
     --popover: 0 0% 100%;
     --popover-foreground: 215 25% 15%;
