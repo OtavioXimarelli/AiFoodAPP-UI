@@ -68,21 +68,21 @@ const BottomNavigation = memo(() => {
               <>
                 {/* Active indicator */}
                 {isActive && (
-                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-primary rounded-b-full animate-slide-in-top" />
+                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-primary rounded-b-full" />
                 )}
                 
-                {/* Icon with glow effect */}
+                {/* Icon with simple hover effect */}
                 <div className={cn(
-                  "p-2 rounded-xl transition-all duration-200 group-hover:scale-110",
+                  "p-2 rounded-xl transition-all duration-200",
                   isActive 
                     ? "bg-primary/10 shadow-lg shadow-primary/20" 
-                    : "group-hover:bg-muted/50"
+                    : "hover:bg-muted/50"
                 )}>
                   <item.icon className={cn(
                     "h-5 w-5 transition-colors duration-200",
                     isActive 
-                      ? "text-primary drop-shadow-sm" 
-                      : "text-muted-foreground group-hover:text-foreground"
+                      ? "text-primary" 
+                      : "text-muted-foreground"
                   )} />
                 </div>
                 
@@ -91,15 +91,10 @@ const BottomNavigation = memo(() => {
                   "transition-colors duration-200 leading-none",
                   isActive 
                     ? "text-primary font-semibold" 
-                    : "text-muted-foreground group-hover:text-foreground"
+                    : "text-muted-foreground"
                 )}>
                   {item.label}
                 </span>
-                
-                {/* Ripple effect on active */}
-                {isActive && (
-                  <div className="absolute inset-0 bg-primary/5 rounded-xl animate-pulse" />
-                )}
               </>
             )}
           </NavLink>

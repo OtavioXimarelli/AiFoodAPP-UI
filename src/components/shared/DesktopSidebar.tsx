@@ -118,20 +118,11 @@ const DesktopSidebar = () => {
                   }
                 >
                   {({ isActive }) => (
-                    <motion.div
-                      className="flex items-center gap-3 w-full"
-                      whileHover={{ x: 5 }}
-                      transition={{ type: "spring", stiffness: 400 }}
-                    >
-                      <motion.div
-                        whileHover={{ scale: 1.2, rotate: 10 }}
-                        transition={{ type: "spring", stiffness: 600 }}
-                      >
-                        <Icon className={cn(
-                          "h-5 w-5 transition-all duration-200",
-                          isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
-                        )} />
-                      </motion.div>
+                    <div className="flex items-center gap-3 w-full">
+                      <Icon className={cn(
+                        "h-5 w-5 transition-all duration-200",
+                        isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
+                      )} />
                       <span className="font-medium">{item.label}</span>
                       {isActive && (
                         <motion.div
@@ -140,7 +131,7 @@ const DesktopSidebar = () => {
                           transition={{ type: "spring", stiffness: 300, damping: 30 }}
                         />
                       )}
-                    </motion.div>
+                    </div>
                   )}
                 </NavLink>
               </motion.li>
