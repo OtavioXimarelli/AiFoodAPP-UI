@@ -8,7 +8,7 @@ import { visualizer } from "rollup-plugin-visualizer";
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 8080,
+    port: 8082,
     headers: {
       'Vary': 'Origin, Accept-Encoding, Authorization',
       'Access-Control-Allow-Origin': '*',
@@ -97,18 +97,13 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  esbuild: {
+    logOverride: { 'this-is-undefined-in-esm': 'silent' }
+  },
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select'],
-          motion: ['framer-motion'],
-          query: ['@tanstack/react-query'],
-          charts: ['recharts'],
-          forms: ['react-hook-form', '@hookform/resolvers', 'zod'],
-        },
+        manualChunks: undefined,
       },
     },
     chunkSizeWarningLimit: 1000,
