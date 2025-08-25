@@ -90,7 +90,7 @@ export const AnimatedElement = memo<AnimatedElementProps>(({
   }
 
   return (
-    <MotionComponent
+    <motion.div
       ref={ref}
       className={className}
       variants={variants}
@@ -99,12 +99,12 @@ export const AnimatedElement = memo<AnimatedElementProps>(({
       transition={{
         duration: finalDuration,
         delay,
-        ease: animationConfig.ease,
+        ease: "easeOut",
       }}
       {...motionProps}
     >
       {children}
-    </MotionComponent>
+    </motion.div>
   );
 });
 
@@ -291,7 +291,7 @@ export const PageTransition = memo<{ children: React.ReactNode }>(({ children })
       exit={{ opacity: 0, y: -20 }}
       transition={{
         duration: animationConfig.duration,
-        ease: animationConfig.ease
+        ease: "easeOut"
       }}
     >
       {children}

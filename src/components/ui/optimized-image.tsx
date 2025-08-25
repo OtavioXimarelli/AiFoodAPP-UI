@@ -46,7 +46,9 @@ export const OptimizedImage = memo<OptimizedImageProps>(({
 
   // Combine refs
   const setRefs = useCallback((node: HTMLImageElement | null) => {
-    imgRef.current = node;
+    if (imgRef.current !== node) {
+      (imgRef as any).current = node;
+    }
     intersectionRef(node);
   }, [intersectionRef]);
 

@@ -28,7 +28,7 @@ const createItemRenderer = <T,>(
 };
 
 // Fixed height virtualized list
-export const VirtualizedList = memo(<T,>({
+const VirtualizedList = memo(<T,>({
   items,
   renderItem,
   itemHeight,
@@ -95,7 +95,7 @@ export const VirtualizedList = memo(<T,>({
   );
 }) as <T>(props: VirtualizedListProps<T>) => JSX.Element;
 
-VirtualizedList.displayName = 'VirtualizedList';
+export { VirtualizedList };
 
 // Variable height virtualized list
 interface VariableVirtualizedListProps<T> extends Omit<VirtualizedListProps<T>, 'itemHeight'> {
@@ -103,7 +103,7 @@ interface VariableVirtualizedListProps<T> extends Omit<VirtualizedListProps<T>, 
   estimatedItemHeight?: number;
 }
 
-export const VariableVirtualizedList = memo(<T,>({
+const VariableVirtualizedList = memo(<T,>({
   items,
   renderItem,
   getItemHeight,
@@ -175,7 +175,7 @@ export const VariableVirtualizedList = memo(<T,>({
   );
 }) as <T>(props: VariableVirtualizedListProps<T>) => JSX.Element;
 
-VariableVirtualizedList.displayName = 'VariableVirtualizedList';
+export { VariableVirtualizedList };
 
 // Grid virtualized component
 interface VirtualizedGridProps<T> {
@@ -192,7 +192,7 @@ interface VirtualizedGridProps<T> {
   gap?: number;
 }
 
-export const VirtualizedGrid = memo(<T,>({
+const VirtualizedGrid = memo(<T,>({
   items,
   renderItem,
   itemWidth,
@@ -286,7 +286,7 @@ export const VirtualizedGrid = memo(<T,>({
   );
 }) as <T>(props: VirtualizedGridProps<T>) => JSX.Element;
 
-VirtualizedGrid.displayName = 'VirtualizedGrid';
+export { VirtualizedGrid };
 
 // Skeleton loader for virtualized lists
 export const VirtualizedListSkeleton = memo<{ 
@@ -297,14 +297,14 @@ export const VirtualizedListSkeleton = memo<{
   return (
     <div className={className}>
       {Array.from({ length: itemCount }, (_, index) => (
-        <SkeletonPulse
+        <div
           key={index}
-          className={`mb-2 rounded`}
+          className="mb-2 rounded"
           style={{ height: itemHeight }}
-        />
+        >
+          <SkeletonPulse className="w-full h-full" />
+        </div>
       ))}
     </div>
   );
 });
-
-VirtualizedListSkeleton.displayName = 'VirtualizedListSkeleton';

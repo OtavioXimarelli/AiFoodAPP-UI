@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { VirtualizedList } from "@/components/ui/virtualized";
+import { VirtualizedList } from "@/components/ui/virtualized-fixed";
 import { AnimatedElement, StaggerContainer, HoverAnimation, LoadingAnimation } from "@/components/ui/animated";
 import { OptimizedImage } from "@/components/ui/optimized-image";
 import { usePerformance } from "@/hooks/usePerformance";
@@ -52,7 +52,7 @@ const FoodItemCard = memo<{
   }, [item, measureRender, onEdit]);
 
   const handleDeleteClick = useCallback(() => {
-    measureRender(`delete-${item.id}`, () => onDelete(item.id));
+    measureRender(`delete-${item.id}`, () => onDelete(item.id?.toString() || ''));
   }, [item.id, measureRender, onDelete]);
 
   return (
@@ -201,7 +201,7 @@ const OptimizedFoodInventory = memo(() => {
 
   const handleDelete = useCallback(async (id: string) => {
     try {
-      await deleteFoodItem(id);
+      await deleteFoodItem(parseInt(id));
       toast.success('Item removido com sucesso!');
     } catch (error) {
       toast.error('Erro ao remover item');
@@ -371,12 +371,12 @@ const OptimizedFoodInventory = memo(() => {
       </AnimatedElement>
 
       {/* Performance metrics (development only) */}
-      {process.env.NODE_ENV === 'development' && metrics.renderCount > 5 && (
+      {process.env.NODE_ENV === 'development' && (
         <Card className="border-yellow-200 bg-yellow-50 dark:bg-yellow-900/10">
           <CardContent className="p-4">
             <div className="text-sm text-yellow-800 dark:text-yellow-200">
               <strong>Performance Info:</strong> {filteredAndSortedItems.length} items, 
-              {metrics.renderCount} renders, {metrics.renderTime}ms last render
+              {metrics.renderTime}ms last render
               {metrics.memoryUsage && `, ${metrics.memoryUsage.toFixed(1)}MB memory`}
             </div>
           </CardContent>
