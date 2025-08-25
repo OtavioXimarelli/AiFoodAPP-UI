@@ -2,8 +2,9 @@ import { NavLink } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Home, Package, ChefHat, TrendingUp, Save } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { memo, useCallback } from "react";
 
-const BottomNavigation = () => {
+const BottomNavigation = memo(() => {
   const { user } = useAuth();
   const isAdmin = user?.role === 'ADMIN' || user?.role === 'admin';
 
@@ -109,6 +110,8 @@ const BottomNavigation = () => {
       <div className="h-safe-area-inset-bottom bg-background/95" />
     </nav>
   );
-};
+});
+
+BottomNavigation.displayName = 'BottomNavigation';
 
 export default BottomNavigation;
