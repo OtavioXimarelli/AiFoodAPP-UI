@@ -15,7 +15,6 @@ import DesktopSidebar from "./DesktopSidebar";
 import { ThemeToggle } from "./ThemeToggle";
 import AppStatusDialog from "./AppStatusDialog";
 import Header from "@/components/Header";
-import GlassSurface from "@/components/GlassSurface/GlassSurface";
 
 interface DashboardLayoutProps {
   children?: ReactNode;
@@ -71,14 +70,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           mounted && "animate-fade-in"
         )}>
           <div className="mx-auto w-full">
-            <GlassSurface
-              borderRadius={28}
-              className="w-full p-4 md:p-6 lg:p-8 bg-background/80 border-border/20 shadow-xl"
-            >
-              <div className="w-full">
-                {children ?? <Outlet />}
-              </div>
-            </GlassSurface>
+            <div className="w-full rounded-[28px] border border-border/20 bg-background/95 shadow-xl p-4 md:p-6 lg:p-8">
+              {children ?? <Outlet />}
+            </div>
           </div>
         </div>
       </main>

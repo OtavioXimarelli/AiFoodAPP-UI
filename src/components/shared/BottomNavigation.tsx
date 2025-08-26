@@ -4,7 +4,6 @@ import { Home, Package, ChefHat, TrendingUp, Save } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { memo, useCallback } from "react";
 import { ClickSpark } from "@/components/ui/click-spark";
-import GlassSurface from "@/components/GlassSurface/GlassSurface";
 
 const BottomNavigation = memo(() => {
   const { user } = useAuth();
@@ -48,7 +47,7 @@ const BottomNavigation = memo(() => {
 
   return (
     <nav className="fixed bottom-4 left-4 right-4 z-50 lg:hidden pointer-events-auto">
-      <GlassSurface borderRadius={18} className="w-full px-3 py-2 bg-background/80 border-border/40 shadow-2xl">
+      <div className="w-full rounded-[18px] border border-white/10 bg-background/80 backdrop-blur-xl px-3 py-2 shadow-2xl">
         <div className={cn(
           "h-14 rounded-md",
           isAdmin ? "grid grid-cols-5" : "grid grid-cols-4"
@@ -86,7 +85,7 @@ const BottomNavigation = memo(() => {
             </NavLink>
           ))}
         </div>
-      </GlassSurface>
+      </div>
       {/* Bottom safe area for mobile devices */}
       <div className="h-safe-area-inset-bottom" />
     </nav>
