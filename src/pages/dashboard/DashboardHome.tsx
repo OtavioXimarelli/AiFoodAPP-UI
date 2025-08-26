@@ -17,62 +17,81 @@ import {
   Award
 } from "lucide-react";
 
+// Memoize static navigation actions
+const quickActions = [
+  {
+    title: "Gerar Nova Receita",
+    description: "Crie receitas deliciosas com IA",
+    icon: ChefHat,
+    href: "/dashboard/recipes",
+    color: "from-primary/20 to-primary/10"
+  },
+  {
+    title: "Inventário de Comida",
+    description: "Gerencie seus ingredientes",
+    icon: Package,
+    href: "/dashboard/food",
+    color: "from-green-500/20 to-green-500/10"
+  },
+  {
+    title: "Insights Nutricionais",
+    description: "Analise sua nutrição",
+    icon: BarChart3,
+    href: "/dashboard/insights",
+    color: "from-blue-500/20 to-blue-500/10"
+  },
+  {
+    title: "Dados Salvos",
+    description: "Acesse suas receitas favoritas",
+    icon: Heart,
+    href: "/dashboard/saved",
+    color: "from-red-500/20 to-red-500/10"
+  }
+];
+
 const DashboardHome = memo(() => {
   const [activeCard, setActiveCard] = useState<string | null>(null);
   const { metrics, measureRender } = usePerformance('DashboardHome');
   const { shouldReduceMotion } = useOptimizedAnimation();
 
-  // Memoize static data to prevent re-computation
-  const stats = useMemo(() => [
-    { label: "Receitas Criadas", value: "24", icon: ChefHat, color: "text-primary" },
-    { label: "Ingredientes", value: "156", icon: Package, color: "text-green-500" },
-    { label: "Calorias Economizadas", value: "3.2k", icon: TrendingUp, color: "text-blue-500" },
-    { label: "Dias Ativos", value: "12", icon: Clock, color: "text-orange-500" }
-  ], []);
+  // Remove mock data - these will come from your backend API
+  const [stats, setStats] = useState([
+    { label: "Receitas Criadas", value: "0", icon: ChefHat, color: "text-primary", loading: true },
+    { label: "Ingredientes", value: "0", icon: Package, color: "text-green-500", loading: true },
+    { label: "Calorias Economizadas", value: "0", icon: TrendingUp, color: "text-blue-500", loading: true },
+    { label: "Dias Ativos", value: "0", icon: Clock, color: "text-orange-500", loading: true }
+  ]);
 
-  const quickActions = useMemo(() => [
-    {
-      title: "Gerar Nova Receita",
-      description: "Crie receitas deliciosas com IA",
-      icon: ChefHat,
-      href: "/dashboard/recipes",
-      color: "from-primary/20 to-primary/10"
-    },
-    {
-      title: "Inventário de Comida",
-      description: "Gerencie seus ingredientes",
-      icon: Package,
-      href: "/dashboard/food",
-      color: "from-green-500/20 to-green-500/10"
-    },
-    {
-      title: "Insights Nutricionais",
-      description: "Analise sua nutrição",
-      icon: BarChart3,
-      href: "/dashboard/insights",
-      color: "from-blue-500/20 to-blue-500/10"
-    },
-    {
-      title: "Dados Salvos",
-      description: "Acesse suas receitas favoritas",
-      icon: Heart,
-      href: "/dashboard/saved",
-      color: "from-red-500/20 to-red-500/10"
-    }
-  ], []);
+  const [recentActivities, setRecentActivities] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const recentActivities = useMemo(() => [
-    {
-      title: "Receita de Risotto Criada",
-      description: "Há 2 horas",
-      badge: { text: "Nova", icon: Award, variant: "secondary" as const }
-    },
-    {
-      title: "Inventário Atualizado",
-      description: "Há 5 horas",
-      badge: { text: "Ingredientes", icon: Package, variant: "outline" as const }
+  // Fetch real data from your backend
+  const fetchDashboardData = useCallback(async () => {
+    setLoading(true);
+    try {
+      // Replace with your actual API endpoints
+      // const response = await fetch('/api/dashboard/stats');
+      // const data = await response.json();
+      
+      // TODO: Connect to your backend API
+      // For now, showing empty state until connected
+      setStats([
+        { label: "Receitas Criadas", value: "0", icon: ChefHat, color: "text-primary", loading: false },
+        { label: "Ingredientes", value: "0", icon: Package, color: "text-green-500", loading: false },
+        { label: "Calorias Economizadas", value: "0", icon: TrendingUp, color: "text-blue-500", loading: false },
+        { label: "Dias Ativos", value: "0", icon: Clock, color: "text-orange-500", loading: false }
+      ]);
+      setRecentActivities([]);
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error);
+    } finally {
+      setLoading(false);
     }
-  ], []);
+  }, []);
+
+  React.useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   return (
     <div className="space-y-8 p-6">
@@ -84,7 +103,7 @@ const DashboardHome = memo(() => {
         </p>
       </div>
 
-      {/* Stats Grid - Optimized with memoization */}
+      {/* Stats Grid - Enhanced with loading states */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat, index) => {
           const StatIcon = stat.icon;
@@ -93,11 +112,15 @@ const DashboardHome = memo(() => {
               <SpotlightCard className="p-6 hover:shadow-lg transition-shadow duration-200">
                 <div className="flex items-center space-x-2">
                   <StatIcon className={`h-4 w-4 ${stat.color}`} />
-                  <div className="space-y-1">
+                  <div className="space-y-1 flex-1">
                     <p className="text-sm font-medium text-muted-foreground">
                       {stat.label}
                     </p>
-                    <p className="text-2xl font-bold">{stat.value}</p>
+                    {stat.loading ? (
+                      <div className="h-6 w-12 bg-muted animate-pulse rounded" />
+                    ) : (
+                      <p className="text-2xl font-bold">{stat.value}</p>
+                    )}
                   </div>
                 </div>
               </SpotlightCard>
@@ -106,7 +129,7 @@ const DashboardHome = memo(() => {
         })}
       </div>
 
-      {/* Quick Actions */}
+      {/* Quick Actions - Static navigation elements */}
       <div className="space-y-4">
         <h2 className="text-2xl font-semibold tracking-tight">Ações Rápidas</h2>
         <div className="grid gap-4 md:grid-cols-2">
@@ -135,32 +158,62 @@ const DashboardHome = memo(() => {
         </div>
       </div>
 
-      {/* Recent Activity */}
+      {/* Recent Activity - Will show real user activities */}
       <div className="space-y-4">
         <h2 className="text-2xl font-semibold tracking-tight">Atividade Recente</h2>
-        <div className="grid gap-4">
-          {recentActivities.map((activity, index) => {
-            const BadgeIcon = activity.badge.icon;
-            return (
-              <EnhancedClickSpark key={activity.title}>
-                <SpotlightCard className="hover:shadow-md transition-shadow duration-200">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <CardTitle className="text-base">{activity.title}</CardTitle>
-                        <CardDescription>{activity.description}</CardDescription>
-                      </div>
-                      <Badge variant={activity.badge.variant}>
-                        <BadgeIcon className="mr-1 h-3 w-3" />
-                        {activity.badge.text}
-                      </Badge>
+        {loading ? (
+          <div className="space-y-4">
+            {[1, 2].map(i => (
+              <SpotlightCard key={i} className="animate-pulse">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-2 flex-1">
+                      <div className="h-4 bg-muted rounded w-1/2" />
+                      <div className="h-3 bg-muted rounded w-1/4" />
                     </div>
-                  </CardHeader>
-                </SpotlightCard>
-              </EnhancedClickSpark>
-            );
-          })}
-        </div>
+                    <div className="h-6 w-16 bg-muted rounded" />
+                  </div>
+                </CardHeader>
+              </SpotlightCard>
+            ))}
+          </div>
+        ) : recentActivities.length === 0 ? (
+          <SpotlightCard className="border-dashed">
+            <CardContent className="p-8 text-center">
+              <div className="space-y-2">
+                <Users className="h-8 w-8 text-muted-foreground mx-auto" />
+                <h3 className="text-lg font-medium text-muted-foreground">Nenhuma Atividade Recente</h3>
+                <p className="text-sm text-muted-foreground">
+                  Suas atividades aparecerão aqui quando você começar a usar o aplicativo.
+                </p>
+              </div>
+            </CardContent>
+          </SpotlightCard>
+        ) : (
+          <div className="grid gap-4">
+            {recentActivities.map((activity, index) => {
+              const BadgeIcon = activity.badge.icon;
+              return (
+                <EnhancedClickSpark key={index}>
+                  <SpotlightCard className="hover:shadow-md transition-shadow duration-200">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <CardTitle className="text-base">{activity.title}</CardTitle>
+                          <CardDescription>{activity.description}</CardDescription>
+                        </div>
+                        <Badge variant={activity.badge.variant}>
+                          <BadgeIcon className="mr-1 h-3 w-3" />
+                          {activity.badge.text}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                  </SpotlightCard>
+                </EnhancedClickSpark>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

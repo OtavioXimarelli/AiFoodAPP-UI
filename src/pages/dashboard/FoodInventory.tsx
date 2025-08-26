@@ -43,27 +43,9 @@ const FoodInventory = memo(() => {
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-  // Memoize food image function to prevent recreation
+  // Remove mock food images - these will be handled by your backend
   const getFoodImage = useCallback((name: string) => {
-    const foodImages: { [key: string]: string } = {
-      'apple': 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400&h=300&fit=crop',
-      'banana': 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=300&fit=crop',
-      'tomato': 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=400&h=300&fit=crop',
-      'chicken': 'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400&h=300&fit=crop',
-      'rice': 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop',
-      'bread': 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=300&fit=crop',
-    };
-    
-    if (!name || typeof name !== 'string') {
-      return 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=300&fit=crop';
-    }
-    
-    const lowerName = name.toLowerCase();
-    for (const [food, image] of Object.entries(foodImages)) {
-      if (lowerName.includes(food)) {
-        return image;
-      }
-    }
+    // Return a placeholder or handle images from your backend
     return 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=300&fit=crop';
   }, []);
 

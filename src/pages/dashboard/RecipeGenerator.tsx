@@ -179,8 +179,13 @@ const RecipeGenerator = memo(() => {
                         <div className="p-1.5 bg-primary/10 rounded-lg">
                           <Package className="h-4 w-4 text-primary" />
                         </div>
-                        Ingredientes Disponíveis ({foodItems.length})
+                        Ingredientes na Despensa ({foodItems.length})
                       </CardTitle>
+                      <p className="text-sm text-muted-foreground">
+                        {foodItems.length === 0 
+                          ? "Adicione ingredientes para gerar receitas personalizadas"
+                          : "Estes ingredientes serão usados para criar suas receitas"}
+                      </p>
                     </CardHeader>
                     <CardContent>
                       <ScrollArea className="h-24 scrollbar-primary">
