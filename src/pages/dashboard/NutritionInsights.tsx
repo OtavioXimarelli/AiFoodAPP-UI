@@ -84,24 +84,26 @@ const NutritionInsights = () => {
   }, {} as Record<string, number>);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/80 to-background/60 pb-20 lg:pb-0">
+    <div className="min-h-screen bg-gradient-to-br from-background via-accent/20 to-background pb-20 lg:pb-0">
       {/* Header */}
-  <div className="sticky top-0 z-40 bg-white/95 border-b border-border/30 p-4 shadow-sm">
+      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-lg border-b border-border/30 p-6 shadow-sm">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Insights Nutricionais</h1>
-            <p className="text-sm text-muted-foreground">
-              Análise completa dos seus alimentos
+            <h1 className="text-3xl font-bold text-foreground bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+              Insights Nutricionais
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Análise completa dos seus alimentos e padrões nutricionais
             </p>
           </div>
-          <div className="flex gap-1 bg-muted rounded-lg p-1">
+          <div className="flex gap-1 bg-muted/50 backdrop-blur-sm rounded-xl p-1.5 border border-border/20">
             {periods.map((period) => (
               <Button
                 key={period.value}
                 variant={selectedPeriod === period.value ? "default" : "ghost"}
                 size="sm"
                 onClick={() => setSelectedPeriod(period.value)}
-                className="text-xs px-3"
+                className="text-xs px-4 py-2 rounded-lg font-medium transition-all duration-200"
               >
                 {period.label}
               </Button>
@@ -110,22 +112,28 @@ const NutritionInsights = () => {
         </div>
       </div>
 
-      <div className="p-4 space-y-6">
+      <div className="p-6 space-y-8 max-w-7xl mx-auto">
         {/* Empty State - No Data Available */}
         {safeFoodItems.length === 0 ? (
-          <Card className="border-dashed border-2">
-            <CardContent className="p-12 text-center">
-              <div className="space-y-4">
-                <div className="p-4 bg-muted/50 rounded-full mx-auto w-fit">
-                  <BarChart3 className="h-8 w-8 text-muted-foreground" />
+          <Card className="border-dashed border-2 border-border/40 rounded-2xl bg-gradient-to-br from-background/50 to-accent/5 backdrop-blur-sm">
+            <CardContent className="p-16 text-center">
+              <div className="space-y-6">
+                <div className="relative">
+                  <div className="p-6 bg-gradient-to-br from-primary/10 to-primary/5 rounded-3xl mx-auto w-fit border border-primary/20">
+                    <BarChart3 className="h-12 w-12 text-primary" />
+                  </div>
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full animate-pulse"></div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">Sem Dados Nutricionais</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Adicione alimentos à sua despensa para ver insights nutricionais detalhados.
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-bold text-foreground">Sem Dados Nutricionais</h3>
+                  <p className="text-muted-foreground text-lg max-w-md mx-auto">
+                    Adicione alimentos à sua despensa para ver insights nutricionais detalhados e análises personalizadas.
                   </p>
-                  <Button variant="outline" className="gap-2">
-                    <Package className="h-4 w-4" />
+                  <Button 
+                    variant="default" 
+                    className="gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    <Package className="h-5 w-5" />
                     Adicionar Alimentos
                   </Button>
                 </div>
@@ -135,32 +143,64 @@ const NutritionInsights = () => {
         ) : (
           <>
             {/* Nutrition Overview - Basic Data */}
-            <div>
-              <h2 className="text-lg font-semibold text-foreground mb-3">Resumo Nutricional Básico</h2>
-              <div className="grid grid-cols-2 gap-3">
-                <Card className="border-border/30 shadow-sm hover:shadow-md transition-all duration-300">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-red-500/10">
-                        <Zap className="h-5 w-5 text-red-500" />
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-1 h-8 bg-gradient-to-b from-primary to-primary/50 rounded-full"></div>
+                <h2 className="text-2xl font-bold text-foreground">Resumo Nutricional</h2>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Card className="rounded-2xl border-border/20 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-background/80 to-red-50/20 backdrop-blur-sm group">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 rounded-2xl bg-gradient-to-br from-red-500/10 to-orange-500/10 border border-red-500/20 group-hover:scale-110 transition-transform duration-300">
+                        <Zap className="h-6 w-6 text-red-500" />
                       </div>
                       <div>
-                        <p className="text-lg font-bold text-foreground">{basicTotals.calories}</p>
-                        <p className="text-xs text-muted-foreground">Calorias (estimadas)</p>
+                        <p className="text-2xl font-bold text-foreground">{basicTotals.calories}</p>
+                        <p className="text-sm text-muted-foreground">Calorias totais</p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-card/60 backdrop-blur-xl border-border/30 shadow-sm hover:shadow-md transition-all duration-300">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-blue-500/10">
-                        <Target className="h-5 w-5 text-blue-500" />
+                <Card className="rounded-2xl border-border/20 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-background/80 to-blue-50/20 backdrop-blur-sm group">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/20 group-hover:scale-110 transition-transform duration-300">
+                        <Target className="h-6 w-6 text-blue-500" />
                       </div>
                       <div>
-                        <p className="text-lg font-bold text-foreground">{basicTotals.protein}g</p>
-                        <p className="text-xs text-muted-foreground">Proteínas (estimadas)</p>
+                        <p className="text-2xl font-bold text-foreground">{basicTotals.protein}g</p>
+                        <p className="text-sm text-muted-foreground">Proteínas</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="rounded-2xl border-border/20 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-background/80 to-green-50/20 backdrop-blur-sm group">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 rounded-2xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 group-hover:scale-110 transition-transform duration-300">
+                        <Wheat className="h-6 w-6 text-green-500" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-foreground">{basicTotals.carbohydrates}g</p>
+                        <p className="text-sm text-muted-foreground">Carboidratos</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="rounded-2xl border-border/20 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-background/80 to-purple-50/20 backdrop-blur-sm group">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 rounded-2xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 group-hover:scale-110 transition-transform duration-300">
+                        <Heart className="h-6 w-6 text-purple-500" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-foreground">{basicTotals.fiber}g</p>
+                        <p className="text-sm text-muted-foreground">Fibras</p>
                       </div>
                     </div>
                   </CardContent>
@@ -169,20 +209,20 @@ const NutritionInsights = () => {
             </div>
 
             {/* Connect to Backend Notice */}
-            <Card className="bg-gradient-to-br from-blue-500/5 to-purple-500/5 border-blue-500/20">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-xl bg-blue-500/10">
-                    <BarChart3 className="h-6 w-6 text-blue-500" />
+            <Card className="rounded-2xl bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-indigo-500/5 border border-blue-500/20 shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardContent className="p-8">
+                <div className="flex items-center gap-6">
+                  <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-500/10 to-indigo-500/10 border border-blue-500/20">
+                    <BarChart3 className="h-8 w-8 text-blue-500" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-foreground">Análise Avançada Disponível</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Conecte com seu backend para análises nutricionais detalhadas, gráficos e relatórios.
+                    <h3 className="text-xl font-bold text-foreground mb-2">Análise Avançada Disponível</h3>
+                    <p className="text-muted-foreground">
+                      Conecte com seu backend para análises nutricionais detalhadas, gráficos interativos e relatórios personalizados.
                     </p>
                   </div>
-                  <Badge className="bg-blue-500 text-white">
-                    Backend
+                  <Badge className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-xl font-medium">
+                    Backend Ready
                   </Badge>
                 </div>
               </CardContent>
@@ -192,36 +232,41 @@ const NutritionInsights = () => {
 
         {/* Food Groups - Basic Distribution */}
         {Object.keys(foodGroups).length > 0 && (
-          <Card className="bg-card/60 backdrop-blur-xl border-border/30 shadow-sm hover:shadow-md transition-all duration-300">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg text-foreground flex items-center gap-2">
-                <PieChart className="h-5 w-5 text-primary" />
-                Distribuição de Alimentos
-              </CardTitle>
+          <Card className="rounded-2xl bg-gradient-to-br from-background/80 to-accent/5 backdrop-blur-xl border-border/20 shadow-lg hover:shadow-xl transition-all duration-300">
+            <CardHeader className="pb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-1 h-8 bg-gradient-to-b from-primary to-primary/50 rounded-full"></div>
+                <CardTitle className="text-2xl text-foreground flex items-center gap-3">
+                  <div className="p-2 rounded-xl bg-primary/10 border border-primary/20">
+                    <PieChart className="h-6 w-6 text-primary" />
+                  </div>
+                  Distribuição de Alimentos
+                </CardTitle>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-4">
               {Object.entries(foodGroups).map(([group, count]) => {
                 const IconComponent = groupIcons[group] || Leaf;
                 const total = Object.values(foodGroups).reduce((a, b) => a + b, 0);
                 const percentage = total > 0 ? (count / total) * 100 : 0;
 
                 return (
-                  <div key={group} className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-primary/10">
-                      <IconComponent className="h-4 w-4 text-primary" />
+                  <div key={group} className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-background/50 to-accent/10 border border-border/20 hover:border-border/40 transition-all duration-300">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
+                      <IconComponent className="h-5 w-5 text-primary" />
                     </div>
                     <div className="flex-1">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-sm font-medium text-foreground">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-semibold text-foreground">
                           {FOOD_GROUP_LABELS[group] || group}
                         </span>
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-sm text-muted-foreground font-medium">
                           {count} {count === 1 ? 'item' : 'itens'}
                         </span>
                       </div>
-                      <Progress value={percentage} className="h-1.5" />
+                      <Progress value={percentage} className="h-2 bg-muted/50" />
                     </div>
-                    <Badge variant="outline" className="text-xs">
+                    <Badge variant="outline" className="px-3 py-1 rounded-full font-medium border-primary/20 text-primary">
                       {percentage.toFixed(0)}%
                     </Badge>
                   </div>
