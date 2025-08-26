@@ -168,16 +168,26 @@ const Index = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 pt-24">
-        <Header />
-        <div className="relative">
-          <Hero />
+      <div className="min-h-screen relative overflow-hidden">
+        {/* Modern gradient background with glass compatibility */}
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-primary/5 to-accent/10" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-background/50 to-primary/10" />
+        
+        {/* Subtle animated elements */}
+        <div className="absolute top-20 left-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse opacity-30" />
+        <div className="absolute bottom-20 right-10 w-80 h-80 bg-accent/5 rounded-full blur-3xl animate-pulse opacity-40" style={{ animationDelay: '2s' }} />
+        
+        {/* Content container */}
+        <div className="relative z-10 pt-24">
+          <Header />
+          <div className="relative">
+            <Hero />
             {/* Decorative particle background for larger screens */}
             <ParticleBackground particleCount={30} className="hidden lg:block" />
-        </div>
+          </div>
         
         {/* Features Section */}
-        <section className="py-24 px-4" data-section="features">
+        <section className="py-24 px-4 relative" data-section="features">
           <div className="container mx-auto">
             <AnimatedElement variant="slideUp" className="text-center mb-20">
               <Badge className="mb-6 bg-primary/10 text-primary border-primary/20 px-4 py-2 text-sm font-medium">
@@ -222,7 +232,7 @@ const Index = () => {
         </section>
 
         {/* Benefits Section */}
-        <section className="py-20 px-4 bg-white/50 dark:bg-background/50">
+        <section className="py-20 px-4 relative bg-gradient-to-r from-background/80 via-primary/5 to-background/80 backdrop-blur-sm">
           <div className="container mx-auto">
             <AnimatedElement variant="slideUp" className="text-center mb-16">
               <Badge className="mb-4 bg-accent/10 text-accent border-accent/20">
@@ -421,6 +431,8 @@ const Index = () => {
             </div>
           </div>
         </footer>
+        
+        </div>
       </div>
     </PageTransition>
   );
