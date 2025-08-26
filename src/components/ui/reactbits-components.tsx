@@ -73,7 +73,7 @@ export const ReactBitsCard = ({
   );
 };
 
-// ParticleBackground: lightweight floating dots
+// ParticleBackground: enhanced floating particles with varied animations
 export const ParticleBackground = ({
   particleCount = 40,
   className,
@@ -81,26 +81,105 @@ export const ParticleBackground = ({
   particleCount?: number;
   className?: string;
 }) => {
-  const particles = Array.from({ length: particleCount }).map(() => ({
-    left: Math.random() * 100,
-    top: Math.random() * 100,
-    size: Math.random() * 6 + 2,
-    duration: Math.random() * 20 + 10,
-    delay: Math.random() * 10,
-  }));
+  const particles = Array.from({ length: particleCount }).map((_, i) => {
+    const animationType = Math.floor(Math.random() * 4); // 4 different animation types
+    return {
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      size: Math.random() * 8 + 2,
+      duration: Math.random() * 25 + 15,
+      delay: Math.random() * 10,
+      animationType,
+      opacity: Math.random() * 0.6 + 0.2,
+      hue: Math.random() * 60, // For color variation
+    };
+  });
+
+  const getAnimation = (particle: any) => {
+    const { animationType, duration } = particle;
+    
+    switch (animationType) {
+      case 0: // Floating movement
+        return {
+          x: [`0%`, `${(Math.random() - 0.5) * 60}%`, '0%'],
+          y: [`0%`, `${(Math.random() - 0.5) * 60}%`, '0%'],
+          rotate: [0, 360],
+          scale: [1, 1.2, 1],
+        };
+      case 1: // Circular movement
+        return {
+          x: [`0%`, `30%`, `0%`, `-30%`, '0%'],
+          y: [`0%`, `-30%`, `-60%`, `-30%`, '0%'],
+          rotate: [0, 180, 360],
+          opacity: [0.3, 0.8, 0.3],
+        };
+      case 2: // Wave-like movement
+        return {
+          x: [`0%`, `40%`, `-20%`, `0%`],
+          y: [`0%`, `20%`, `40%`, '0%'],
+          scale: [0.8, 1.3, 0.8],
+          rotate: [0, 90, 180, 270, 360],
+        };
+      default: // Pulsing movement
+        return {
+          x: [`0%`, `${(Math.random() - 0.5) * 30}%`, '0%'],
+          y: [`0%`, `${(Math.random() - 0.5) * 30}%`, '0%'],
+          scale: [0.5, 1.5, 0.5],
+          opacity: [0.2, 0.9, 0.2],
+        };
+    }
+  };
 
   return (
     <div className={cn('absolute inset-0 overflow-hidden pointer-events-none', className)}>
       {particles.map((p, i) => (
         <motion.div
           key={i}
-          className="absolute bg-primary/20 rounded-full"
-          style={{ left: `${p.left}%`, top: `${p.top}%`, width: p.size, height: p.size }}
-          animate={{
-            x: [`0%`, `${(Math.random() - 0.5) * 50}%`, '0%'],
-            y: [`0%`, `${(Math.random() - 0.5) * 50}%`, '0%'],
+          className="absolute rounded-full"
+          style={{ 
+            left: `${p.left}%`, 
+            top: `${p.top}%`, 
+            width: p.size, 
+            height: p.size,
+            background: `hsl(${220 + p.hue}, 70%, 60%)`,
+            opacity: p.opacity,
+            filter: 'blur(0.5px)',
           }}
-          transition={{ duration: p.duration, repeat: Infinity, ease: 'linear', delay: p.delay }}
+          animate={getAnimation(p)}
+          transition={{ 
+            duration: p.duration, 
+            repeat: Infinity, 
+            ease: p.animationType === 1 ? 'linear' : 'easeInOut', 
+            delay: p.delay 
+          }}
+        />
+      ))}
+      
+      {/* Add some special glowing particles */}
+      {Array.from({ length: Math.floor(particleCount / 8) }).map((_, i) => (
+        <motion.div
+          key={`glow-${i}`}
+          className="absolute rounded-full bg-primary/30"
+          style={{ 
+            left: `${Math.random() * 100}%`, 
+            top: `${Math.random() * 100}%`, 
+            width: Math.random() * 12 + 6, 
+            height: Math.random() * 12 + 6,
+            filter: 'blur(2px)',
+            boxShadow: '0 0 20px currentColor',
+          }}
+          animate={{
+            x: [`0%`, `${(Math.random() - 0.5) * 80}%`, '0%'],
+            y: [`0%`, `${(Math.random() - 0.5) * 80}%`, '0%'],
+            scale: [0.5, 1.5, 0.5],
+            opacity: [0.1, 0.6, 0.1],
+          }}
+          transition={{ 
+            duration: Math.random() * 30 + 20, 
+            repeat: Infinity, 
+            ease: 'easeInOut',
+            delay: Math.random() * 5,
+          }}
         />
       ))}
     </div>
