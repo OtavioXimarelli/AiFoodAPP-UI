@@ -5,8 +5,7 @@ import { AnimatedElement, StaggerContainer, HoverAnimation } from "@/components/
 import { useOptimizedAnimation } from "@/hooks/usePerformance";
 import { memo } from "react";
 import { ClickSpark } from "@/components/ui/click-spark";
-import { SpotlightCard } from "@/components/ui/spotlight-card";
-import { FluidGlass } from "@/components/ui/fluid-glass";
+import { ReactBitsCard } from "@/components/ui/reactbits-components";
 import { useFoodItems } from "@/hooks/useFoodItems";
 import { useLocalRecipes } from "@/hooks/useLocalRecipes";
 
@@ -100,8 +99,8 @@ const Hero = memo(() => {
             <div className="relative w-full max-w-lg mx-auto">
               {/* Main Card - Recipe Generator */}
               <ClickSpark count={10} color="hsl(var(--primary))">
-                <HoverAnimation scale={1.02} y={-5}>
-                  <FluidGlass variant="default" intensity="medium" className="rounded-3xl p-6 transform rotate-2 hover:rotate-0 transition-transform duration-500 will-change-transform">
+                <ReactBitsCard variant="tilt" className="transform rotate-2 hover:rotate-0 transition-transform duration-500 will-change-transform">
+                  <div className="p-6 bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-sm rounded-3xl border border-border/20 shadow-xl">
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-12 h-12 bg-gradient-to-r from-primary to-accent rounded-xl flex items-center justify-center">
                         <Sparkles className="w-6 h-6 text-white" />
@@ -116,8 +115,8 @@ const Hero = memo(() => {
                       <div className="h-3 bg-gradient-to-r from-primary/10 to-primary/30 rounded-full w-3/4"></div>
                       <div className="h-3 bg-gradient-to-r from-primary/5 to-primary/20 rounded-full w-1/2"></div>
                     </div>
-                  </FluidGlass>
-                </HoverAnimation>
+                  </div>
+                </ReactBitsCard>
               </ClickSpark>
 
               {/* Floating Nutrition Card */}
@@ -126,14 +125,14 @@ const Hero = memo(() => {
                 delay={0.8}
                 className="absolute -top-6 -right-6"
               >
-                <HoverAnimation scale={1.1} y={-3}>
-                  <div className="bg-green-50 dark:bg-green-900/20 rounded-2xl border border-green-200 dark:border-green-800 shadow-lg p-4 transform -rotate-6 hover:rotate-0 transition-transform duration-500 will-change-transform">
+                <ReactBitsCard variant="magnetic" className="transform -rotate-6 hover:rotate-0 transition-transform duration-500 will-change-transform">
+                  <div className="bg-green-50 dark:bg-green-900/20 rounded-2xl border border-green-200 dark:border-green-800 shadow-lg p-4">
                     <div className="text-center">
                       <div className="text-lg font-bold text-green-600 dark:text-green-400">{avgCalories ?? 450}</div>
                       <div className="text-xs text-green-600 dark:text-green-400">{avgCalories ? 'Média de calorias' : 'Calorias (exemplo)'} </div>
                     </div>
                   </div>
-                </HoverAnimation>
+                </ReactBitsCard>
               </AnimatedElement>
 
               {/* Floating Ingredients Card */}
@@ -142,14 +141,14 @@ const Hero = memo(() => {
                 delay={1}
                 className="absolute -bottom-4 -left-8"
               >
-                <HoverAnimation scale={1.1} y={-3}>
-                  <div className="bg-orange-50 dark:bg-orange-900/20 rounded-2xl border border-orange-200 dark:border-orange-800 shadow-lg p-4 transform rotate-3 hover:rotate-0 transition-transform duration-500 will-change-transform">
+                <ReactBitsCard variant="hover-glow" className="transform rotate-3 hover:rotate-0 transition-transform duration-500 will-change-transform">
+                  <div className="bg-orange-50 dark:bg-orange-900/20 rounded-2xl border border-orange-200 dark:border-orange-800 shadow-lg p-4">
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 bg-orange-500 rounded-full"></div>
                       <div className="text-sm font-medium text-orange-600 dark:text-orange-400">{totalIngredients} {totalIngredients === 1 ? 'Ingrediente' : 'Ingredientes'}</div>
                     </div>
                   </div>
-                </HoverAnimation>
+                </ReactBitsCard>
               </AnimatedElement>
             </div>
           </AnimatedElement>

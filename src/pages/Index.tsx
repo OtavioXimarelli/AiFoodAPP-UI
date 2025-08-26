@@ -30,8 +30,8 @@ const FeatureCard = memo<{
 
   return (
     <div ref={ref}>
-      <HoverAnimation scale={1.03} y={-5}>
-  <Card className="group border border-border/50 shadow-md hover:shadow-lg overflow-hidden relative h-full transition-all duration-500">
+      <ReactBitsCard variant="tilt" className="h-full">
+        <Card className="group border-0 shadow-lg overflow-hidden h-full bg-card/95 backdrop-blur-sm">
           {/* Gradient overlay on hover */}
           <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
           
@@ -57,9 +57,9 @@ const FeatureCard = memo<{
           </CardContent>
           
           {/* Subtle glow effect */}
-          <div className={`absolute -inset-0.5 ${feature.bgGlow} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500 -z-10`}></div>
+          <div className={`absolute -inset-0.5 ${feature.bgGlow} opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-500 -z-10`}></div>
         </Card>
-      </HoverAnimation>
+      </ReactBitsCard>
     </div>
   );
 });
@@ -251,8 +251,8 @@ const Index = () => {
               staggerDelay={0.15}
             >
               {benefits.map((benefit, index) => (
-                <HoverAnimation key={index} scale={1.02} y={-3}>
-                  <Card className="group border border-border/50 shadow-md h-full">
+                <ReactBitsCard key={index} variant="hover-glow" className="h-full">
+                  <Card className="group border-0 bg-card/95 backdrop-blur-sm shadow-lg h-full">
                     <CardContent className="p-8">
                       <div className="flex items-start gap-4">
                         <HoverAnimation scale={1.15}>
@@ -271,7 +271,7 @@ const Index = () => {
                       </div>
                     </CardContent>
                   </Card>
-                </HoverAnimation>
+                </ReactBitsCard>
               ))}
             </StaggerContainer>
           </div>
@@ -314,22 +314,22 @@ const Index = () => {
               {/* Action buttons */}
               <AnimatedElement variant="slideUp" delay={0.4}>
                 <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
-                  <HoverAnimation scale={1.05}>
-                    <Button asChild size="lg" className="bg-white text-primary hover:bg-white/95 shadow-2xl px-8 py-4 text-lg font-semibold h-auto transition-all duration-300">
+                  <ReactBitsCard variant="magnetic" className="w-auto">
+                    <Button asChild size="lg" className="bg-white text-primary hover:bg-white/95 shadow-2xl px-8 py-4 text-lg font-semibold h-auto transition-all duration-300 border-0">
                       <Link to="/login">
                         <Sparkles className="mr-3 h-6 w-6" />
                         Começar Grátis Hoje
                       </Link>
                     </Button>
-                  </HoverAnimation>
-                  <HoverAnimation scale={1.02}>
+                  </ReactBitsCard>
+                  <ReactBitsCard variant="hover-glow" className="w-auto">
                     <Button asChild size="lg" variant="outline" className="border-2 border-white/30 text-white bg-white/10 hover:bg-white hover:text-primary hover:border-white backdrop-blur-sm px-8 py-4 text-lg font-semibold h-auto shadow-lg transition-all duration-300">
                       <Link to="/login">
                         <Users className="mr-3 h-6 w-6" />
                         Fazer Login
                       </Link>
                     </Button>
-                  </HoverAnimation>
+                  </ReactBitsCard>
                 </div>
               </AnimatedElement>
               
