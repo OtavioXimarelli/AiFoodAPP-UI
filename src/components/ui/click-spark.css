@@ -1,0 +1,13 @@
+.click-spark {
+  position: absolute;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.click-spark-dot {
+  width: 1px;
+  height: 1px;
+  border-radius: 50%;
+  background-color: hsl(var(--primary));
+  box-shadow: 0 0 6px hsl(var(--primary));
+}

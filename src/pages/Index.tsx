@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
+import { ReactBitsCard, ParticleBackground, TextReveal } from "@/components/ui/reactbits-components";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,7 +31,7 @@ const FeatureCard = memo<{
   return (
     <div ref={ref}>
       <HoverAnimation scale={1.03} y={-5}>
-        <Card className="group bg-card/50 backdrop-blur-sm border border-border/50 shadow-xl hover:shadow-2xl overflow-hidden relative h-full transition-all duration-500">
+  <Card className="group border border-border/50 shadow-md hover:shadow-lg overflow-hidden relative h-full transition-all duration-500">
           {/* Gradient overlay on hover */}
           <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
           
@@ -169,7 +170,11 @@ const Index = () => {
     <PageTransition>
       <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 pt-24">
         <Header />
-        <Hero />
+        <div className="relative">
+          <Hero />
+            {/* Decorative particle background for larger screens */}
+            <ParticleBackground particleCount={30} className="hidden lg:block" />
+        </div>
         
         {/* Features Section */}
         <section className="py-24 px-4" data-section="features">
@@ -178,11 +183,9 @@ const Index = () => {
               <Badge className="mb-6 bg-primary/10 text-primary border-primary/20 px-4 py-2 text-sm font-medium">
                 🚀 Funcionalidades Avançadas
               </Badge>
-              <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-                A plataforma mais
-                <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent"> completa</span>
-                <br />para sua cozinha
-              </h2>
+              <TextReveal className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+                A plataforma mais <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">completa</span> para sua cozinha
+              </TextReveal>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
                 Tecnologia de ponta que revoluciona como você planeja, prepara e desfruta suas refeições
               </p>
@@ -239,7 +242,7 @@ const Index = () => {
             >
               {benefits.map((benefit, index) => (
                 <HoverAnimation key={index} scale={1.02} y={-3}>
-                  <Card className="group bg-card/80 backdrop-blur-sm border border-border/50 shadow-xl h-full">
+                  <Card className="group border border-border/50 shadow-md h-full">
                     <CardContent className="p-8">
                       <div className="flex items-start gap-4">
                         <HoverAnimation scale={1.15}>
@@ -272,7 +275,7 @@ const Index = () => {
           
           {/* Floating elements */}
           <div className="absolute top-20 left-20 w-20 h-20 bg-white/10 rounded-full blur-xl animate-float"></div>
-          <div className="absolute bottom-20 right-20 w-32 h-32 bg-white/5 rounded-full blur-2xl animate-float" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute bottom-20 right-20 w-32 h-32 bg-white/5 rounded-full blur-2xl animate-float anim-delay-2s"></div>
           
           <div className="container mx-auto text-center relative z-10">
             <div className="max-w-4xl mx-auto">

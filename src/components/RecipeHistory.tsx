@@ -6,6 +6,7 @@ import { useLocalRecipes } from "@/hooks/useLocalRecipes";
 import { Recipe } from "@/lib/types";
 import { Clock, Users, ChefHat, Trash2, Eye } from "lucide-react";
 import { format } from "date-fns";
+import { formatPrepTime, formatCalories, formatServings } from "@/lib/format";
 import { ptBR } from "date-fns/locale";
 
 interface RecipeHistoryProps {
@@ -65,13 +66,13 @@ const RecipeHistory = ({ onViewRecipe }: RecipeHistoryProps) => {
                       </p>
                       
                       <div className="flex items-center gap-3 text-xs text-muted-foreground mb-2">
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          <span>{recipe.prepTime || '30min'}</span>
-                        </div>
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            <span>{formatPrepTime(recipe.prepTime) ?? 'N/A'}</span>
+                          </div>
                         <div className="flex items-center gap-1">
                           <Users className="h-3 w-3" />
-                          <span>{recipe.servings || 4} porções</span>
+                          <span>{formatServings(recipe.servings) ?? 'N/A'}</span>
                         </div>
                       </div>
 

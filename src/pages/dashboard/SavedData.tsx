@@ -26,6 +26,7 @@ import {
   CheckCircle,
   ShieldAlert
 } from "lucide-react";
+import { formatPrepTime, formatCalories, formatServings } from "@/lib/format";
 import { useToast } from "@/hooks/use-toast";
 
 const SavedDataPage = () => {
@@ -346,7 +347,7 @@ const SavedDataPage = () => {
                       {recipe.calories && (
                         <div className="flex items-center gap-1">
                           <Flame className="h-3 w-3" />
-                          {recipe.calories}cal
+                          {formatCalories(recipe.calories)}
                         </div>
                       )}
                     </div>
@@ -409,9 +410,9 @@ const SavedDataPage = () => {
                     <div className="grid grid-cols-2 gap-3 mb-4">
                       <div className="text-center p-2 bg-orange-50 dark:bg-orange-900/20 rounded">
                         <div className="text-sm font-medium text-orange-600 dark:text-orange-400">
-                          {analysis.analysis.calories}
-                        </div>
-                        <div className="text-xs text-muted-foreground">Calorias</div>
+                            {formatCalories(analysis.analysis.calories) ?? analysis.analysis.calories}
+                          </div>
+                          <div className="text-xs text-muted-foreground">Calorias</div>
                       </div>
                       <div className="text-center p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
                         <div className="text-sm font-medium text-blue-600 dark:text-blue-400">

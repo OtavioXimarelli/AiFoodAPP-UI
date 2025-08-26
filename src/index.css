@@ -407,6 +407,11 @@ All colors MUST be HSL.
     }
   }
 
+  /* Utility for delayed animation timing used in CTA floating elements */
+  .anim-delay-2s {
+    animation-delay: 2s !important;
+  }
+
   @keyframes slideInFromTop {
     from {
       transform: translateY(-20px);

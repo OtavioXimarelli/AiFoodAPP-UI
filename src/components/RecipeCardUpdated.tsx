@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Clock, Users, Flame, BookmarkPlus, BookmarkCheck } from "lucide-react";
 import { useLocalRecipes } from "@/hooks/useLocalRecipes";
 import { Recipe } from "@/lib/types";
+import { formatPrepTime, formatCalories, formatServings } from "@/lib/format";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -123,15 +124,15 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
         <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <Clock className="h-4 w-4" />
-            {recipe.prepTime || "N/A"}
+            {formatPrepTime(recipe.prepTime) ?? "N/A"}
           </div>
           <div className="flex items-center gap-1">
             <Users className="h-4 w-4" />
-            {recipe.servings} porções
+            {formatServings(recipe.servings) ?? 'N/A'}
           </div>
           <div className="flex items-center gap-1">
             <Flame className="h-4 w-4" />
-            {recipe.calories} cal
+            {formatCalories(recipe.calories) ?? 'N/A'}
           </div>
         </div>
 

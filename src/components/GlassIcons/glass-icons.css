@@ -1,0 +1,64 @@
+.gi-grid {
+  display: grid;
+  gap: 5em;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+}
+@media (min-width: 768px) {
+  .gi-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+
+.gi-item {
+  position: relative;
+  background: transparent;
+  outline: none;
+  width: 4.5em;
+  height: 4.5em;
+  perspective: 24em;
+  transform-style: preserve-3d;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.gi-bg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border-radius: 1.25em;
+  display: block;
+  transition: opacity 300ms ease-out, transform 300ms ease-out;
+  transform-origin: 100% 100%;
+  rotate: 15deg;
+  box-shadow: 0.5em -0.5em 0.75em hsla(223, 10%, 10%, 0.15);
+}
+
+.gi-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border-radius: 1.25em;
+  background: hsla(0,0%,100%,0.15);
+  transition: opacity 300ms ease-out, transform 300ms ease-out;
+  transform-origin: 80% 50%;
+  display: flex;
+  backdrop-filter: blur(0.75em);
+  -webkit-backdrop-filter: blur(0.75em);
+  box-shadow: inset 0 0 0 0.1em hsla(0,0%,100%,0.3);
+}
+
+.gi-inner { margin: auto; width: 1.5em; height: 1.5em; display:flex; align-items:center; justify-content:center }
+
+.gi-label { position: absolute; top: 100%; left: 0; right: 0; text-align: center; white-space: nowrap; line-height: 2; font-size: 1rem; opacity: 0; transform: translateY(0); transition: opacity 300ms ease-out, transform 300ms ease-out }
+
+.gi-item:hover .gi-bg { transform: rotate(25deg) translate3d(-0.5em,-0.5em,0.5em); }
+.gi-item:hover .gi-overlay { transform: translateZ(2em); }
+.gi-item:hover .gi-label { opacity: 1; transform: translateY(20%); }
+
+/* Predefined gradient mapping classes */
+.gi-blue .gi-bg { background: linear-gradient(hsl(223, 90%, 50%), hsl(208, 90%, 50%)); }
+.gi-purple .gi-bg { background: linear-gradient(hsl(283, 90%, 50%), hsl(268, 90%, 50%)); }
+.gi-red .gi-bg { background: linear-gradient(hsl(3, 90%, 50%), hsl(348, 90%, 50%)); }
+.gi-indigo .gi-bg { background: linear-gradient(hsl(253, 90%, 50%), hsl(238, 90%, 50%)); }
+.gi-orange .gi-bg { background: linear-gradient(hsl(43, 90%, 50%), hsl(28, 90%, 50%)); }
+.gi-green .gi-bg { background: linear-gradient(hsl(123, 90%, 40%), hsl(108, 90%, 40%)); }
+
+/* Fallback for unknown colors: use CSS custom property --gi-bg (can be set by code if needed) */
+.gi-custom .gi-bg { background: var(--gi-bg, hsl(223 10% 20%)); }

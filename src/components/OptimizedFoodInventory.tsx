@@ -292,6 +292,7 @@ const OptimizedFoodInventory = memo(() => {
               </div>
               <div className="flex gap-2">
                 <select
+                  title="Filtrar por categoria"
                   value={filterGroup}
                   onChange={(e) => setFilterGroup(e.target.value as FoodGroup | "all")}
                   className="px-3 py-2 rounded-md border border-input bg-background text-sm"
@@ -302,6 +303,7 @@ const OptimizedFoodInventory = memo(() => {
                   ))}
                 </select>
                 <select
+                  title="Ordenar por"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as "name" | "expiration" | "group")}
                   className="px-3 py-2 rounded-md border border-input bg-background text-sm"

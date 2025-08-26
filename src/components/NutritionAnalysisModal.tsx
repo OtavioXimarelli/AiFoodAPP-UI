@@ -267,7 +267,7 @@ const NutritionAnalysisModal = ({ open, onOpenChange, recipe, analysis }: Nutrit
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[95vh] overflow-hidden bg-background/95 backdrop-blur-xl border border-border/20 shadow-2xl w-[95vw] sm:w-full">
+  <DialogContent className="max-w-6xl max-h-[95vh] overflow-hidden bg-white/95 border border-border/20 shadow-lg w-[95vw] sm:w-full">
         {/* Subtle Close Button */}
         <Button 
           variant="ghost" 

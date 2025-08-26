@@ -2,6 +2,7 @@ import RecipeCard from "./RecipeCard";
 import { useLocalRecipes } from "@/hooks/useLocalRecipes";
 import { useEffect } from "react";
 import { Recipe } from "@/lib/types";
+import { formatPrepTime, formatCalories, formatServings } from "@/lib/format";
 
 const RecipeResults = () => {
   const { saveRecipes } = useLocalRecipes();
@@ -12,7 +13,7 @@ const RecipeResults = () => {
       id: "1",
       title: "Salada de Quinoa com Frango Grelhado",
       description: "Uma refeição completa e balanceada, rica em proteínas e fibras",
-      prepTime: "25 min",
+  prepTime: "25 min",
       servings: 2,
       calories: 320,
       difficulty: "Fácil" as const,
@@ -24,7 +25,7 @@ const RecipeResults = () => {
       id: "2", 
       title: "Bowl de Brócolis e Quinoa Proteico",
       description: "Combinação perfeita de vegetais e grãos para uma refeição nutritiva",
-      prepTime: "20 min",
+  prepTime: "20 min",
       servings: 1,
       calories: 280,
       difficulty: "Fácil" as const,
@@ -36,7 +37,7 @@ const RecipeResults = () => {
       id: "3",
       title: "Frango Teriyaki com Vegetais",
       description: "Versão saudável do clássico teriyaki com molho caseiro",
-      prepTime: "35 min", 
+  prepTime: "35 min", 
       servings: 3,
       calories: 410,
       difficulty: "Médio" as const,
@@ -52,7 +53,7 @@ const RecipeResults = () => {
       id: recipe.id,
       name: recipe.title,
       description: recipe.description,
-      nutritionalInfo: [`${recipe.calories} calorias`, `${recipe.servings} porções`],
+      nutritionalInfo: [formatCalories(recipe.calories) ?? `${recipe.calories} cal`, formatServings(recipe.servings) ?? `${recipe.servings} porções`],
       instructions: recipe.instructions,
       ingredientsList: recipe.ingredients.map(ingredient => ({
         name: ingredient,
@@ -68,6 +69,13 @@ const RecipeResults = () => {
     }));
 
     // Salvar automaticamente as receitas geradas
+    // normalize some display fields
+    recipesToSave.forEach(r => {
+      r.prepTime = r.prepTime; // keep original but UI will format
+      r.calories = r.calories;
+      r.servings = r.servings;
+    });
+
     saveRecipes(recipesToSave);
   }, [saveRecipes]); // Remove mockRecipes dependency to avoid infinite loop
 

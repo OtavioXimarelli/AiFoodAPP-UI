@@ -1,10 +1,12 @@
 import axios from "axios";
 
-// With the proxy setup, we can use relative URLs for API requests
-// This ensures cookies work properly across domains
-const useProxy = true; // Set to true to use proxy setup
-const rawBaseURL = useProxy ? '' : (import.meta.env.VITE_API_BASE_URL || "http://localhost:8080");
-// No need to modify base URL with proxy - paths are relative
+// By default prefer the live API endpoint (disable proxy). Override with VITE_API_BASE_URL in env.
+// If you need to use a local proxy for cookie handling during development, set VITE_USE_PROXY=true.
+const useProxy = (import.meta.env.VITE_USE_PROXY === 'true') || false;
+const rawBaseURL = useProxy
+  ? ''
+  : (import.meta.env.VITE_API_BASE_URL || "https://api.yourapp.com");
+// Final base URL used by axios
 const baseURL = rawBaseURL;
 
 // Função utilitária para garantir que os caminhos de API não tenham duplicação do prefixo /api

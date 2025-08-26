@@ -1,84 +1,87 @@
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { useAuthStore } from "@/store/authStore";
+import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
-import { ChefHat, LogIn, LayoutDashboard, LogOut } from "lucide-react";
-import { EnhancedClickSpark } from "@/components/ui/enhanced-click-spark";
-import GlassSurface from "@/components/GlassSurface/GlassSurface";
+import { ChefHat, LogIn, LogOut, User } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import SimpleHeader from "./SimpleHeader";
 
-const Header = () => {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const logout = useAuthStore((s) => s.logout);
-  
+const Header = ({
+  containerClassName,
+  variant,
+}: {
+  containerClassName?: string;
+  variant?: "mobile" | "desktop";
+}) => {
+  const { isAuthenticated, user, logout } = useAuth();
+  const location = useLocation();
+
+  // keep header compact and near the top
+  const defaultContainer = "fixed top-3 left-3 right-3 z-50 mx-auto max-w-none pointer-events-auto";
+  const containerClass = containerClassName ?? defaultContainer;
+
+  const isHomePage = location.pathname === "/";
+
   return (
-    <header className="fixed top-3 left-3 right-3 z-50 mx-auto max-w-none">
-      <GlassSurface
-        borderRadius={28}
-        blur={23}
-        opacity={0.95}
-        backgroundOpacity={0.45}
-        className="w-full shadow-lg bg-transparent border border-white/5"
-      >
-        <div className="flex h-12 items-center px-4 sm:h-16 sm:px-6 md:px-12 lg:px-16 xl:px-20 w-full">
-          <EnhancedClickSpark className="flex items-center">
-            <Link
-              to="/"
-              className="flex items-center gap-2 sm:gap-4 font-bold text-lg sm:text-xl bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent hover:from-primary/80 hover:to-primary transition-all duration-300"
-            >
-              <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-primary/80 shadow-md hover:shadow-lg transition-all duration-300">
-                <ChefHat className="h-5 w-5 sm:h-7 sm:w-7 text-primary-foreground" />
-              </div>
-              {/* Hide text on very small screens, show from `sm` up */}
-              <div className="hidden sm:block">
-                <div className="text-xl sm:text-2xl font-bold">AI Food App</div>
-                <div className="text-sm text-muted-foreground font-normal">Receitas Saudáveis com IA</div>
-              </div>
-            </Link>
-          </EnhancedClickSpark>
+    <header className={containerClass}>
+      <div className={
+        isHomePage ?
+          "w-full rounded-[28px] bg-background/70 backdrop-blur-sm border border-border/10 shadow-sm" :
+          "w-full border-b border-border/50 bg-background/80 backdrop-blur-xl"
+      }>
+        <div className="flex h-10 items-center px-3 sm:h-12 sm:px-4 w-full">
+          <Link
+            to="/"
+            className="flex items-center gap-2 sm:gap-3 font-bold text-sm sm:text-base bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent"
+          >
+            <div className="p-1.5 rounded-lg bg-gradient-to-br from-primary to-primary/80 shadow-sm">
+              <ChefHat className="h-4 w-4 sm:h-5 sm:w-5 text-primary-foreground" />
+            </div>
+            <div className="hidden sm:block">
+              <div className="text-base font-semibold">AI Food App</div>
+            </div>
+          </Link>
 
-          <div className="ml-auto flex items-center gap-2 sm:gap-4">
+          <div className="ml-auto flex items-center gap-2 sm:gap-3">
             {!isAuthenticated ? (
               <div className="flex items-center gap-3">
-                <EnhancedClickSpark>
-                  <Link to="/login">
-                    <Button 
-                      size="default"
-                      aria-label="Entrar"
-                      className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/80 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-300 px-2 sm:px-6 py-2"
-                    >
-                      <LogIn className="h-4 w-4" />
-                      <span className="hidden sm:inline">Entrar</span>
-                    </Button>
-                  </Link>
-                </EnhancedClickSpark>
+                <Link to="/login">
+                  <Button 
+                    size="sm"
+                    aria-label="Entrar"
+                    className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/80 hover:to-primary shadow-sm transition-all duration-200 px-3 py-1.5 text-sm"
+                  >
+                    <LogIn className="h-4 w-4" />
+                    <span className="hidden sm:inline">Entrar</span>
+                  </Button>
+                </Link>
               </div>
             ) : (
               <div className="flex items-center gap-2 sm:gap-3">
-                <EnhancedClickSpark>
-                  <Link to="/dashboard">
-                    <Button 
-                      variant="outline" 
-                      size="default"
-                      aria-label="Dashboard"
-                      className="gap-2 hover:bg-primary/10 hover:text-primary hover:border-primary/20 transition-all duration-200 bg-background/50 border-white/20 px-2 sm:px-6 py-2"
-                    >
-                      <LayoutDashboard className="h-4 w-4" />
-                      <span className="hidden sm:inline">Dashboard</span>
-                    </Button>
-                  </Link>
-                </EnhancedClickSpark>
-                <EnhancedClickSpark>
-                  <Button 
-                    variant="outline" 
-                    size="default"
-                    aria-label="Sair"
-                    className="gap-2 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20 transition-all duration-200 bg-background/50 border-white/20 px-2 sm:px-6 py-2" 
-                    onClick={logout}
-                  >
-                    <LogOut className="h-4 w-4" />
-                    <span className="hidden sm:inline">Sair</span>
-                  </Button>
-                </EnhancedClickSpark>
+                {variant === "desktop" && user && (
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-8 w-8 ring-1 ring-primary/20 transition-all duration-150 cursor-pointer">
+                      <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-semibold">
+                        {user.name ? user.name.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="hidden xl:block">
+                      <p className="text-sm font-medium text-foreground">{user.name}</p>
+                      <p className="text-xs text-muted-foreground">{user.email}</p>
+                    </div>
+                  </div>
+                )}
+
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  aria-label="Sair"
+                  className="gap-2 hover:bg-destructive/10 hover:text-destructive transition-all duration-150 px-3 py-1.5"
+                  onClick={logout}
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span className="hidden sm:inline">Sair</span>
+                </Button>
               </div>
             )}
             <div className="ml-1">
@@ -86,7 +89,7 @@ const Header = () => {
             </div>
           </div>
         </div>
-      </GlassSurface>
+      </div>
     </header>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import './click-spark.css';
 
 interface SparkProps {
   id: string;
@@ -72,7 +73,7 @@ export const ClickSpark: React.FC<ClickSparkProps> = ({
           return (
             <motion.div
               key={spark.id}
-              className="absolute pointer-events-none z-50"
+              className="click-spark"
               style={{
                 left: spark.x - 2,
                 top: spark.y - 2,
@@ -98,13 +99,7 @@ export const ClickSpark: React.FC<ClickSparkProps> = ({
                 ease: [0.23, 1, 0.32, 1],
               }}
             >
-              <div
-                className="w-1 h-1 rounded-full"
-                style={{
-                  backgroundColor: color,
-                  boxShadow: `0 0 6px ${color}`,
-                }}
-              />
+              <div className="click-spark-dot" />
             </motion.div>
           );
         })}

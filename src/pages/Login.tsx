@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { ReactBitsCard, TextReveal } from "@/components/ui/reactbits-components";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
@@ -96,16 +97,14 @@ const Login = () => {
       <div className="absolute bottom-20 right-20 w-24 h-24 bg-accent/5 rounded-full blur-xl animate-float animate-delay-2s"></div>
       <div className="absolute top-1/2 left-10 w-16 h-16 bg-primary/10 rounded-full blur-lg animate-float animate-delay-4s"></div>
       
-      <div className="relative z-10 w-full max-w-md mx-auto p-6">
+  <div className="relative z-10 w-full max-w-md mx-auto p-6">
         {/* Header section */}
         <div className="text-center mb-8 animate-fade-in">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-3xl mb-6 shadow-lg shadow-primary/20">
             <ChefHat className="w-10 h-10 text-white" />
           </div>
           
-          <h1 className="text-4xl font-bold text-foreground mb-3">
-            Bem-vindo de volta
-          </h1>
+          <TextReveal className="text-4xl font-bold text-foreground mb-3">Bem-vindo de volta</TextReveal>
           
           <p className="text-lg text-muted-foreground mb-4">
             Acesse sua conta e continue criando receitas incríveis com IA
@@ -118,8 +117,9 @@ const Login = () => {
         </div>
 
         {/* Login Card */}
-        <Card className="bg-card/80 backdrop-blur-xl border border-border/50 shadow-2xl shadow-black/5 animate-scale-in">
-          <CardContent className="p-8">
+        <ReactBitsCard>
+          <Card className="border border-border/50 shadow-md shadow-black/5 animate-scale-in">
+            <CardContent className="p-8">
             <Button 
               onClick={handleGoogleLogin}
               className="w-full h-14 text-lg font-semibold bg-white hover:bg-gray-50 text-gray-800 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
@@ -163,7 +163,8 @@ const Login = () => {
               </div>
             </div>
           </CardContent>
-        </Card>
+          </Card>
+        </ReactBitsCard>
 
         {/* Bottom text */}
         <div className="text-center mt-6 animate-fade-in animate-delay-300ms">

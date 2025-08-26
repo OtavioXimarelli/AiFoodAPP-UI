@@ -16,6 +16,7 @@ import {
   Calendar,
   Star
 } from "lucide-react";
+import { formatPrepTime, formatCalories } from "@/lib/format";
 
 interface RecipeDetailModalProps {
   open: boolean;
@@ -39,7 +40,7 @@ const RecipeDetailModal = ({ open, onOpenChange, recipe }: RecipeDetailModalProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[95vh] overflow-hidden bg-background/95 backdrop-blur-xl border border-border/20 shadow-2xl w-[95vw] sm:w-full">
+  <DialogContent className="max-w-6xl max-h-[95vh] overflow-hidden bg-white/95 border border-border/20 shadow-lg w-[95vw] sm:w-full">
         {/* Subtle Close Button */}
         <Button 
           variant="ghost" 
@@ -84,15 +85,15 @@ const RecipeDetailModal = ({ open, onOpenChange, recipe }: RecipeDetailModalProp
                 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {recipe.prepTime && (
-                    <div className="flex items-center gap-3 p-3 bg-background/60 backdrop-blur-sm rounded-xl border border-border/20">
+                    <div className="flex items-center gap-3 p-3 bg-white/95 rounded-xl border border-border/20">
                       <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                         <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground font-medium">Tempo</p>
-                        <p className="font-semibold text-foreground">
-                          {typeof recipe.prepTime === 'string' ? recipe.prepTime : `${recipe.prepTime} min`}
-                        </p>
+                          <p className="font-semibold text-foreground">
+                            {formatPrepTime(recipe.prepTime) ?? 'N/A'}
+                          </p>
                       </div>
                     </div>
                   )}
@@ -114,7 +115,7 @@ const RecipeDetailModal = ({ open, onOpenChange, recipe }: RecipeDetailModalProp
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground font-medium">Calorias</p>
-                        <p className="font-semibold text-foreground">{recipe.calories}</p>
+                          <p className="font-semibold text-foreground">{formatCalories(recipe.calories) ?? 'N/A'}</p>
                       </div>
                     </div>
                   )}
@@ -135,7 +136,7 @@ const RecipeDetailModal = ({ open, onOpenChange, recipe }: RecipeDetailModalProp
                 {recipe.tags && recipe.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {recipe.tags.map((tag, index) => (
-                      <Badge key={index} variant="secondary" className="px-3 py-1 text-sm bg-background/80 backdrop-blur-sm border border-border/30">
+                      <Badge key={index} variant="secondary" className="px-3 py-1 text-sm bg-white/95 border border-border/30">
                         {tag}
                       </Badge>
                     ))}
@@ -146,7 +147,7 @@ const RecipeDetailModal = ({ open, onOpenChange, recipe }: RecipeDetailModalProp
 
             {/* Ingredients */}
             {recipe.ingredientsList && recipe.ingredientsList.length > 0 && (
-              <Card className="border-border/30 shadow-lg bg-background/50 backdrop-blur-sm">
+              <Card className="border-border/30 shadow-md bg-white/95">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-xl">
                     <div className="p-2 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-xl border border-green-200 dark:border-green-800">
@@ -180,7 +181,7 @@ const RecipeDetailModal = ({ open, onOpenChange, recipe }: RecipeDetailModalProp
 
             {/* Instructions */}
             {recipe.instructions && recipe.instructions.length > 0 && (
-              <Card className="border-border/30 shadow-lg bg-background/50 backdrop-blur-sm">
+              <Card className="border-border/30 shadow-md bg-white/95">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-xl">
                     <div className="p-2 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 rounded-xl border border-blue-200 dark:border-blue-800">
@@ -218,7 +219,7 @@ const RecipeDetailModal = ({ open, onOpenChange, recipe }: RecipeDetailModalProp
 
             {/* Nutritional Info */}
             {recipe.nutritionalInfo && recipe.nutritionalInfo.length > 0 && (
-              <Card className="border-border/30 shadow-lg bg-background/50 backdrop-blur-sm">
+              <Card className="border-border/30 shadow-md bg-white/95">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-xl">
                     <div className="p-2 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-xl border border-orange-200 dark:border-orange-800">

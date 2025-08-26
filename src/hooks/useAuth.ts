@@ -77,7 +77,7 @@ export const useAuth = () => {
     // Verificar logout em progresso apenas se não for órfão
     if (logoutInProgress && logoutTimestamp) {
       const timeSinceLogout = Date.now() - parseInt(logoutTimestamp);
-      if (timeSinceLogout < 10000) { // Só bloquear por 10 segundos max
+      if (timeSinceLogout < 15000) { // Só bloquear por 15 segundos max (extended guard)
         console.log('🔑 Logout in progress, skipping auth check');
         return;
       } else {
@@ -230,7 +230,38 @@ export const useAuth = () => {
       
       // Tentar fazer logout no servidor
       await authService.logout();
-      console.log('🔑 Server logout successful');
+      console.log('🔑 Server logout requested');
+
+      // Poll status endpoint to ensure server-side session was cleared before redirecting
+      try {
+        const maxWaitMs = 5000; // wait up to 5s
+        const pollInterval = 300;
+        const start = Date.now();
+        let confirmed = false;
+
+        while (Date.now() - start < maxWaitMs) {
+          try {
+            const status = await apiClient.getAuthStatus();
+            if (!status || status.authenticated !== true) {
+              confirmed = true;
+              break;
+            }
+          } catch (e) {
+            // ignore transient errors and retry
+          }
+          // small delay before next poll
+          // eslint-disable-next-line no-await-in-loop
+          await new Promise((r) => setTimeout(r, pollInterval));
+        }
+
+        if (confirmed) {
+          console.log('🔑 Server logout confirmed by status endpoint');
+        } else {
+          console.warn('🔑 Server logout not confirmed within timeout - continuing with client cleanup');
+        }
+      } catch (e) {
+        console.warn('🔑 Error while confirming server logout:', e);
+      }
       
     } catch (error) {
       console.error('🔑 Server logout failed:', error);

@@ -7,9 +7,22 @@ import { memo } from "react";
 import { ClickSpark } from "@/components/ui/click-spark";
 import { SpotlightCard } from "@/components/ui/spotlight-card";
 import { FluidGlass } from "@/components/ui/fluid-glass";
+import { useFoodItems } from "@/hooks/useFoodItems";
+import { useLocalRecipes } from "@/hooks/useLocalRecipes";
 
 const Hero = memo(() => {
   const { shouldReduceMotion } = useOptimizedAnimation();
+  const { foodItems } = useFoodItems();
+  const { storedRecipes } = useLocalRecipes();
+
+  const totalIngredients = Array.isArray(foodItems) ? foodItems.length : 0;
+  const totalRecipes = Array.isArray(storedRecipes) ? storedRecipes.length : 0;
+  // compute average calories from saved recipes (safe fallback)
+  const avgCalories = (() => {
+    if (!Array.isArray(storedRecipes) || storedRecipes.length === 0) return null;
+    const sum = storedRecipes.reduce((acc, r) => acc + (r.calories || 0), 0);
+    return Math.round(sum / storedRecipes.length) || null;
+  })();
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -108,24 +121,24 @@ const Hero = memo(() => {
               </ClickSpark>
 
               {/* Floating Nutrition Card */}
-              <AnimatedElement 
-                variant="scale" 
+              <AnimatedElement
+                variant="scale"
                 delay={0.8}
                 className="absolute -top-6 -right-6"
               >
                 <HoverAnimation scale={1.1} y={-3}>
                   <div className="bg-green-50 dark:bg-green-900/20 rounded-2xl border border-green-200 dark:border-green-800 shadow-lg p-4 transform -rotate-6 hover:rotate-0 transition-transform duration-500 will-change-transform">
                     <div className="text-center">
-                      <div className="text-lg font-bold text-green-600 dark:text-green-400">450</div>
-                      <div className="text-xs text-green-600 dark:text-green-400">Calorias</div>
+                      <div className="text-lg font-bold text-green-600 dark:text-green-400">{avgCalories ?? 450}</div>
+                      <div className="text-xs text-green-600 dark:text-green-400">{avgCalories ? 'Média de calorias' : 'Calorias (exemplo)'} </div>
                     </div>
                   </div>
                 </HoverAnimation>
               </AnimatedElement>
 
               {/* Floating Ingredients Card */}
-              <AnimatedElement 
-                variant="scale" 
+              <AnimatedElement
+                variant="scale"
                 delay={1}
                 className="absolute -bottom-4 -left-8"
               >
@@ -133,7 +146,7 @@ const Hero = memo(() => {
                   <div className="bg-orange-50 dark:bg-orange-900/20 rounded-2xl border border-orange-200 dark:border-orange-800 shadow-lg p-4 transform rotate-3 hover:rotate-0 transition-transform duration-500 will-change-transform">
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 bg-orange-500 rounded-full"></div>
-                      <div className="text-sm font-medium text-orange-600 dark:text-orange-400">5 Ingredientes</div>
+                      <div className="text-sm font-medium text-orange-600 dark:text-orange-400">{totalIngredients} {totalIngredients === 1 ? 'Ingrediente' : 'Ingredientes'}</div>
                     </div>
                   </div>
                 </HoverAnimation>

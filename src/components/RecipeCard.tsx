@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Clock, Users, Flame, BookmarkPlus, BookmarkCheck } from "lucide-react";
 import { useLocalRecipes } from "@/hooks/useLocalRecipes";
 import { Recipe } from "@/lib/types";
+import { formatPrepTime, formatCalories, formatServings } from "@/lib/format";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { EnhancedClickSpark } from "@/components/ui/enhanced-click-spark";
@@ -70,7 +71,11 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
       };
 
       const success = saveRecipes([recipeToSave]);
-      
+      const nutritionalInfo = [
+        formatCalories(recipe.calories) ?? `${recipe.calories} cal`,
+        formatServings(recipe.servings) ?? `${recipe.servings} porções`
+      ];
+
       if (success) {
         toast({
           title: "Receita salva!",
@@ -81,7 +86,6 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
         throw new Error("Falha ao salvar receita");
       }
     } catch (error) {
-      console.error('Erro ao salvar receita:', error);
       toast({
         title: "Erro ao salvar",
         description: "Não foi possível salvar a receita. Tente novamente.",
@@ -125,15 +129,15 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
         <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <Clock className="h-4 w-4" />
-            {recipe.prepTime || "N/A"}
+            {formatPrepTime(recipe.prepTime) ?? "N/A"}
           </div>
           <div className="flex items-center gap-1">
             <Users className="h-4 w-4" />
-            {recipe.servings} porções
+            {formatServings(recipe.servings) ?? 'N/A'}
           </div>
           <div className="flex items-center gap-1">
             <Flame className="h-4 w-4" />
-            {recipe.calories} cal
+            {formatCalories(recipe.calories) ?? 'N/A'}
           </div>
         </div>
 
