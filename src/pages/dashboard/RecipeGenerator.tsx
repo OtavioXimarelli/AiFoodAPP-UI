@@ -1,6 +1,8 @@
+import React, { useState, useCallback, useMemo, memo } from "react";
 import { useRecipes } from "@/hooks/useRecipes";
 import { useLocalRecipes } from "@/hooks/useLocalRecipes";
 import { useFoodItems } from "@/hooks/useFoodItems";
+import { usePerformance } from "@/hooks/usePerformance";
 import { Recipe } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,22 +30,24 @@ import toast from "react-hot-toast";
 import NutritionAnalysisModal from "@/components/NutritionAnalysisModal";
 import RecipeHistory from "@/components/RecipeHistory";
 import { EnhancedClickSpark } from "@/components/ui/enhanced-click-spark";
-import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-const RecipeGenerator = () => {
+const RecipeGenerator = memo(() => {
   const { recipes, loading, error, analysis, analyzingId, generateRecipe, analyzeRecipe, clearRecipes, clearError } = useRecipes();
   const { foodItems, loading: foodLoading } = useFoodItems();
   const { saveRecipes } = useLocalRecipes();
+  const { measureRender } = usePerformance('RecipeGenerator');
+  // Memoize state to prevent unnecessary re-renders
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [analysisModalOpen, setAnalysisModalOpen] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [selectedSavedRecipe, setSelectedSavedRecipe] = useState<Recipe | null>(null);
   const [recipeDetailModalOpen, setRecipeDetailModalOpen] = useState(false);
 
-  const handleGenerateRecipes = async () => {
+  // Optimize handlers with useCallback
+  const handleGenerateRecipes = useCallback(async () => {
     try {
       clearRecipes();
       const newRecipes = await generateRecipe();
@@ -54,9 +58,9 @@ const RecipeGenerator = () => {
     } catch (error: any) {
       toast.error(error.message || "Falha ao gerar receitas");
     }
-  };
+  }, [generateRecipe, saveRecipes, clearRecipes]);
 
-  const handleAnalyze = async (recipe: Recipe) => {
+  const handleAnalyze = useCallback(async (recipe: Recipe) => {
     if (!recipe.id) return;
     
     try {
@@ -68,12 +72,16 @@ const RecipeGenerator = () => {
     } catch (error: any) {
       toast.error(error.message || "Falha ao analisar receita");
     }
-  };
+  }, [analyzeRecipe]);
 
-  const handleViewSavedRecipe = (recipe: Recipe) => {
+  const handleViewSavedRecipe = useCallback((recipe: Recipe) => {
     setSelectedSavedRecipe(recipe);
     setRecipeDetailModalOpen(true);
-  };
+  }, []);
+
+  // Memoize computed values
+  const hasIngredients = useMemo(() => foodItems.length > 0, [foodItems.length]);
+  const canGenerateRecipes = useMemo(() => !loading && hasIngredients, [loading, hasIngredients]);
 
   if (error) {
     return (
@@ -96,7 +104,7 @@ const RecipeGenerator = () => {
       </div>
     );
   }
-
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background/80 to-background/60 pb-20 lg:pb-0">
       {/* Header */}
@@ -122,7 +130,7 @@ const RecipeGenerator = () => {
             </Button>
             <Button 
               onClick={handleGenerateRecipes}
-              disabled={loading || foodItems.length === 0}
+              disabled={!canGenerateRecipes}
               className="flex-1 sm:flex-none bg-primary hover:bg-primary/90 text-primary-foreground gap-2 shadow-lg shadow-primary/20"
             >
               {loading ? (
@@ -163,8 +171,8 @@ const RecipeGenerator = () => {
               }} />
             ) : (
               <>
-                {/* Ingredientes Disponíveis */}
-                {foodItems.length > 0 && (
+                {/* Ingredientes Disponíveis - Optimized */}
+                {hasIngredients && (
                   <Card className="bg-card border-border/50">
                     <CardHeader>
                       <CardTitle className="text-foreground flex items-center gap-2 text-lg">
@@ -324,8 +332,8 @@ const RecipeGenerator = () => {
           </div>
         )}
 
-        {/* Estado vazio - Sem ingredientes */}
-        {foodItems.length === 0 && !loading && !showHistory && (
+        {/* Estado vazio - Sem ingredientes - Optimized */}
+        {!hasIngredients && !loading && !showHistory && (
           <Card className="bg-card border-border/50">
             <CardContent className="p-8 sm:p-12 text-center">
               <div className="space-y-4">
@@ -347,8 +355,8 @@ const RecipeGenerator = () => {
           </Card>
         )}
 
-        {/* Estado vazio - Nenhuma receita gerada ainda */}
-        {recipes.length === 0 && !loading && foodItems.length > 0 && !showHistory && (
+        {/* Estado vazio - Nenhuma receita gerada ainda - Optimized */}
+        {recipes.length === 0 && !loading && hasIngredients && !showHistory && (
           <Card className="bg-card border-border/50">
             <CardContent className="p-8 sm:p-12 text-center">
               <div className="space-y-4">
@@ -392,6 +400,8 @@ const RecipeGenerator = () => {
       )}
     </div>
   );
-};
+});
+
+RecipeGenerator.displayName = 'RecipeGenerator';
 
 export default RecipeGenerator;

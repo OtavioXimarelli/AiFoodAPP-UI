@@ -1,5 +1,6 @@
-import { useState } from "react";
+import React, { useState, useEffect, useMemo, memo, useCallback } from "react";
 import { useFoodItems } from "@/hooks/useFoodItems";
+import { usePerformance } from "@/hooks/usePerformance";
 import { FoodItem, BasicFoodPayload, UpdateFoodPayload, FoodGroup, FOOD_GROUP_LABELS, validateFoodItem } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,20 +18,24 @@ import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { format, isAfter, differenceInDays, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { useEffect } from "react";
 import { EnhancedClickSpark } from "@/components/ui/enhanced-click-spark";
 
-const FoodInventory = () => {
+const FoodInventory = memo(() => {
   const { foodItems, loading, error, createFoodItem, updateFoodItem, deleteFoodItem, clearError } = useFoodItems();
+  const { measureRender } = usePerformance('FoodInventory');
 
-  // Safety check to ensure foodItems is always an array
-  const safeFoodItems = Array.isArray(foodItems) ? foodItems : [];
+  // Memoize food items to prevent unnecessary re-renders
+  const safeFoodItems = useMemo(() => 
+    Array.isArray(foodItems) ? foodItems : [], 
+    [foodItems]
+  );
 
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<FoodItem | null>(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
-  // Use simplified form for AI-enhanced food creation (per ENDPOINTS_SUMMARY.md)
+  
+  // Memoized form state
   const [form, setForm] = useState<BasicFoodPayload>({
     name: "",
     quantity: 1,
@@ -38,7 +43,8 @@ const FoodInventory = () => {
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-  const getFoodImage = (name: string) => {
+  // Memoize food image function to prevent recreation
+  const getFoodImage = useCallback((name: string) => {
     const foodImages: { [key: string]: string } = {
       'apple': 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400&h=300&fit=crop',
       'banana': 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=300&fit=crop',
@@ -48,7 +54,6 @@ const FoodInventory = () => {
       'bread': 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=300&fit=crop',
     };
     
-    // Safety check to prevent undefined/null errors
     if (!name || typeof name !== 'string') {
       return 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=300&fit=crop';
     }
@@ -60,10 +65,10 @@ const FoodInventory = () => {
       }
     }
     return 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=300&fit=crop';
-  };
+  }, []);
 
-  const getExpirationStatus = (expiration: string) => {
-    // Safety check for undefined/invalid expiration
+  // Memoize expiration status calculation for performance
+  const getExpirationStatus = useCallback((expiration: string) => {
     if (!expiration || typeof expiration !== 'string') {
       return { 
         status: 'unknown', 
@@ -75,7 +80,6 @@ const FoodInventory = () => {
 
     const expirationDate = new Date(expiration);
     
-    // Check if the date is valid
     if (isNaN(expirationDate.getTime())) {
       return { 
         status: 'invalid', 
@@ -110,9 +114,10 @@ const FoodInventory = () => {
         icon: '✅'
       };
     }
-  };
+  }, []);
 
-  const resetForm = () => {
+  // Optimize form reset with useCallback
+  const resetForm = useCallback(() => {
     setForm({
       name: "",
       quantity: 1,
@@ -120,7 +125,7 @@ const FoodInventory = () => {
     });
     setFormErrors({});
     setEditing(null);
-  };
+  }, []);
 
   // Mostrar modal de boas-vindas na primeira visita
   useEffect(() => {
@@ -742,6 +747,8 @@ const FoodInventory = () => {
       </Dialog>
     </div>
   );
-};
+});
+
+FoodInventory.displayName = 'FoodInventory';
 
 export default FoodInventory;

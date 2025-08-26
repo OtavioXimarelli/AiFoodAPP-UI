@@ -1,8 +1,11 @@
-import React, { useState, useMemo, memo } from "react";
+import React, { useState, useMemo, memo, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
+import { EnhancedClickSpark } from "@/components/ui/enhanced-click-spark";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
+import { usePerformance, useOptimizedAnimation } from "@/hooks/usePerformance";
 import { 
   ChefHat, 
   Package, 
@@ -13,15 +16,11 @@ import {
   Users,
   Award
 } from "lucide-react";
-import { 
-  OptimizedStatCard, 
-  OptimizedActionCard, 
-  OptimizedActivityItem,
-  withPerformanceOptimization 
-} from "@/components/ui/optimized-dashboard";
 
 const DashboardHome = memo(() => {
   const [activeCard, setActiveCard] = useState<string | null>(null);
+  const { metrics, measureRender } = usePerformance('DashboardHome');
+  const { shouldReduceMotion } = useOptimizedAnimation();
 
   // Memoize static data to prevent re-computation
   const stats = useMemo(() => [
@@ -85,35 +84,54 @@ const DashboardHome = memo(() => {
         </p>
       </div>
 
-      {/* Stats Grid */}
+      {/* Stats Grid - Optimized with memoization */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat, index) => (
-          <OptimizedStatCard 
-            key={stat.label}
-            label={stat.label}
-            value={stat.value}
-            icon={stat.icon}
-            color={stat.color}
-            index={index}
-          />
-        ))}
+        {stats.map((stat, index) => {
+          const StatIcon = stat.icon;
+          return (
+            <EnhancedClickSpark key={stat.label}>
+              <SpotlightCard className="p-6 hover:shadow-lg transition-shadow duration-200">
+                <div className="flex items-center space-x-2">
+                  <StatIcon className={`h-4 w-4 ${stat.color}`} />
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">
+                      {stat.label}
+                    </p>
+                    <p className="text-2xl font-bold">{stat.value}</p>
+                  </div>
+                </div>
+              </SpotlightCard>
+            </EnhancedClickSpark>
+          );
+        })}
       </div>
 
       {/* Quick Actions */}
       <div className="space-y-4">
         <h2 className="text-2xl font-semibold tracking-tight">Ações Rápidas</h2>
         <div className="grid gap-4 md:grid-cols-2">
-          {quickActions.map((action, index) => (
-            <OptimizedActionCard
-              key={action.title}
-              title={action.title}
-              description={action.description}
-              icon={action.icon}
-              href={action.href}
-              color={action.color}
-              index={index}
-            />
-          ))}
+          {quickActions.map((action, index) => {
+            const ActionIcon = action.icon;
+            return (
+              <EnhancedClickSpark key={action.title}>
+                <Link to={action.href}>
+                  <SpotlightCard className="group cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/10">
+                    <CardHeader className="flex flex-row items-center space-y-0 pb-2">
+                      <div className={`rounded-lg bg-gradient-to-br ${action.color} p-2`}>
+                        <ActionIcon className="h-4 w-4" />
+                      </div>
+                      <div className="ml-4 space-y-1">
+                        <CardTitle className="text-sm font-medium">
+                          {action.title}
+                        </CardTitle>
+                        <CardDescription>{action.description}</CardDescription>
+                      </div>
+                    </CardHeader>
+                  </SpotlightCard>
+                </Link>
+              </EnhancedClickSpark>
+            );
+          })}
         </div>
       </div>
 
@@ -121,15 +139,27 @@ const DashboardHome = memo(() => {
       <div className="space-y-4">
         <h2 className="text-2xl font-semibold tracking-tight">Atividade Recente</h2>
         <div className="grid gap-4">
-          {recentActivities.map((activity, index) => (
-            <OptimizedActivityItem
-              key={activity.title}
-              title={activity.title}
-              description={activity.description}
-              badge={activity.badge}
-              index={index}
-            />
-          ))}
+          {recentActivities.map((activity, index) => {
+            const BadgeIcon = activity.badge.icon;
+            return (
+              <EnhancedClickSpark key={activity.title}>
+                <SpotlightCard className="hover:shadow-md transition-shadow duration-200">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-1">
+                        <CardTitle className="text-base">{activity.title}</CardTitle>
+                        <CardDescription>{activity.description}</CardDescription>
+                      </div>
+                      <Badge variant={activity.badge.variant}>
+                        <BadgeIcon className="mr-1 h-3 w-3" />
+                        {activity.badge.text}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                </SpotlightCard>
+              </EnhancedClickSpark>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -138,4 +168,4 @@ const DashboardHome = memo(() => {
 
 DashboardHome.displayName = 'DashboardHome';
 
-export default withPerformanceOptimization(DashboardHome, 'DashboardHome');
+export default DashboardHome;
