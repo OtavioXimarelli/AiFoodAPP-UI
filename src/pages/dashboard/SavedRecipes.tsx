@@ -8,6 +8,8 @@ import { useLocalRecipes } from '@/hooks/useLocalRecipes';
 import { useToast } from '@/hooks/use-toast';
 import { Recipe } from '@/lib/types';
 import { EnhancedClickSpark } from '@/components/ui/enhanced-click-spark';
+import PageToolbar from '@/components/shared/PageToolbar';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   Search,
   Clock,
@@ -61,17 +63,10 @@ const SavedRecipes = ({ onViewRecipe }: SavedRecipesProps) => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            <ChefHat className="h-6 w-6" />
-            Receitas Salvas
-          </h2>
-          <p className="text-muted-foreground">
-            {storedRecipes.length} receita{storedRecipes.length !== 1 ? 's' : ''} na sua coleção
-          </p>
-        </div>
-      </div>
+      <PageToolbar 
+        title="Receitas Salvas" 
+        subtitle={`${storedRecipes.length} receita${storedRecipes.length !== 1 ? 's' : ''} na sua coleção`}
+      />
 
       {/* Search */}
       <div className="relative">
@@ -112,22 +107,34 @@ const SavedRecipes = ({ onViewRecipe }: SavedRecipesProps) => {
                     <div className="flex justify-between items-start">
                       <CardTitle className="text-lg line-clamp-2">{recipe.name}</CardTitle>
                       <div className="flex gap-1 ml-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => onViewRecipe(recipe)}
-                          className="h-8 w-8 p-0"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteRecipe(recipe.id!)}
-                          className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              aria-label="Ver receita"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => onViewRecipe(recipe)}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Ver receita</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              aria-label="Excluir receita"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteRecipe(recipe.id!)}
+                              className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Excluir receita</TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
                   </CardHeader>

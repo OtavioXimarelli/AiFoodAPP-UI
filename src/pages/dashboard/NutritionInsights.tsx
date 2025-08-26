@@ -20,6 +20,7 @@ import {
   Package
 } from "lucide-react";
 import { FOOD_GROUP_LABELS } from "@/lib/types";
+import PageToolbar from "@/components/shared/PageToolbar";
 
 const groupIcons: Record<string, any> = {
   VEGETABLES: Leaf,
@@ -85,31 +86,26 @@ const NutritionInsights = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-accent/20 to-background pb-20 lg:pb-0">
-      {/* Header */}
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-lg border-b border-border/30 p-6 shadow-sm">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-              Insights Nutricionais
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              Análise completa dos seus alimentos e padrões nutricionais
-            </p>
-          </div>
-          <div className="flex gap-1 bg-muted/50 backdrop-blur-sm rounded-xl p-1.5 border border-border/20">
-            {periods.map((period) => (
-              <Button
-                key={period.value}
-                variant={selectedPeriod === period.value ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setSelectedPeriod(period.value)}
-                className="text-xs px-4 py-2 rounded-lg font-medium transition-all duration-200"
-              >
-                {period.label}
-              </Button>
-            ))}
-          </div>
-        </div>
+      <div className="sticky top-0 z-40 py-4">
+        <PageToolbar
+          title="Insights Nutricionais"
+          subtitle="Análise completa dos seus alimentos e padrões nutricionais"
+          actions={
+            <div className="flex gap-1 bg-muted/50 backdrop-blur-sm rounded-xl p-1.5 border border-border/20">
+              {periods.map((period) => (
+                <Button
+                  key={period.value}
+                  variant={selectedPeriod === period.value ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setSelectedPeriod(period.value)}
+                  className="text-xs px-4 py-2 rounded-lg font-medium transition-all duration-200"
+                >
+                  {period.label}
+                </Button>
+              ))}
+            </div>
+          }
+        />
       </div>
 
       <div className="p-6 space-y-8 max-w-7xl mx-auto">

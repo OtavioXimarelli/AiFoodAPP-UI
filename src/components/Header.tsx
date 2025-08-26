@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
-import { ChefHat, LogIn, LogOut, User } from "lucide-react";
+import { ChefHat, LogIn, LogOut, User, Info } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import GlassSurface from "@/components/GlassSurface/GlassSurface";
 import SimpleHeader from "./SimpleHeader";
@@ -10,9 +10,11 @@ import SimpleHeader from "./SimpleHeader";
 const Header = ({
   containerClassName,
   variant,
+  onInfoClick,
 }: {
   containerClassName?: string;
   variant?: "mobile" | "desktop";
+  onInfoClick?: () => void;
 }) => {
   const { isAuthenticated, user, logout } = useAuth();
   const location = useLocation();
@@ -43,6 +45,19 @@ const Header = ({
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
             {!isAuthenticated ? (
               <div className="flex items-center gap-3">
+                {onInfoClick && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    aria-label="Estado do aplicativo"
+                    className="gap-2 px-2.5 py-1.5"
+                    onClick={onInfoClick}
+                    title="Estado do aplicativo"
+                  >
+                    <Info className="h-4 w-4" />
+                    <span className="hidden sm:inline">Info</span>
+                  </Button>
+                )}
                 <Link to="/login">
                   <Button 
                     size="sm"
@@ -68,6 +83,20 @@ const Header = ({
                       <p className="text-xs text-muted-foreground">{user.email}</p>
                     </div>
                   </div>
+                )}
+
+                {onInfoClick && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    aria-label="Estado do aplicativo"
+                    className="gap-2 px-2.5 py-1.5"
+                    onClick={onInfoClick}
+                    title="Estado do aplicativo"
+                  >
+                    <Info className="h-4 w-4" />
+                    <span className="hidden sm:inline">Info</span>
+                  </Button>
                 )}
 
                 <Button 
@@ -95,10 +124,11 @@ const Header = ({
   // Non-home page header
   return (
     <header className={containerClass}>
-      <div className="w-full border-b border-border/50 bg-background/80 backdrop-blur-xl">
+      <GlassSurface className="w-full rounded-[28px] border border-white/10">
         <div className="flex h-10 items-center px-3 sm:h-12 sm:px-4 w-full">
           <Link
             to="/"
+            aria-label="Página inicial"
             className="flex items-center gap-2 sm:gap-3 font-bold text-sm sm:text-base bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent"
           >
             <div className="p-1.5 rounded-lg bg-gradient-to-br from-primary to-primary/80 shadow-sm">
@@ -112,6 +142,19 @@ const Header = ({
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
             {!isAuthenticated ? (
               <div className="flex items-center gap-3">
+                {onInfoClick && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    aria-label="Estado do aplicativo"
+                    className="gap-2 px-2.5 py-1.5"
+                    onClick={onInfoClick}
+                    title="Estado do aplicativo"
+                  >
+                    <Info className="h-4 w-4" />
+                    <span className="hidden sm:inline">Info</span>
+                  </Button>
+                )}
                 <Link to="/login">
                   <Button 
                     size="sm"
@@ -139,6 +182,20 @@ const Header = ({
                   </div>
                 )}
 
+                {onInfoClick && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    aria-label="Estado do aplicativo"
+                    className="gap-2 px-2.5 py-1.5"
+                    onClick={onInfoClick}
+                    title="Estado do aplicativo"
+                  >
+                    <Info className="h-4 w-4" />
+                    <span className="hidden sm:inline">Info</span>
+                  </Button>
+                )}
+
                 <Button 
                   variant="outline" 
                   size="sm"
@@ -156,7 +213,7 @@ const Header = ({
             </div>
           </div>
         </div>
-      </div>
+      </GlassSurface>
     </header>
   );
 };

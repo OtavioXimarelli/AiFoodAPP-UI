@@ -33,6 +33,8 @@ import { EnhancedClickSpark } from "@/components/ui/enhanced-click-spark";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import PageToolbar from "@/components/shared/PageToolbar";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const RecipeGenerator = memo(() => {
   const { recipes, loading, error, analysis, analyzingId, generateRecipe, analyzeRecipe, clearRecipes, clearError } = useRecipes();
@@ -107,46 +109,51 @@ const RecipeGenerator = memo(() => {
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background/80 to-background/60 pb-20 lg:pb-0">
-      {/* Header */}
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-xl border-b border-border/30 p-4 shadow-lg shadow-black/5">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <ChefHat className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-              </div>
-              Gerador de Receitas IA
-            </h1>
-            <p className="text-sm text-muted-foreground">Crie receitas personalizadas com seus ingredientes</p>
-          </div>
-          <div className="flex gap-2 w-full sm:w-auto">
-            <Button 
-              variant="outline"
-              onClick={() => setShowHistory(!showHistory)}
-              className="flex-1 sm:flex-none gap-2"
-            >
-              <History className="h-4 w-4" />
-              {showHistory ? 'Ocultar' : 'Histórico'}
-            </Button>
-            <Button 
-              onClick={handleGenerateRecipes}
-              disabled={!canGenerateRecipes}
-              className="flex-1 sm:flex-none bg-primary hover:bg-primary/90 text-primary-foreground gap-2 shadow-lg shadow-primary/20"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Gerando...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-4 w-4" />
-                  Gerar Receitas
-                </>
-              )}
-            </Button>
-          </div>
-        </div>
+      <div className="sticky top-0 z-40 py-4">
+        <PageToolbar
+          title="Gerador de Receitas IA"
+          subtitle="Crie receitas personalizadas com seus ingredientes"
+          actions={
+            <>
+              <Button 
+                aria-label={showHistory ? 'Ocultar histórico' : 'Mostrar histórico'}
+                variant="outline"
+                onClick={() => setShowHistory(!showHistory)}
+                className="gap-2"
+              >
+                <History className="h-4 w-4" />
+                {showHistory ? 'Ocultar' : 'Histórico'}
+              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span>
+                    <Button 
+                      aria-label="Gerar receitas"
+                      onClick={handleGenerateRecipes}
+                      disabled={!canGenerateRecipes}
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2 shadow-lg shadow-primary/20"
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Gerando...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="h-4 w-4" />
+                          Gerar Receitas
+                        </>
+                      )}
+                    </Button>
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {canGenerateRecipes ? 'Gerar receitas com seus ingredientes' : 'Adicione ingredientes para habilitar'}
+                </TooltipContent>
+              </Tooltip>
+            </>
+          }
+        />
       </div>
 
       <div className="p-4 space-y-6">

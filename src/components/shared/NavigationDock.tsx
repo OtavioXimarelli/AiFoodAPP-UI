@@ -5,10 +5,7 @@ import {
   Package, 
   ChefHat, 
   TrendingUp, 
-  BookOpen,
-  User,
-  LogOut,
-  Settings
+  BookOpen
 } from 'lucide-react';
 import { Dock } from '@/components/ui/dock';
 import { useAuth } from '@/hooks/useAuth';
@@ -30,39 +27,34 @@ const NavigationDock = () => {
       id: 'inventory',
       icon: <Package className="w-5 h-5" />,
       label: 'Despensa',
-      href: '/dashboard/food-inventory',
-      active: location.pathname === '/dashboard/food-inventory'
+      href: '/dashboard/food',
+      active: location.pathname === '/dashboard/food'
     },
     {
       id: 'recipes',
       icon: <ChefHat className="w-5 h-5" />,
       label: 'Receitas',
-      href: '/dashboard/recipe-generator',
-      active: location.pathname === '/dashboard/recipe-generator'
+      href: '/dashboard/recipes',
+      active: location.pathname === '/dashboard/recipes'
     },
     {
       id: 'insights',
       icon: <TrendingUp className="w-5 h-5" />,
       label: 'Insights',
-      href: '/dashboard/nutrition-insights',
-      active: location.pathname === '/dashboard/nutrition-insights'
+      href: '/dashboard/insights',
+      active: location.pathname === '/dashboard/insights'
     },
     {
       id: 'saved',
       icon: <BookOpen className="w-5 h-5" />,
       label: 'Salvos',
-      href: '/dashboard/saved-recipes',
-      active: location.pathname === '/dashboard/saved-recipes'
+      href: '/dashboard/saved',
+      active: location.pathname === '/dashboard/saved'
     }
   ];
 
   const handleNavigation = (href: string) => {
     navigate(href);
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate('/');
   };
 
   // Add navigation handlers to items
@@ -77,33 +69,8 @@ const NavigationDock = () => {
       <Dock
         items={navigationItems}
         position="bottom"
-        className="mb-6"
-      />
-
-      {/* User Actions Dock */}
-      <Dock
-        items={[
-          {
-            id: 'profile',
-            icon: <User className="w-5 h-5" />,
-            label: user?.name || 'Perfil',
-            onClick: () => navigate('/dashboard/profile')
-          },
-          {
-            id: 'settings',
-            icon: <Settings className="w-5 h-5" />,
-            label: 'Configurações',
-            onClick: () => navigate('/dashboard/settings')
-          },
-          {
-            id: 'logout',
-            icon: <LogOut className="w-5 h-5" />,
-            label: 'Sair',
-            onClick: handleLogout
-          }
-        ]}
-        position="bottom"
-        className="mb-20"
+  className=""
+  centerIndex={2}
       />
     </>
   );

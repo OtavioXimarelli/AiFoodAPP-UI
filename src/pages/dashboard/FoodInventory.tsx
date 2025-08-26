@@ -12,13 +12,15 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Plus, Trash2, Pencil, Calendar as CalendarIcon, Package, AlertTriangle, Loader2, Scale, Hash, CalendarDays, Info } from "lucide-react";
+import { Plus, Trash2, Pencil, Calendar as CalendarIcon, Package, AlertTriangle, Loader2, Scale, Hash, CalendarDays, Info, RefreshCw } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { format, isAfter, differenceInDays, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { EnhancedClickSpark } from "@/components/ui/enhanced-click-spark";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Progress } from "@/components/ui/progress";
 
 const FoodInventory = memo(() => {
   const { foodItems, loading, error, createFoodItem, updateFoodItem, deleteFoodItem, clearError } = useFoodItems();
@@ -43,13 +45,29 @@ const FoodInventory = memo(() => {
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-  // Remove mock food images - these will be handled by your backend
-  const getFoodImage = useCallback((name: string) => {
-    // Return a placeholder or handle images from your backend
-    return 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=300&fit=crop';
+  // Quick filter by group (persist to localStorage)
+  const [activeGroup, setActiveGroup] = useState<FoodGroup | 'all'>(() => {
+    const v = localStorage.getItem('food_filter_group');
+    return v && (v === 'all' || Object.keys(FOOD_GROUP_LABELS).includes(v))
+      ? (v as FoodGroup | 'all')
+      : 'all';
+  });
+  useEffect(() => {
+    localStorage.setItem('food_filter_group', activeGroup);
+  }, [activeGroup]);
+  // Filtro de status (tela atual)
+  const [statusFilter, setStatusFilter] = useState<'all' | 'expired' | 'expiring' | 'fresh'>('all');
+  // Ordenação (local)
+  const [sortBy, setSortBy] = useState<'relevance' | 'expSoon' | 'expFar' | 'qtyDesc' | 'qtyAsc' | 'nameAsc'>('relevance');
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setActiveGroup('all');
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, []);
-
-  // Memoize expiration status calculation for performance
+  
+  // Cálculo de status de validade (antes do uso em filtros/ordenação)
   const getExpirationStatus = useCallback((expiration: string) => {
     if (!expiration || typeof expiration !== 'string') {
       return { 
@@ -84,7 +102,7 @@ const FoodInventory = memo(() => {
     } else if (daysUntilExpiration <= 3) {
       return { 
         status: 'expiring', 
-        color: 'bg-yellow-500', 
+        color: 'bg-red-500', 
         text: `⏰ ${daysUntilExpiration} ${daysUntilExpiration === 1 ? 'dia restante' : 'dias restantes'}`,
         icon: '⚠️'
       };
@@ -97,6 +115,56 @@ const FoodInventory = memo(() => {
       };
     }
   }, []);
+  const displayedItems = useMemo(() => {
+    // 1) filtro por grupo
+    const groupFiltered = activeGroup === 'all' ? safeFoodItems : safeFoodItems.filter(i => i.foodGroup === activeGroup);
+    // 2) filtro por status
+    const statusFiltered = groupFiltered.filter((i) => {
+      if (statusFilter === 'all') return true;
+      const s = getExpirationStatus(i.expiration).status as 'expired' | 'expiring' | 'fresh' | 'invalid' | 'unknown';
+      return s === statusFilter;
+    });
+    // 3) ordenação
+    const withDerived = statusFiltered.map((i) => {
+      const exp = i.expiration ? new Date(i.expiration) : null;
+      const validDate = exp && !isNaN(exp.getTime()) ? exp : null;
+      const days = validDate ? differenceInDays(validDate, new Date()) : Number.POSITIVE_INFINITY;
+      return { item: i, exp: validDate, days };
+    });
+    withDerived.sort((a, b) => {
+      switch (sortBy) {
+        case 'expSoon':
+          return (a.days ?? Infinity) - (b.days ?? Infinity);
+        case 'expFar':
+          return (b.days ?? Infinity) - (a.days ?? Infinity);
+        case 'qtyDesc':
+          return (b.item.quantity || 0) - (a.item.quantity || 0);
+        case 'qtyAsc':
+          return (a.item.quantity || 0) - (b.item.quantity || 0);
+        case 'nameAsc':
+          return (a.item.name || '').localeCompare(b.item.name || '', 'pt-BR', { sensitivity: 'base' });
+        case 'relevance':
+        default: {
+          // Prioriza vencidos, depois expira hoje/expirando, depois frescos; dentro do grupo, mais próximos primeiro
+          const sA = getExpirationStatus(a.item.expiration).status;
+          const sB = getExpirationStatus(b.item.expiration).status;
+          const rank = (s: string) => (s === 'expired' ? 0 : s === 'expiring' ? 1 : 2);
+          const r = rank(sA) - rank(sB);
+          if (r !== 0) return r;
+          return (a.days ?? Infinity) - (b.days ?? Infinity);
+        }
+      }
+    });
+    return withDerived.map((x) => x.item);
+  }, [safeFoodItems, activeGroup, statusFilter, sortBy, getExpirationStatus]);
+
+  // Remove mock food images - these will be handled by your backend
+  const getFoodImage = useCallback((name: string) => {
+    // Return a placeholder or handle images from your backend
+    return 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=300&fit=crop';
+  }, []);
+
+  // Memoize expiration status calculation for performance (moved above usage)
 
   // Optimize form reset with useCallback
   const resetForm = useCallback(() => {
@@ -187,6 +255,22 @@ const FoodInventory = memo(() => {
     }
   };
 
+  // Quick renew helper: prefill form with new expiration and open edit dialog
+  const handleRenew = (item: FoodItem, days?: number) => {
+    setEditing(item);
+    const newExpiration = typeof days === 'number' ? addDays(new Date(), days) : (item.expiration ? new Date(item.expiration) : new Date());
+    setForm({
+      name: item.name || '',
+      quantity: item.quantity || 1,
+      expiration: !isNaN(newExpiration.getTime()) ? newExpiration.toISOString().split('T')[0] : ''
+    });
+    setOpen(true);
+    if (typeof days !== 'number') {
+      // open calendar to let user pick a date
+      setTimeout(() => setCalendarOpen(true), 0);
+    }
+  };
+
   if (error) {
     return (
       <div className="p-6">
@@ -211,9 +295,10 @@ const FoodInventory = memo(() => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background/80 to-background/60 pb-20 lg:pb-0 scrollbar-default">
-      {/* Header */}
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-xl border-b border-border/30 p-4 shadow-lg shadow-black/5">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      {/* Cabeçalho da página (sem vidro) */}
+      <div className="sticky top-0 z-40 p-3 md:p-4">
+        <div className="rounded-2xl bg-card border border-border shadow-sm">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-foreground">Despensa Inteligente</h1>
             <p className="text-sm text-muted-foreground">Gerencie seus alimentos com IA</p>
@@ -225,7 +310,7 @@ const FoodInventory = memo(() => {
                 Adicionar Alimento
               </Button>
             </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto custom-scrollbar bg-background/95 backdrop-blur-xl border border-border/20 shadow-2xl">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto custom-scrollbar bg-background border border-border/20 shadow-2xl">
             <DialogHeader className="space-y-4 pb-6 border-b border-border/10">
               <DialogTitle className="flex items-center gap-3 text-xl">
                 <div className="p-2 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent rounded-xl border border-primary/20 shadow-sm">
@@ -529,14 +614,82 @@ const FoodInventory = memo(() => {
             </form>
           </DialogContent>
           </Dialog>
+          </div>
+          {/* Filtros rápidos */}
+          <div className="mt-2 overflow-x-auto px-4 pb-4">
+            <div className="flex items-center gap-2 min-w-max">
+            <button
+              onClick={() => setActiveGroup('all')}
+              className={cn(
+                'px-3 py-1.5 rounded-full text-xs border transition-colors',
+                activeGroup === 'all' ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted/40 text-foreground/80 border-border/50 hover:bg-muted'
+              )}
+            >
+              Todas
+            </button>
+            {Object.entries(FOOD_GROUP_LABELS).map(([value, label]) => (
+              <button
+                key={value}
+                onClick={() => setActiveGroup(value as FoodGroup)}
+                className={cn(
+                  'px-3 py-1.5 rounded-full text-xs border transition-colors',
+                  activeGroup === (value as FoodGroup) ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted/40 text-foreground/80 border-border/50 hover:bg-muted'
+                )}
+              >
+                {label}
+              </button>
+            ))}
+            </div>
+            {/* Filtro por status + ordenação */}
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-2 overflow-x-auto">
+                <span className="text-[11px] text-muted-foreground whitespace-nowrap">Status:</span>
+                {[
+                  { v: 'all', label: 'Todos' },
+                  { v: 'expired', label: 'Vencidos' },
+                  { v: 'expiring', label: 'Expirando' },
+                  { v: 'fresh', label: 'Frescos' },
+                ].map((opt) => (
+                  <button
+                    key={opt.v}
+                    onClick={() => setStatusFilter(opt.v as any)}
+                    className={cn(
+                      'px-3 py-1.5 rounded-full text-xs border transition-colors',
+                      statusFilter === (opt.v as any)
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'bg-muted/40 text-foreground/80 border-border/50 hover:bg-muted'
+                    )}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] text-muted-foreground">Ordenar:</span>
+                <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+                  <SelectTrigger className="h-8 w-56 text-xs">
+                    <SelectValue placeholder="Ordenar" />
+                  </SelectTrigger>
+                  <SelectContent className="text-sm">
+                    <SelectItem value="relevance">Relevância (alertas primeiro)</SelectItem>
+                    <SelectItem value="expSoon">Validade (mais próximos)</SelectItem>
+                    <SelectItem value="expFar">Validade (mais distantes)</SelectItem>
+                    <SelectItem value="qtyDesc">Quantidade (maior primeiro)</SelectItem>
+                    <SelectItem value="qtyAsc">Quantidade (menor primeiro)</SelectItem>
+                    <SelectItem value="nameAsc">Nome (A-Z)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+        </div>
         </div>
       </div>
 
-      <div className="p-4 space-y-6">
-
+      {/* Content */}
+      {/* Loading / empty / filtered empty */}
       {loading ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin" />
+        <div className="flex items-center justify-center py-16 text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" />
           <span className="ml-2">Carregando alimentos...</span>
         </div>
       ) : safeFoodItems.length === 0 ? (
@@ -551,43 +704,147 @@ const FoodInventory = memo(() => {
             </Button>
           </CardContent>
         </Card>
+      ) : displayedItems.length === 0 ? (
+        <Card className="border-border bg-card">
+          <CardContent className="p-8 text-center text-sm text-muted-foreground">
+            Nenhum alimento nesta categoria.
+          </CardContent>
+        </Card>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {safeFoodItems.map((item) => {
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {displayedItems.map((item) => {
             const expirationStatus = getExpirationStatus(item.expiration);
             const tags = item.tags ? item.tags.split(',').map(tag => tag.trim()).filter(Boolean) : [];
+            const today = new Date();
+            const exp = item.expiration ? new Date(item.expiration) : null;
+            const validDate = exp && !isNaN(exp.getTime());
+            const daysLeft = validDate ? differenceInDays(exp!, today) : null;
+            const pct = daysLeft !== null ? Math.max(0, Math.min(100, (daysLeft / 30) * 100)) : null;
+            const isExpired = expirationStatus.status === 'expired';
+            const isExpiring = expirationStatus.status === 'expiring';
 
             return (
-              <Card key={item.id} className="bg-card border-border/50 overflow-hidden hover:shadow-lg hover:shadow-primary/10 hover:scale-[1.02] transition-all duration-300">
-                <AspectRatio ratio={16 / 9}>
+              <Card
+                key={item.id}
+                className={`relative group bg-card border border-border/40 overflow-hidden rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ${isExpired ? 'ring-1 ring-red-500/20 border-red-300/60' : ''} ${isExpiring ? 'ring-1 ring-red-500/20 border-red-300/60' : ''}`}
+                aria-label={isExpired ? 'Alimento vencido' : isExpiring ? 'Alimento prestes a vencer' : undefined}
+              >
+                <div className={`absolute inset-x-0 top-0 h-1 ${expirationStatus.color}`} />
+
+                <AspectRatio ratio={16 / 9} className="relative">
                   <img
                     src={getFoodImage(item.name || 'Unknown')}
                     alt={item.name || 'Alimento'}
-                    className="object-cover w-full h-full"
+                    className={`object-cover w-full h-full transition-transform duration-300 group-hover:scale-[1.03] ${isExpired ? 'grayscale saturate-50 opacity-90' : ''}`}
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent" />
+                  {isExpired && (
+                    <>
+                      <div className="absolute inset-0 bg-red-500/10" />
+                      <div className="absolute top-2 left-2 z-10">
+                        <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-red-600 text-white shadow">Vencido</span>
+                      </div>
+                      <div className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-red-600/90 text-white shadow">
+                        <AlertTriangle className="h-3.5 w-3.5" />
+                      </div>
+                    </>
+                  )}
+                  {isExpiring && !isExpired && (
+                    <>
+                      <div className="absolute inset-0 bg-red-500/5" />
+                      <div className="absolute top-2 left-2 z-10">
+                        <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-red-600 text-white shadow">
+                          {daysLeft === 0 ? 'Expira hoje' : `Expira em ${daysLeft}d`}
+                        </span>
+                      </div>
+                      <div className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-red-600/90 text-white shadow">
+                        <AlertTriangle className="h-3.5 w-3.5" />
+                      </div>
+                    </>
+                  )}
                 </AspectRatio>
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
-                    <CardTitle className="text-base text-foreground">{item.name || 'Alimento sem nome'}</CardTitle>
+                    <CardTitle className="text-base text-foreground flex items-center gap-1">
+                      {isExpired && <AlertTriangle className="h-3.5 w-3.5 text-red-600" />}
+                      {isExpiring && !isExpired && <AlertTriangle className="h-3.5 w-3.5 text-red-600" />}
+                      {item.name || 'Alimento sem nome'}
+                    </CardTitle>
                     <Badge className={`${expirationStatus.color} text-white text-xs font-medium ${expirationStatus.status === 'expired' ? 'animate-pulse' : ''}`}>
                       {expirationStatus.text}
                     </Badge>
                   </div>
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <div className="mt-1 h-px bg-gradient-to-r from-transparent via-border/60 to-transparent" />
+                  <div className="mt-2 flex items-center gap-4 text-xs text-muted-foreground">
                     <div className="flex items-center gap-1">
                       <Package className="h-3 w-3" />
                       <span>Qtd: {item.quantity}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <CalendarIcon className="h-3 w-3" />
-                      <span>
-                        {item.expiration && !isNaN(new Date(item.expiration).getTime()) 
-                          ? format(new Date(item.expiration), 'dd/MM/yyyy', { locale: ptBR })
+                      <span className={cn(daysLeft !== null && daysLeft < 0 ? 'text-red-600 line-through' : '')}>
+                        {validDate 
+                          ? format(exp!, 'dd/MM/yyyy', { locale: ptBR })
                           : 'Data inválida'
                         }
                       </span>
                     </div>
                   </div>
+                  {/* Days-left progress */}
+                  {pct !== null && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="mt-3">
+                          <div className="flex justify-between text-[10px] text-muted-foreground">
+                            <span>Validade</span>
+                            <span>
+                              {daysLeft !== null && daysLeft < 0
+                                ? 'Vencido'
+                                : daysLeft === 0
+                                ? 'Hoje'
+                                : `${daysLeft}d`}
+                            </span>
+                          </div>
+          <Progress
+                            value={pct ?? 0}
+                            aria-label="Progresso de validade (0-30 dias)"
+                            title={
+                              validDate
+                                ? daysLeft !== null && daysLeft < 0
+                                  ? `Vencido em ${format(exp!, 'dd/MM/yyyy', { locale: ptBR })} (há ${Math.abs(daysLeft!)} dias)`
+                                  : daysLeft === 0
+                                  ? `Expira hoje (${format(exp!, 'dd/MM/yyyy', { locale: ptBR })})`
+                                  : `Expira em ${format(exp!, 'dd/MM/yyyy', { locale: ptBR })} (${daysLeft} dias)`
+                                : 'Data inválida'
+                            }
+                            className="mt-1 h-1.5"
+                            indicatorClassName={
+                              expirationStatus.status === 'expired'
+                                ? 'bg-red-500'
+                                : expirationStatus.status === 'expiring'
+            ? 'bg-red-500'
+                                : expirationStatus.status === 'fresh'
+                                ? 'bg-green-500'
+                                : 'bg-gray-400'
+                            }
+                          />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {validDate ? (
+                          daysLeft !== null && daysLeft < 0 ? (
+                            <span>Vencido em {format(exp!, 'dd/MM/yyyy', { locale: ptBR })} (há {Math.abs(daysLeft!)} dias)</span>
+                          ) : daysLeft === 0 ? (
+                            <span>Expira hoje ({format(exp!, 'dd/MM/yyyy', { locale: ptBR })})</span>
+                          ) : (
+                            <span>Expira em {format(exp!, 'dd/MM/yyyy', { locale: ptBR })} ({daysLeft} dias)</span>
+                          )
+                        ) : (
+                          <span>Data inválida</span>
+                        )}
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="space-y-3">
@@ -623,19 +880,64 @@ const FoodInventory = memo(() => {
                     )}
 
                     <div className="flex justify-end gap-2 pt-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleEdit(item)}
-                        className="h-8 w-8 p-0"
-                      >
-                        <Pencil className="h-3 w-3" />
-                      </Button>
+                      {(isExpired || isExpiring) && (
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-8 w-8 p-0"
+                                  title="Renovar validade"
+                                  aria-label="Renovar validade"
+                                >
+                                  <RefreshCw className="h-3 w-3" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>Renovar validade</TooltipContent>
+                            </Tooltip>
+                          </PopoverTrigger>
+                          <PopoverContent align="end" className="w-44 p-2 bg-background border border-border/30 rounded-md shadow-md">
+                            <div className="grid gap-1">
+                              {[{label:'Hoje', days:0},{label:'+3 dias', days:3},{label:'+7 dias', days:7},{label:'+30 dias', days:30}].map(opt => (
+                                <Button key={opt.label} variant="ghost" size="sm" className="justify-start h-8" onClick={() => handleRenew(item, opt.days)}>
+                                  {opt.label}
+                                </Button>
+                              ))}
+                              <div className="my-1 h-px bg-border/40" />
+                              <Button variant="ghost" size="sm" className="justify-start h-8" onClick={() => handleRenew(item)}>
+                                Escolher data…
+                              </Button>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      )}
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleEdit(item)}
+                            className="h-8 w-8 p-0"
+                            title="Editar alimento"
+                            aria-label="Editar alimento"
+                          >
+                            <Pencil className="h-3 w-3" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Editar alimento</TooltipContent>
+                      </Tooltip>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button size="sm" variant="outline" className="h-8 w-8 p-0">
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button size="sm" variant="outline" className="h-8 w-8 p-0" title="Excluir alimento" aria-label="Excluir alimento">
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Excluir alimento</TooltipContent>
+                          </Tooltip>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
@@ -658,11 +960,10 @@ const FoodInventory = memo(() => {
           })}
         </div>
       )}
-      </div>
 
-      {/* Modal de Boas-vindas */}
-      <Dialog open={showWelcomeModal} onOpenChange={setShowWelcomeModal}>
-        <DialogContent className="max-w-lg bg-background/95 backdrop-blur-xl border border-border/20 shadow-2xl">
+       {/* Modal de Boas-vindas */}
+       <Dialog open={showWelcomeModal} onOpenChange={setShowWelcomeModal}>
+         <DialogContent className="max-w-lg bg-background border border-border/20 shadow-2xl">
           <DialogHeader className="space-y-4 pb-6 border-b border-border/10">
             <DialogTitle className="flex items-center gap-3 text-xl">
               <div className="p-2 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 rounded-xl border border-blue-500/30 shadow-sm">

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const SimpleHeader: React.FC = () => {
   return (
@@ -7,9 +8,9 @@ const SimpleHeader: React.FC = () => {
         <h1 className="text-lg font-bold">Dashboard</h1>
         <nav>
           <ul className="flex space-x-4">
-            <li><a href="/dashboard" className="hover:underline">Home</a></li>
-            <li><a href="/profile" className="hover:underline">Profile</a></li>
-            <li><a href="/settings" className="hover:underline">Settings</a></li>
+            <li><Link to="/dashboard" className="hover:underline">Home</Link></li>
+            <li><Link to="/dashboard/profile" className="hover:underline">Profile</Link></li>
+            <li><Link to="/dashboard/settings" className="hover:underline">Settings</Link></li>
           </ul>
         </nav>
       </div>

@@ -28,6 +28,8 @@ import {
 } from "lucide-react";
 import { formatPrepTime, formatCalories, formatServings } from "@/lib/format";
 import { useToast } from "@/hooks/use-toast";
+import PageToolbar from "@/components/shared/PageToolbar";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const SavedDataPage = () => {
   const { user } = useAuth();
@@ -181,25 +183,23 @@ const SavedDataPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-6 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Dados Salvos</h1>
-          <p className="text-muted-foreground">
-            Gerencie suas receitas e análises nutricionais salvas
-          </p>
-        </div>
-
-        {/* Search */}
-        <div className="relative w-full lg:w-80">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar receitas ou análises..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
+  <div className="sticky top-0 z-40 py-2 -mx-4 px-4">
+        <PageToolbar
+          title="Dados Salvos"
+          subtitle="Gerencie suas receitas e análises nutricionais salvas"
+          actions={
+            <div className="relative w-full lg:w-80">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar receitas ou análises..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+                aria-label="Buscar receitas ou análises"
+              />
+            </div>
+          }
+        />
       </div>
 
       {/* Storage Info */}
@@ -318,14 +318,20 @@ const SavedDataPage = () => {
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <CardTitle className="text-lg line-clamp-2">{recipe.name}</CardTitle>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => deleteRecipe(recipe.id!)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            aria-label="Excluir receita"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => deleteRecipe(recipe.id!)}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Excluir receita</TooltipContent>
+                      </Tooltip>
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -396,14 +402,20 @@ const SavedDataPage = () => {
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <CardTitle className="text-lg line-clamp-2">{analysis.title}</CardTitle>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => deleteAnalysis(analysis.id!)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            aria-label="Excluir análise"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => deleteAnalysis(analysis.id!)}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Excluir análise</TooltipContent>
+                      </Tooltip>
                     </div>
                   </CardHeader>
                   <CardContent>

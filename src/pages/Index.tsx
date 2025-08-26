@@ -2,6 +2,8 @@ import { useEffect, memo, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
+import AppStatusDialog from "@/components/shared/AppStatusDialog";
+import { useState } from "react";
 import Hero from "@/components/Hero";
 import { ReactBitsCard, ParticleBackground, TextReveal } from "@/components/ui/reactbits-components";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -166,6 +168,8 @@ const Index = () => {
     );
   }
 
+  const [showAppStatus, setShowAppStatus] = useState(false);
+
   return (
     <PageTransition>
       <div className="min-h-screen relative overflow-hidden">
@@ -175,16 +179,17 @@ const Index = () => {
         
         {/* Subtle animated elements */}
         <div className="absolute top-20 left-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse opacity-30" />
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-accent/5 rounded-full blur-3xl animate-pulse opacity-40" style={{ animationDelay: '2s' }} />
+  <div className="absolute bottom-20 right-10 w-80 h-80 bg-accent/5 rounded-full blur-3xl animate-pulse opacity-40 animate-delay-2s" />
         
         {/* Content container */}
         <div className="relative z-10 pt-24">
-          <Header />
+          <Header onInfoClick={() => setShowAppStatus(true)} />
           <div className="relative">
             <Hero />
             {/* Decorative particle background for larger screens */}
             <ParticleBackground particleCount={30} className="hidden lg:block" />
           </div>
+          <AppStatusDialog open={showAppStatus} onOpenChange={setShowAppStatus} />
         
         {/* Features Section */}
         <section className="py-24 px-4 relative" data-section="features">
