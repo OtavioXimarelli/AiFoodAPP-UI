@@ -11,6 +11,8 @@ export default defineConfig({
         manualChunks: undefined,
       },
     },
+    // Force rebuild to clear TypeScript cache
+    emptyOutDir: true,
   },
   resolve: {
     alias: {
@@ -19,7 +21,7 @@ export default defineConfig({
   },
   server: {
     host: '::',
-    port: 8082,
+    port: 8080,
     proxy: {
       '/api': {
         target: 'http://localhost:8080',
