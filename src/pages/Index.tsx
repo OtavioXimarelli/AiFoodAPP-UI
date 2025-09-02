@@ -72,6 +72,7 @@ const Index = () => {
   const { isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
   const { reportPerformanceIssue } = usePerformance('IndexPage');
+  const [showAppStatus, setShowAppStatus] = useState(false);
 
   // Redirect authenticated users to dashboard
   useEffect(() => {
@@ -167,8 +168,6 @@ const Index = () => {
       </div>
     );
   }
-
-  const [showAppStatus, setShowAppStatus] = useState(false);
 
   return (
     <PageTransition>
