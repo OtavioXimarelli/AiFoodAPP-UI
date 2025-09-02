@@ -327,7 +327,7 @@ const Index = () => {
                     </Button>
                   </ReactBitsCard>
                   <ReactBitsCard variant="hover-glow" className="w-auto">
-                    <Button asChild size="lg" variant="outline" className="border-2 border-white/30 text-white bg-white/10 hover:bg-white hover:text-primary hover:border-white backdrop-blur-sm px-8 py-4 text-lg font-semibold h-auto shadow-lg transition-all duration-300">
+                    <Button asChild size="lg" variant="outline" className="border-2 border-primary/60 text-primary bg-background/50 hover:bg-primary hover:text-primary-foreground hover:border-primary backdrop-blur-sm px-8 py-4 text-lg font-semibold h-auto shadow-lg transition-all duration-300 dark:border-white/30 dark:text-white dark:bg-white/10 dark:hover:bg-white dark:hover:text-primary dark:hover:border-white">
                       <Link to="/login">
                         <Users className="mr-3 h-6 w-6" />
                         Fazer Login
