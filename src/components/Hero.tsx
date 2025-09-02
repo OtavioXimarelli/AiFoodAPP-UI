@@ -75,7 +75,7 @@ const Hero = memo(() => {
                        }}
                        variant="outline" 
                        size="lg"
-                       className="w-full sm:w-auto border-2 border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 px-8 py-4 text-base font-semibold backdrop-blur-sm"
+                       className="w-full sm:w-auto border-2 border-primary/80 bg-background/80 text-primary hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 px-8 py-4 text-base font-semibold backdrop-blur-sm shadow-md"
                      >
                        <Play className="mr-2 h-4 w-4" />
                        Ver Demonstração
