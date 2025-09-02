@@ -301,17 +301,17 @@ const Index = () => {
               
               <AnimatedElement variant="slideUp" delay={0.2}>
                 <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-                  Transforme sua cozinha em um
+                  Revolucione sua
                   <span className="block bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent mt-2">
-                    laboratório de sabores
+                    experiência culinária
                   </span>
                 </h2>
               </AnimatedElement>
               
               <AnimatedElement variant="fadeIn" delay={0.3}>
                 <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
-                  Descubra o futuro da culinária com nossa plataforma alimentada por IA. 
-                  <span className="font-bold text-white">Crie, explore e inove</span> na sua cozinha.
+                  Descubra o poder da inteligência artificial aplicada à culinária. 
+                  <span className="font-bold text-white">Crie receitas incríveis</span> com os ingredientes que você tem em casa.
                 </p>
               </AnimatedElement>
               
@@ -322,7 +322,7 @@ const Index = () => {
                     <Button asChild size="lg" className="bg-white text-primary hover:bg-white/95 shadow-2xl px-8 py-4 text-lg font-semibold h-auto transition-all duration-300 border-0">
                       <Link to="/login">
                         <Sparkles className="mr-3 h-6 w-6" />
-                        Começar Grátis Hoje
+                        Começar Agora
                       </Link>
                     </Button>
                   </ReactBitsCard>
@@ -342,15 +342,15 @@ const Index = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-white/80 text-sm">
                   <div className="flex items-center justify-center gap-2">
                     <CheckCircle className="w-5 h-5" />
-                    <span>Sem cartão de crédito</span>
+                    <span>100% Gratuito</span>
                   </div>
                   <div className="flex items-center justify-center gap-2">
                     <CheckCircle className="w-5 h-5" />
-                    <span>Cancele quando quiser</span>
+                    <span>Acesso Instantâneo</span>
                   </div>
                   <div className="flex items-center justify-center gap-2">
                     <CheckCircle className="w-5 h-5" />
-                    <span>Suporte brasileiro</span>
+                    <span>Suporte Brasileiro</span>
                   </div>
                 </div>
               </AnimatedElement>
