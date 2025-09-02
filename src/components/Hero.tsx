@@ -54,41 +54,41 @@ const Hero = memo(() => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
                 <ClickSpark count={8} color="hsl(var(--primary))">
                   <HoverAnimation scale={1.05}>
-                    <Button 
-                      onClick={() => {
-                        window.location.href = '/register';
-                      }}
-                      size="lg" 
-                      className="w-full sm:w-auto bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-lg hover:shadow-xl px-8 py-4 text-base font-semibold transition-all duration-300"
-                    >
+                     <Button 
+                       onClick={() => {
+                         window.location.href = '/register';
+                       }}
+                       size="lg" 
+                       className="w-full sm:w-auto bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-lg hover:shadow-xl px-8 py-4 text-base font-semibold transition-all duration-300 border border-primary/20"
+                     >
                       <Sparkles className="mr-2 h-5 w-5" />
                       Começar Grátis Agora
                     </Button>
                   </HoverAnimation>
                 </ClickSpark>
-                <ClickSpark count={6} color="hsl(var(--accent))">
-                  <HoverAnimation scale={1.02}>
-                    <Button 
-                      onClick={() => {
-                        const featuresSection = document.querySelector('[data-section="features"]');
-                        featuresSection?.scrollIntoView({ behavior: 'smooth' });
-                      }}
-                      variant="outline" 
-                      size="lg"
-                      className="w-full sm:w-auto border-primary/30 text-primary hover:bg-primary/10 hover:border-primary transition-all duration-300 px-8 py-4 text-base font-semibold backdrop-blur-sm"
-                    >
-                      <Play className="mr-2 h-4 w-4" />
-                      Ver Demonstração
-                    </Button>
-                  </HoverAnimation>
-                </ClickSpark>
+                 <ClickSpark count={6} color="hsl(var(--accent))">
+                   <HoverAnimation scale={1.02}>
+                     <Button 
+                       onClick={() => {
+                         const featuresSection = document.querySelector('[data-section="features"]');
+                         featuresSection?.scrollIntoView({ behavior: 'smooth' });
+                       }}
+                       variant="outline" 
+                       size="lg"
+                       className="w-full sm:w-auto border-2 border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 px-8 py-4 text-base font-semibold backdrop-blur-sm"
+                     >
+                       <Play className="mr-2 h-4 w-4" />
+                       Ver Demonstração
+                     </Button>
+                   </HoverAnimation>
+                 </ClickSpark>
               </div>
             </AnimatedElement>
 
             <AnimatedElement variant="fadeIn" delay={0.7}>
               {/* Trust Indicators */}
               <div className="mt-8 text-sm text-muted-foreground">
-                <p>✓ Teste grátis • ✓ Sem cartão de crédito • ✓ Cancele a qualquer momento</p>
+                <p>✓ 100% Gratuito • ✓ Acesso Instantâneo • ✓ Suporte Brasileiro</p>
               </div>
             </AnimatedElement>
           </StaggerContainer>
