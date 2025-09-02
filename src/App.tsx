@@ -10,6 +10,8 @@ import { sessionService } from "./services/sessionService";
 import { LoadingAnimation } from "@/components/ui/animated";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import './utils/logoutDebug'; // Import debug utilities
+import { DEV_CONFIG, logDevStatus } from "@/config/dev";
+import { DevBypass } from "@/components/shared/DevBypass";
 
 // Lazy load pages for better performance
 const Index = lazy(() => import("./pages/Index"));
@@ -54,6 +56,9 @@ const PageLoader = () => (
 const App = () => {
   // Initialize session service
   useEffect(() => {
+    // Log status de desenvolvimento
+    logDevStatus();
+    
     // Inicializar apenas se não estivermos na página de login ou callback do OAuth2
     const shouldInitSession = !window.location.pathname.includes('/login') && 
                               !window.location.pathname.includes('/oauth2/callback') &&
@@ -160,8 +165,26 @@ const App = () => {
                   <Route path="/register" element={<Login />} />
                   <Route path="/oauth2/callback" element={<Login />} />
                   <Route path="/login/oauth2/code/google" element={<Login />} />
-                  {/* Temporary redirect all protected routes to login */}
-                  <Route path="/dashboard/*" element={<Login />} />
+                  
+                  {/* Rotas do dashboard - apenas em desenvolvimento */}
+                  {DEV_CONFIG.ENABLE_DEV_ACCESS ? (
+                    <Route path="/dev-dashboard/*" element={
+                      <DevBypass>
+                        <DashboardLayout>
+                          <Routes>
+                            <Route index element={<DashboardHome />} />
+                            <Route path="inventory" element={<FoodInventory />} />
+                            <Route path="recipes" element={<RecipeGenerator />} />
+                            <Route path="nutrition" element={<NutritionInsights />} />
+                            <Route path="saved" element={<SavedData />} />
+                          </Routes>
+                        </DashboardLayout>
+                      </DevBypass>
+                    } />
+                  ) : (
+                    /* Redirect protected routes to login in production */
+                    <Route path="/dashboard/*" element={<Login />} />
+                  )}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>

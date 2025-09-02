@@ -13,6 +13,7 @@ import { AnimatedElement, StaggerContainer, HoverAnimation, PageTransition, Load
 import { useIntersectionObserver } from "@/hooks/useScrollAnimation";
 import { usePerformance } from "@/hooks/usePerformance";
 import { ChefHat, Sparkles, Shield, BarChart3, ArrowRight, Users, Zap, Heart, Check, Brain, Clock, Trophy, Star, Bot, Target, TrendingUp, Activity, Award, Leaf, Dumbbell, Microscope, Quote, CheckCircle, Smartphone, Cloud } from "lucide-react";
+import { DevAccess } from "@/components/DevAccess";
 
 // Memoized FeatureCard component for better performance
 const FeatureCard = memo<{
@@ -183,6 +184,9 @@ const Index = () => {
         {/* Content container */}
         <div className="relative z-10 pt-24">
           <Header onInfoClick={() => setShowAppStatus(true)} />
+          <div className="container mx-auto px-4">
+            <DevAccess />
+          </div>
           <div className="relative">
             <Hero />
             {/* Decorative particle background for larger screens */}
