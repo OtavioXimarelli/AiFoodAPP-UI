@@ -157,18 +157,11 @@ const App = () => {
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/oauth2/callback" element={<OAuth2Callback />} />
-                  <Route path="/login/oauth2/code/google" element={<OAuth2Callback />} />
-                  <Route element={<ProtectedRoute />}>
-                    <Route path="/dashboard" element={<DashboardLayout />}>
-                      <Route index element={<DashboardHome />} />
-                      <Route path="food" element={<FoodInventory />} />
-                      <Route path="recipes" element={<RecipeGenerator />} />
-                      <Route path="insights" element={<NutritionInsights />} />
-                      <Route path="saved" element={<SavedData />} />
-                    </Route>
-                  </Route>
+                  <Route path="/register" element={<Login />} />
+                  <Route path="/oauth2/callback" element={<Login />} />
+                  <Route path="/login/oauth2/code/google" element={<Login />} />
+                  {/* Temporary redirect all protected routes to login */}
+                  <Route path="/dashboard/*" element={<Login />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>

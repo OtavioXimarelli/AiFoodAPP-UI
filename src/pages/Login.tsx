@@ -71,19 +71,8 @@ const Login = () => {
     checkAuthStatus();
   }, [isAuthenticated, navigate, from, checkAuthentication]);
 
-  const handleGoogleLogin = async () => {
-    try {
-      // Marcar que estamos iniciando o processo de login OAuth
-      sessionStorage.setItem('oauth_login_in_progress', 'true');
-      // Marcar quando iniciamos o login
-      sessionStorage.setItem('oauth_login_started_at', new Date().toISOString());
-      await redirectToLogin('google');
-    } catch (error) {
-      console.error('🔑 Failed to start Google login:', error);
-      // Clear the OAuth markers if login failed
-      sessionStorage.removeItem('oauth_login_in_progress');
-      sessionStorage.removeItem('oauth_login_started_at');
-    }
+  const handleBackToHome = () => {
+    navigate('/');
   };
 
   return (
@@ -104,15 +93,15 @@ const Login = () => {
             <ChefHat className="w-10 h-10 text-white" />
           </div>
           
-          <TextReveal className="text-4xl font-bold text-foreground mb-3">Bem-vindo de volta</TextReveal>
+          <TextReveal className="text-4xl font-bold text-foreground mb-3">Sistema Temporariamente Desabilitado</TextReveal>
           
           <p className="text-lg text-muted-foreground mb-4">
-            Acesse sua conta e continue criando receitas incríveis com IA
+            O login está temporariamente desabilitado para manutenção. Volte em breve!
           </p>
           
-          <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-2">
+          <Badge className="bg-orange-100 text-orange-700 border-orange-200 px-4 py-2">
             <Lock className="w-3 h-3 mr-2" />
-            Login Seguro
+            Em Manutenção
           </Badge>
         </div>
 
@@ -121,29 +110,21 @@ const Login = () => {
           <Card className="border border-border/50 shadow-md shadow-black/5 animate-scale-in">
             <CardContent className="p-8">
             <Button 
-              onClick={handleGoogleLogin}
-              className="w-full h-14 text-lg font-semibold bg-white hover:bg-gray-50 text-gray-800 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-              variant="outline"
+              onClick={handleBackToHome}
+              className="w-full h-14 text-lg font-semibold bg-primary hover:bg-primary/90 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+              variant="default"
             >
               <div className="flex items-center justify-center gap-4">
-                <div className="flex items-center justify-center w-8 h-8 bg-white rounded-full shadow-sm">
-                  <Chrome className="h-5 w-5 text-gray-600" />
-                </div>
-                <span>Entrar com Google</span>
-                <Sparkles className="h-5 w-5 text-primary" />
+                <ChefHat className="h-5 w-5" />
+                <span>Voltar ao Início</span>
               </div>
             </Button>
             
             <div className="mt-6 text-center">
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Ao entrar, você concorda com nossos{" "}
-                <a href="#" className="text-primary hover:underline font-medium">
-                  termos de serviço
-                </a>{" "}
-                e{" "}
-                <a href="#" className="text-primary hover:underline font-medium">
-                  política de privacidade
-                </a>
+                Estamos trabalhando para melhorar sua experiência.{" "}
+                <br />
+                Por favor, volte em breve para acessar todas as funcionalidades!
               </p>
             </div>
 
@@ -169,7 +150,7 @@ const Login = () => {
         {/* Bottom text */}
         <div className="text-center mt-6 animate-fade-in animate-delay-300ms">
           <p className="text-sm text-muted-foreground">
-            Primeira vez aqui? O login com Google já cria sua conta automaticamente! 🎉
+            Explore nossa landing page enquanto trabalhamos nas melhorias! 🚀
           </p>
         </div>
       </div>
