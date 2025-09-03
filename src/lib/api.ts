@@ -5,7 +5,7 @@ import axios from "axios";
 const useProxy = (import.meta.env.VITE_USE_PROXY === 'true') || false;
 const rawBaseURL = useProxy
   ? ''
-  : (import.meta.env.VITE_API_BASE_URL || "56.125.128.85:8080");
+  : (import.meta.env.VITE_API_BASE_URL || "https://api.aifoodapp.site");
 // Final base URL used by axios
 const baseURL = rawBaseURL;
 
