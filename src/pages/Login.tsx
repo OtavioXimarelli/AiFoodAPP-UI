@@ -5,7 +5,7 @@ import { ReactBitsCard, TextReveal } from "@/components/ui/reactbits-components"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
-import { Chrome, Loader2, ChefHat, Sparkles, Lock } from "lucide-react";
+import { Chrome, ChefHat, Sparkles } from "lucide-react";
 import { apiClient } from "@/lib/api";
 
 const Login = () => {
@@ -71,6 +71,17 @@ const Login = () => {
     checkAuthStatus();
   }, [isAuthenticated, navigate, from, checkAuthentication]);
 
+  const handleGoogleLogin = async () => {
+    try {
+      console.log("🔄 Login: Initiating Google login...");
+      sessionStorage.setItem('oauth_login_in_progress', 'true');
+      await redirectToLogin('google');
+    } catch (error) {
+      console.error("❌ Login: Google login failed", error);
+      sessionStorage.removeItem('oauth_login_in_progress');
+    }
+  };
+
   const handleBackToHome = () => {
     navigate('/');
   };
@@ -93,64 +104,80 @@ const Login = () => {
             <ChefHat className="w-10 h-10 text-white" />
           </div>
           
-          <TextReveal className="text-4xl font-bold text-foreground mb-3">Sistema Temporariamente Desabilitado</TextReveal>
+          
+          <TextReveal className="text-4xl font-bold text-foreground mb-3">Bem-vindo de volta!</TextReveal>
           
           <p className="text-lg text-muted-foreground mb-4">
-            O login está temporariamente desabilitado para manutenção. Volte em breve!
+            Entre na sua conta para acessar todas as funcionalidades
           </p>
-          
-          <Badge className="bg-orange-100 text-orange-700 border-orange-200 px-4 py-2">
-            <Lock className="w-3 h-3 mr-2" />
-            Em Manutenção
-          </Badge>
         </div>
 
         {/* Login Card */}
         <ReactBitsCard>
           <Card className="border border-border/50 shadow-md shadow-black/5 animate-scale-in">
+            <CardHeader className="text-center pb-4">
+              <CardTitle className="text-2xl font-bold">Entrar na Conta</CardTitle>
+            </CardHeader>
             <CardContent className="p-8">
-            <Button 
-              onClick={handleBackToHome}
-              className="w-full h-14 text-lg font-semibold bg-primary hover:bg-primary/90 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300"
-              variant="default"
-            >
-              <div className="flex items-center justify-center gap-4">
-                <ChefHat className="h-5 w-5" />
-                <span>Voltar ao Início</span>
+              {/* Google Login Button */}
+              <Button 
+                onClick={handleGoogleLogin}
+                className="w-full h-14 text-lg font-semibold bg-white hover:bg-gray-50 text-gray-900 border border-gray-300 shadow-lg hover:shadow-xl transition-all duration-300"
+                variant="outline"
+              >
+                <div className="flex items-center justify-center gap-4">
+                  <Chrome className="h-5 w-5 text-blue-500" />
+                  <span>Continuar com Google</span>
+                </div>
+              </Button>
+              
+              <div className="mt-6 text-center">
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Ao continuar, você concorda com nossos{" "}
+                  <a href="#" className="text-primary hover:underline">Termos de Serviço</a>
+                  {" "}e{" "}
+                  <a href="#" className="text-primary hover:underline">Política de Privacidade</a>
+                </p>
               </div>
-            </Button>
-            
-            <div className="mt-6 text-center">
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Estamos trabalhando para melhorar sua experiência.{" "}
-                <br />
-                Por favor, volte em breve para acessar todas as funcionalidades!
-              </p>
-            </div>
 
-            {/* Features highlight */}
-            <div className="mt-8 grid grid-cols-2 gap-4 pt-6 border-t border-border/30">
-              <div className="text-center">
-                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-2">
-                  <Sparkles className="w-4 h-4 text-primary" />
+              {/* Features highlight */}
+              <div className="mt-8 grid grid-cols-2 gap-4 pt-6 border-t border-border/30">
+                <div className="text-center">
+                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-2">
+                    <Sparkles className="w-4 h-4 text-primary" />
+                  </div>
+                  <p className="text-xs text-muted-foreground">IA Avançada</p>
                 </div>
-                <p className="text-xs text-muted-foreground">IA Avançada</p>
-              </div>
-              <div className="text-center">
-                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-2">
-                  <ChefHat className="w-4 h-4 text-primary" />
+                <div className="text-center">
+                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-2">
+                    <ChefHat className="w-4 h-4 text-primary" />
+                  </div>
+                  <p className="text-xs text-muted-foreground">Receitas Personalizadas</p>
                 </div>
-                <p className="text-xs text-muted-foreground">Receitas Personalizadas</p>
               </div>
-            </div>
-          </CardContent>
+              
+              {/* Back to home button */}
+              <Button 
+                onClick={handleBackToHome}
+                variant="ghost"
+                className="w-full mt-4 text-muted-foreground hover:text-foreground"
+              >
+                ← Voltar ao Início
+              </Button>
+            </CardContent>
           </Card>
         </ReactBitsCard>
 
         {/* Bottom text */}
         <div className="text-center mt-6 animate-fade-in animate-delay-300ms">
           <p className="text-sm text-muted-foreground">
-            Explore nossa landing page enquanto trabalhamos nas melhorias! 🚀
+            Novo por aqui?{" "}
+            <button 
+              onClick={handleGoogleLogin}
+              className="text-primary hover:underline font-medium"
+            >
+              Criar uma conta gratuita
+            </button>
           </p>
         </div>
       </div>
