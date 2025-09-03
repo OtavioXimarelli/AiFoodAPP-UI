@@ -91,26 +91,26 @@ export const authService = {
     }
   },
 
-  // Redirect to OAuth2 login - using the API client for proper handling
+  // Redirect to OAuth2 login
   async redirectToLogin(provider: string = 'google'): Promise<void> {
     try {
-      console.log("🔑 Initiating OAuth2 login via API client...");
-      await apiClient.initiateOAuth2Login(provider);
-    } catch (error) {
-      console.error("🔑 Failed to initiate OAuth2 login:", error);
+      console.log("🔑 Iniciando redirecionamento para o login OAuth2...");
       
-      // Fallback to direct redirect if API client fails
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
-      const url = new URL(apiBaseUrl);
-      const oauthUrl = `${url.protocol}//${url.host}/oauth2/authorization/${provider}`;
-
-      console.log("🔑 Fallback - redirecting directly to OAuth2 login:", oauthUrl);
+      // A URL base da API deve vir das suas variáveis de ambiente
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "https://api.aifoodapp.site";
       
-      // Mark OAuth login in progress
-      sessionStorage.setItem('oauth_login_in_progress', 'true');
-      sessionStorage.setItem('oauth_login_started_at', new Date().toISOString());
+      // Monta a URL de autorização completa. 
+      // Nota: O caminho NÃO tem /api porque o security filter do Spring
+      // intercepta /oauth2/authorization antes do context-path.
+      const oauthUrl = `${apiBaseUrl}/oauth2/authorization/${provider}`;
       
+      console.log("🔑 Redirecionando o navegador para:", oauthUrl);
+      
+      // Isto força o navegador a navegar para a página de login do Google
       window.location.href = oauthUrl;
+
+    } catch (error) {
+      console.error("🔑 Falha ao iniciar o login OAuth2:", error);
     }
   },
 
