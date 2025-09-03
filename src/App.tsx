@@ -166,8 +166,17 @@ const App = () => {
                   <Route path="/oauth2/callback" element={<Login />} />
                   <Route path="/login/oauth2/code/google" element={<Login />} />
                   
-                  {/* Rotas do dashboard - apenas em desenvolvimento */}
-                  {DEV_CONFIG.ENABLE_DEV_ACCESS ? (
+                  {/* Rotas protegidas do dashboard para usuários normais */}
+                  <Route path="/dashboard" element={<ProtectedRoute />}>
+                    <Route path="" element={<DashboardLayout><DashboardHome /></DashboardLayout>} />
+                    <Route path="inventory" element={<DashboardLayout><FoodInventory /></DashboardLayout>} />
+                    <Route path="recipes" element={<DashboardLayout><RecipeGenerator /></DashboardLayout>} />
+                    <Route path="nutrition" element={<DashboardLayout><NutritionInsights /></DashboardLayout>} />
+                    <Route path="saved" element={<DashboardLayout><SavedData /></DashboardLayout>} />
+                  </Route>
+
+                  {/* Rotas de desenvolvimento - apenas em localhost */}
+                  {DEV_CONFIG.ENABLE_DEV_ACCESS && (
                     <Route path="/dev-dashboard/*" element={
                       <DevBypass>
                         <DashboardLayout>
@@ -181,9 +190,6 @@ const App = () => {
                         </DashboardLayout>
                       </DevBypass>
                     } />
-                  ) : (
-                    /* Redirect protected routes to login in production */
-                    <Route path="/dashboard/*" element={<Login />} />
                   )}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

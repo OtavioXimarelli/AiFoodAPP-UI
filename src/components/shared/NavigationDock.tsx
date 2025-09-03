@@ -16,8 +16,8 @@ const NavigationDock = () => {
   const location = useLocation();
   const { user, logout } = useAuth();
 
-  // Define base path based on development mode
-  const basePath = DEV_CONFIG.ENABLE_DEV_ACCESS ? '/dev-dashboard' : '/dashboard';
+  // Always use /dashboard for production navigation - dev routes are separate
+  const basePath = '/dashboard';
 
   const mainNavigationItems = [
     {
