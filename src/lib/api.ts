@@ -630,7 +630,7 @@ export class ApiClient {
       
       // With proxy setup, use relative URL to ensure same-origin OAuth2 flow
       // This will be proxied to backend by Vite
-      const oauthUrl = `/oauth2/authorization/${provider}`;
+      const oauthUrl = `https://api.aifoodapp.site/oauth2/authorization/${provider}`;
       
       console.log("🔑 Redirecting to OAuth2 endpoint (via proxy):", oauthUrl);
       
