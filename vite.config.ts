@@ -34,4 +34,9 @@ export default defineConfig(({ mode }) => ({
       },
     },
   },
+  // Allow preview to accept requests for the deployed host used in debugging
+  preview: {
+    // Add hosts that are allowed to access the preview server
+    allowedHosts: ['aifoodapp.site'],
+  },
 }))
