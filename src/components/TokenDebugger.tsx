@@ -1,13 +1,18 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { foodService } from "@/services/foodService";
-import { recipeService } from "@/services/recipeService";
-import toast from "react-hot-toast";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { foodService } from '@/services/foodService';
+import { recipeService } from '@/services/recipeService';
+import toast from 'react-hot-toast';
 
 const TokenDebugger = () => {
-  const [status, setStatus] = useState({ isAuthenticated: false, hasToken: false, tokenLength: 0, tokenPreview: '' });
+  const [status, setStatus] = useState({
+    isAuthenticated: false,
+    hasToken: false,
+    tokenLength: 0,
+    tokenPreview: '',
+  });
   const [loading, setLoading] = useState(false);
 
   const refreshStatus = () => {
@@ -31,8 +36,9 @@ const TokenDebugger = () => {
     }
   };
 
-  const testFoodList = () => testProtectedRoute("GET /api/foods/list", foodService.getFoodItems);
-  const testRecipeGen = () => testProtectedRoute("GET /api/recipes/gen", recipeService.generateRecipes);
+  const testFoodList = () => testProtectedRoute('GET /api/foods/list', foodService.getFoodItems);
+  const testRecipeGen = () =>
+    testProtectedRoute('GET /api/recipes/gen', recipeService.generateRecipes);
 
   return (
     <Card className="w-full max-w-md">
@@ -50,18 +56,18 @@ const TokenDebugger = () => {
           <h4 className="font-semibold">Authentication Status</h4>
           <div className="grid grid-cols-2 gap-2 text-sm">
             <div>Authenticated:</div>
-            <Badge variant={status.isAuthenticated ? "default" : "destructive"}>
-              {status.isAuthenticated ? "Yes" : "No"}
+            <Badge variant={status.isAuthenticated ? 'default' : 'destructive'}>
+              {status.isAuthenticated ? 'Yes' : 'No'}
             </Badge>
-            
+
             <div>Has Token:</div>
-            <Badge variant={status.hasToken ? "default" : "destructive"}>
-              {status.hasToken ? "Yes" : "No"}
+            <Badge variant={status.hasToken ? 'default' : 'destructive'}>
+              {status.hasToken ? 'Yes' : 'No'}
             </Badge>
-            
+
             <div>Token Length:</div>
             <div className="text-xs font-mono">{status.tokenLength}</div>
-            
+
             <div>Token Preview:</div>
             <div className="text-xs font-mono">{status.tokenPreview}</div>
           </div>
@@ -71,16 +77,16 @@ const TokenDebugger = () => {
         <div className="space-y-2">
           <h4 className="font-semibold">Test Protected Routes</h4>
           <div className="flex flex-col gap-2">
-            <Button 
-              onClick={testFoodList} 
+            <Button
+              onClick={testFoodList}
               disabled={loading || !status.hasToken}
               variant="outline"
               size="sm"
             >
               Test Food List API
             </Button>
-            <Button 
-              onClick={testRecipeGen} 
+            <Button
+              onClick={testRecipeGen}
               disabled={loading || !status.hasToken}
               variant="outline"
               size="sm"

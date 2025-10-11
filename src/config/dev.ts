@@ -1,18 +1,19 @@
 // Configuração de desenvolvimento
 export const DEV_CONFIG = {
   // Ative esta flag para testar funcionalidades em desenvolvimento
-  ENABLE_DEV_ACCESS: process.env.NODE_ENV === 'development' && window.location.hostname === 'localhost',
-  
+  ENABLE_DEV_ACCESS:
+    process.env.NODE_ENV === 'development' && window.location.hostname === 'localhost',
+
   // Bypass de autenticação em desenvolvimento
   BYPASS_AUTH: process.env.NODE_ENV === 'development' && window.location.hostname === 'localhost',
-  
+
   // Usuário mock para desenvolvimento
   MOCK_USER: {
     id: 123,
     email: 'dev@localhost.com',
     name: 'Desenvolvedor',
-    role: 'user'
-  }
+    role: 'user',
+  },
 };
 
 // Hook para verificar se estamos em modo de desenvolvimento

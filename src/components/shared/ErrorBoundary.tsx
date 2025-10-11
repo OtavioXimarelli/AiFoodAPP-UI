@@ -25,7 +25,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
+
     this.setState({
       error,
       errorInfo,
@@ -73,9 +73,10 @@ export class ErrorBoundary extends Component<Props, State> {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-muted-foreground text-center">
-                Ocorreu um erro inesperado. Nossa equipe foi notificada e está trabalhando para corrigi-lo.
+                Ocorreu um erro inesperado. Nossa equipe foi notificada e está trabalhando para
+                corrigi-lo.
               </p>
-              
+
               {process.env.NODE_ENV === 'development' && this.state.error && (
                 <details className="bg-muted p-4 rounded-lg text-sm">
                   <summary className="cursor-pointer font-medium">
@@ -89,29 +90,17 @@ export class ErrorBoundary extends Component<Props, State> {
               )}
 
               <div className="flex flex-col sm:flex-row gap-3">
-                <Button 
-                  onClick={this.handleRetry}
-                  variant="outline"
-                  className="flex-1"
-                >
+                <Button onClick={this.handleRetry} variant="outline" className="flex-1">
                   <RefreshCw className="w-4 h-4 mr-2" />
                   Tentar Novamente
                 </Button>
-                <Button 
-                  onClick={this.handleGoHome}
-                  className="flex-1"
-                >
+                <Button onClick={this.handleGoHome} className="flex-1">
                   <Home className="w-4 h-4 mr-2" />
                   Ir para Início
                 </Button>
               </div>
 
-              <Button 
-                onClick={this.handleReload}
-                variant="ghost"
-                size="sm"
-                className="w-full"
-              >
+              <Button onClick={this.handleReload} variant="ghost" size="sm" className="w-full">
                 Recarregar Página
               </Button>
             </CardContent>
@@ -128,7 +117,7 @@ export class ErrorBoundary extends Component<Props, State> {
 export const useErrorHandler = () => {
   return (error: Error, errorInfo?: ErrorInfo) => {
     console.error('Error caught by hook:', error, errorInfo);
-    
+
     // Report error in production
     if (process.env.NODE_ENV === 'production') {
       // reportError(error, errorInfo);

@@ -1,16 +1,16 @@
-import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
-import { 
-  AlertTriangle, 
-  Mail, 
-  Send, 
-  Sparkles, 
+import { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import {
+  AlertTriangle,
+  Mail,
+  Send,
+  Sparkles,
   Construction,
   Heart,
   MessageCircle,
@@ -19,9 +19,9 @@ import {
   Clock,
   CheckCircle2,
   AlertCircle,
-  Zap
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+  Zap,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface AppStatusDialogProps {
   open: boolean;
@@ -30,8 +30,8 @@ interface AppStatusDialogProps {
 }
 
 const AppStatusDialog = ({ open, onOpenChange, userName }: AppStatusDialogProps) => {
-  const [suggestion, setSuggestion] = useState("");
-  const [userEmail, setUserEmail] = useState("");
+  const [suggestion, setSuggestion] = useState('');
+  const [userEmail, setUserEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const { toast } = useToast();
@@ -39,18 +39,18 @@ const AppStatusDialog = ({ open, onOpenChange, userName }: AppStatusDialogProps)
   const handleSendSuggestion = async () => {
     if (!suggestion.trim()) {
       toast({
-        title: "Ops! 🤔",
-        description: "Por favor, escreva sua sugestão antes de enviar.",
-        variant: "destructive",
+        title: 'Ops! 🤔',
+        description: 'Por favor, escreva sua sugestão antes de enviar.',
+        variant: 'destructive',
       });
       return;
     }
 
     if (!userEmail.trim()) {
       toast({
-        title: "Email necessário 📧",
-        description: "Por favor, informe seu email para que possamos responder.",
-        variant: "destructive",
+        title: 'Email necessário 📧',
+        description: 'Por favor, informe seu email para que possamos responder.',
+        variant: 'destructive',
       });
       return;
     }
@@ -59,36 +59,36 @@ const AppStatusDialog = ({ open, onOpenChange, userName }: AppStatusDialogProps)
 
     try {
       // Create mailto link
-      const subject = encodeURIComponent("Sugestão/Feedback - AI Food App");
+      const subject = encodeURIComponent('Sugestão/Feedback - AI Food App');
       const body = encodeURIComponent(
         `Olá equipe do AI Food App!\n\n` +
-        `Sugestão/Feedback: ${suggestion}\n\n` +
-        `De: ${userEmail}\n` +
-        `Usuário: ${userName || "Não informado"}\n\n` +
-        `Enviado através do modal de status do app.`
+          `Sugestão/Feedback: ${suggestion}\n\n` +
+          `De: ${userEmail}\n` +
+          `Usuário: ${userName || 'Não informado'}\n\n` +
+          `Enviado através do modal de status do app.`
       );
-      
+
       const mailtoLink = `mailto:dev@aifoodapp.site?subject=${subject}&body=${body}`;
-      
+
       // Try to open email client
       window.location.href = mailtoLink;
-      
+
       // Show success message
       toast({
-        title: "Feedback enviado! 🎉",
-        description: "Obrigado pelo feedback! Seu cliente de email foi aberto para enviar a mensagem.",
+        title: 'Feedback enviado! 🎉',
+        description:
+          'Obrigado pelo feedback! Seu cliente de email foi aberto para enviar a mensagem.',
       });
 
       // Clear form
-      setSuggestion("");
-      setUserEmail("");
+      setSuggestion('');
+      setUserEmail('');
       setShowFeedback(false);
-      
     } catch (error) {
       toast({
-        title: "Erro ao enviar 😅",
-        description: "Tente enviar diretamente para dev@aifoodapp.site",
-        variant: "destructive",
+        title: 'Erro ao enviar 😅',
+        description: 'Tente enviar diretamente para dev@aifoodapp.site',
+        variant: 'destructive',
       });
     } finally {
       setIsSubmitting(false);
@@ -97,58 +97,66 @@ const AppStatusDialog = ({ open, onOpenChange, userName }: AppStatusDialogProps)
 
   const appFeatures = [
     {
-      name: "Sistema de Login",
-      status: "completed",
+      name: 'Sistema de Login',
+      status: 'completed',
       icon: CheckCircle2,
-      description: "OAuth2 com Google implementado"
+      description: 'OAuth2 com Google implementado',
     },
     {
-      name: "Despensa Digital",
-      status: "completed",
+      name: 'Despensa Digital',
+      status: 'completed',
       icon: CheckCircle2,
-      description: "Gerenciamento básico de alimentos"
+      description: 'Gerenciamento básico de alimentos',
     },
     {
-      name: "Gerador de Receitas",
-      status: "development",
+      name: 'Gerador de Receitas',
+      status: 'development',
       icon: Code,
-      description: "IA para criação de receitas"
+      description: 'IA para criação de receitas',
     },
     {
-      name: "Análise Nutricional",
-      status: "development",
+      name: 'Análise Nutricional',
+      status: 'development',
       icon: Construction,
-      description: "Informações nutricionais detalhadas"
+      description: 'Informações nutricionais detalhadas',
     },
     {
-      name: "Unidades e Categorias",
-      status: "planning",
+      name: 'Unidades e Categorias',
+      status: 'planning',
       icon: Clock,
-      description: "Sistema completo de medidas"
+      description: 'Sistema completo de medidas',
     },
     {
-      name: "Notificações Push",
-      status: "planning",
+      name: 'Notificações Push',
+      status: 'planning',
       icon: AlertCircle,
-      description: "Alertas de vencimento"
-    }
+      description: 'Alertas de vencimento',
+    },
   ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "completed": return "bg-green-500/20 text-green-700 border-green-500/30";
-      case "development": return "bg-yellow-500/20 text-yellow-700 border-yellow-500/30";
-      case "planning": return "bg-blue-500/20 text-blue-700 border-blue-500/30";
-      default: return "bg-gray-500/20 text-gray-700 border-gray-500/30";
+      case 'completed':
+        return 'bg-green-500/20 text-green-700 border-green-500/30';
+      case 'development':
+        return 'bg-yellow-500/20 text-yellow-700 border-yellow-500/30';
+      case 'planning':
+        return 'bg-blue-500/20 text-blue-700 border-blue-500/30';
+      default:
+        return 'bg-gray-500/20 text-gray-700 border-gray-500/30';
     }
   };
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case "completed": return "✅ Pronto";
-      case "development": return "🚧 Desenvolvendo";
-      case "planning": return "📋 Planejado";
-      default: return "❓ Indefinido";
+      case 'completed':
+        return '✅ Pronto';
+      case 'development':
+        return '🚧 Desenvolvendo';
+      case 'planning':
+        return '📋 Planejado';
+      default:
+        return '❓ Indefinido';
     }
   };
 
@@ -175,7 +183,7 @@ const AppStatusDialog = ({ open, onOpenChange, userName }: AppStatusDialogProps)
                 <Construction className="h-6 w-6 text-primary" />
                 <h3 className="text-lg font-semibold">Status Atual</h3>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
                   <Zap className="h-4 w-4 text-green-600" />
@@ -188,9 +196,9 @@ const AppStatusDialog = ({ open, onOpenChange, userName }: AppStatusDialogProps)
               </div>
 
               <p className="text-sm text-muted-foreground mt-4 leading-relaxed">
-                O AI Food App está em <strong>desenvolvimento ativo</strong>. As funcionalidades principais 
-                estão operacionais, mas ainda estamos aprimorando recursos e adicionando novos campos 
-                para uma experiência mais completa.
+                O AI Food App está em <strong>desenvolvimento ativo</strong>. As funcionalidades
+                principais estão operacionais, mas ainda estamos aprimorando recursos e adicionando
+                novos campos para uma experiência mais completa.
               </p>
             </CardContent>
           </Card>
@@ -202,10 +210,13 @@ const AppStatusDialog = ({ open, onOpenChange, userName }: AppStatusDialogProps)
                 <CheckCircle2 className="h-6 w-6 text-primary" />
                 <h3 className="text-lg font-semibold">Progresso das Funcionalidades</h3>
               </div>
-              
+
               <div className="space-y-3">
                 {appFeatures.map((feature, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:border-border transition-colors">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:border-border transition-colors"
+                  >
                     <div className="flex items-center gap-3">
                       <feature.icon className="h-5 w-5 text-muted-foreground" />
                       <div>
@@ -213,7 +224,7 @@ const AppStatusDialog = ({ open, onOpenChange, userName }: AppStatusDialogProps)
                         <div className="text-xs text-muted-foreground">{feature.description}</div>
                       </div>
                     </div>
-                    <Badge className={cn("text-xs font-medium", getStatusColor(feature.status))}>
+                    <Badge className={cn('text-xs font-medium', getStatusColor(feature.status))}>
                       {getStatusText(feature.status)}
                     </Badge>
                   </div>
@@ -229,7 +240,7 @@ const AppStatusDialog = ({ open, onOpenChange, userName }: AppStatusDialogProps)
                 <MessageCircle className="h-6 w-6 text-primary" />
                 <h3 className="text-lg font-semibold">Envie sua Sugestão</h3>
               </div>
-              
+
               <p className="text-sm text-muted-foreground mb-4">
                 Sua opinião é importante! Conte-nos o que você gostaria de ver no app.
               </p>
@@ -244,7 +255,7 @@ const AppStatusDialog = ({ open, onOpenChange, userName }: AppStatusDialogProps)
                     type="email"
                     placeholder="seu@email.com"
                     value={userEmail}
-                    onChange={(e) => setUserEmail(e.target.value)}
+                    onChange={e => setUserEmail(e.target.value)}
                     className="bg-background/50"
                   />
                 </div>
@@ -257,13 +268,13 @@ const AppStatusDialog = ({ open, onOpenChange, userName }: AppStatusDialogProps)
                   <Textarea
                     placeholder="Gostaria de sugerir uma nova funcionalidade, reportar um bug, ou dar um feedback geral..."
                     value={suggestion}
-                    onChange={(e) => setSuggestion(e.target.value)}
+                    onChange={e => setSuggestion(e.target.value)}
                     className="min-h-[100px] bg-background/50 resize-none"
                   />
                 </div>
 
-                <Button 
-                  onClick={handleSendSuggestion} 
+                <Button
+                  onClick={handleSendSuggestion}
                   disabled={isSubmitting}
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
@@ -298,11 +309,7 @@ const AppStatusDialog = ({ open, onOpenChange, userName }: AppStatusDialogProps)
           </Card>
 
           <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              onClick={() => onOpenChange(false)}
-              className="flex-1"
-            >
+            <Button variant="outline" onClick={() => onOpenChange(false)} className="flex-1">
               Fechar
             </Button>
           </div>

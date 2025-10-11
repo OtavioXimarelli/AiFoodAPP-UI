@@ -1,30 +1,52 @@
-import React, { useState, useMemo, memo, useCallback } from "react";
-import { useFoodItems } from "@/hooks/useFoodItems";
-import { FoodItem, CreateFoodPayload, UpdateFoodPayload, FoodGroup, FOOD_GROUP_LABELS } from "@/lib/types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { VirtualizedList } from "@/components/ui/virtualized-fixed";
-import { AnimatedElement, StaggerContainer, HoverAnimation, LoadingAnimation } from "@/components/ui/animated";
-import { OptimizedImage } from "@/components/ui/optimized-image";
-import { usePerformance } from "@/hooks/usePerformance";
-import { Plus, Trash2, Pencil, Package, AlertTriangle, Scale, Hash, CalendarDays, Search, Filter } from "lucide-react";
-import { cn } from "@/lib/utils";
-import toast from "react-hot-toast";
-import { format, differenceInDays } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import React, { useState, useMemo, memo, useCallback } from 'react';
+import { useFoodItems } from '@/hooks/useFoodItems';
+import {
+  FoodItem,
+  CreateFoodPayload,
+  UpdateFoodPayload,
+  FoodGroup,
+  FOOD_GROUP_LABELS,
+} from '@/lib/types';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { VirtualizedList } from '@/components/ui/virtualized-fixed';
+import {
+  AnimatedElement,
+  StaggerContainer,
+  HoverAnimation,
+  LoadingAnimation,
+} from '@/components/ui/animated';
+import { OptimizedImage } from '@/components/ui/optimized-image';
+import { usePerformance } from '@/hooks/usePerformance';
+import {
+  Plus,
+  Trash2,
+  Pencil,
+  Package,
+  AlertTriangle,
+  Scale,
+  Hash,
+  CalendarDays,
+  Search,
+  Filter,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import toast from 'react-hot-toast';
+import { format, differenceInDays } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 // Memoized food item component for virtualization
-const FoodItemCard = memo<{ 
-  item: FoodItem; 
-  index: number; 
-  onEdit: (item: FoodItem) => void; 
-  onDelete: (id: string) => void; 
+const FoodItemCard = memo<{
+  item: FoodItem;
+  index: number;
+  onEdit: (item: FoodItem) => void;
+  onDelete: (id: string) => void;
 }>(({ item, index, onEdit, onDelete }) => {
   const { measureRender } = usePerformance(`FoodItemCard-${index}`);
-  
+
   const daysUntilExpiration = useMemo(() => {
     if (!item.expiration) return null;
     return differenceInDays(new Date(item.expiration), new Date());
@@ -35,14 +57,14 @@ const FoodItemCard = memo<{
 
   const getFoodImage = useCallback((name: string) => {
     const foodImages: { [key: string]: string } = {
-      'apple': 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400&h=300&fit=crop',
-      'banana': 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=300&fit=crop',
-      'carrot': 'https://images.unsplash.com/photo-1582515073490-39981397c445?w=400&h=300&fit=crop',
-      'milk': 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400&h=300&fit=crop',
-      'bread': 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=400&h=300&fit=crop',
-      'default': 'https://images.unsplash.com/photo-1506617420156-8e4536971650?w=400&h=300&fit=crop'
+      apple: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400&h=300&fit=crop',
+      banana: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=300&fit=crop',
+      carrot: 'https://images.unsplash.com/photo-1582515073490-39981397c445?w=400&h=300&fit=crop',
+      milk: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400&h=300&fit=crop',
+      bread: 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=400&h=300&fit=crop',
+      default: 'https://images.unsplash.com/photo-1506617420156-8e4536971650?w=400&h=300&fit=crop',
     };
-    
+
     const key = name.toLowerCase();
     return foodImages[key] || foodImages['default'];
   }, []);
@@ -57,11 +79,13 @@ const FoodItemCard = memo<{
 
   return (
     <HoverAnimation scale={1.02} y={-2}>
-      <Card className={cn(
-        "h-full transition-all duration-300 hover:shadow-lg",
-        isExpired && "border-red-500 bg-red-50 dark:bg-red-900/10",
-        isExpiringSoon && !isExpired && "border-orange-500 bg-orange-50 dark:bg-orange-900/10"
-      )}>
+      <Card
+        className={cn(
+          'h-full transition-all duration-300 hover:shadow-lg',
+          isExpired && 'border-red-500 bg-red-50 dark:bg-red-900/10',
+          isExpiringSoon && !isExpired && 'border-orange-500 bg-orange-50 dark:bg-orange-900/10'
+        )}
+      >
         <CardHeader className="p-4">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -75,10 +99,9 @@ const FoodItemCard = memo<{
                 />
                 {(isExpired || isExpiringSoon) && (
                   <div className="absolute top-1 right-1">
-                    <AlertTriangle className={cn(
-                      "w-3 h-3",
-                      isExpired ? "text-red-500" : "text-orange-500"
-                    )} />
+                    <AlertTriangle
+                      className={cn('w-3 h-3', isExpired ? 'text-red-500' : 'text-orange-500')}
+                    />
                   </div>
                 )}
               </div>
@@ -121,24 +144,23 @@ const FoodItemCard = memo<{
           {item.expiration && (
             <div className="flex items-center gap-2 text-sm">
               <CalendarDays className="w-4 h-4 text-muted-foreground" />
-              <span className={cn(
-                "font-medium",
-                isExpired && "text-red-600 dark:text-red-400",
-                isExpiringSoon && !isExpired && "text-orange-600 dark:text-orange-400"
-              )}>
-                {isExpired 
+              <span
+                className={cn(
+                  'font-medium',
+                  isExpired && 'text-red-600 dark:text-red-400',
+                  isExpiringSoon && !isExpired && 'text-orange-600 dark:text-orange-400'
+                )}
+              >
+                {isExpired
                   ? `Vencido há ${Math.abs(daysUntilExpiration || 0)} dias`
-                  : isExpiringSoon 
+                  : isExpiringSoon
                     ? `Vence em ${daysUntilExpiration} dias`
-                    : format(new Date(item.expiration), "dd/MM/yyyy", { locale: ptBR })
-                }
+                    : format(new Date(item.expiration), 'dd/MM/yyyy', { locale: ptBR })}
               </span>
             </div>
           )}
           {item.calories && item.calories > 0 && (
-            <div className="mt-2 text-xs text-muted-foreground">
-              {item.calories} kcal
-            </div>
+            <div className="mt-2 text-xs text-muted-foreground">{item.calories} kcal</div>
           )}
         </CardContent>
       </Card>
@@ -149,34 +171,35 @@ const FoodItemCard = memo<{
 FoodItemCard.displayName = 'FoodItemCard';
 
 const OptimizedFoodInventory = memo(() => {
-  const { foodItems, loading, error, createFoodItem, updateFoodItem, deleteFoodItem } = useFoodItems();
+  const { foodItems, loading, error, createFoodItem, updateFoodItem, deleteFoodItem } =
+    useFoodItems();
   const { metrics, reportPerformanceIssue } = usePerformance('FoodInventory');
-  
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterGroup, setFilterGroup] = useState<FoodGroup | "all">("all");
-  const [sortBy, setSortBy] = useState<"name" | "expiration" | "group">("name");
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterGroup, setFilterGroup] = useState<FoodGroup | 'all'>('all');
+  const [sortBy, setSortBy] = useState<'name' | 'expiration' | 'group'>('name');
 
   // Safety check and memoized filtering
   const filteredAndSortedItems = useMemo(() => {
     const safeFoodItems = Array.isArray(foodItems) ? foodItems : [];
-    
+
     let filtered = safeFoodItems.filter(item => {
       const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesFilter = filterGroup === "all" || item.foodGroup === filterGroup;
+      const matchesFilter = filterGroup === 'all' || item.foodGroup === filterGroup;
       return matchesSearch && matchesFilter;
     });
 
     // Sort items
     filtered.sort((a, b) => {
       switch (sortBy) {
-        case "name":
+        case 'name':
           return a.name.localeCompare(b.name);
-        case "expiration":
+        case 'expiration':
           if (!a.expiration && !b.expiration) return 0;
           if (!a.expiration) return 1;
           if (!b.expiration) return -1;
           return new Date(a.expiration).getTime() - new Date(b.expiration).getTime();
-        case "group":
+        case 'group':
           return a.foodGroup.localeCompare(b.foodGroup);
         default:
           return 0;
@@ -199,14 +222,17 @@ const OptimizedFoodInventory = memo(() => {
     console.log('Edit item:', item);
   }, []);
 
-  const handleDelete = useCallback(async (id: string) => {
-    try {
-      await deleteFoodItem(parseInt(id));
-      toast.success('Item removido com sucesso!');
-    } catch (error) {
-      toast.error('Erro ao remover item');
-    }
-  }, [deleteFoodItem]);
+  const handleDelete = useCallback(
+    async (id: string) => {
+      try {
+        await deleteFoodItem(parseInt(id));
+        toast.success('Item removido com sucesso!');
+      } catch (error) {
+        toast.error('Erro ao remover item');
+      }
+    },
+    [deleteFoodItem]
+  );
 
   const handleAdd = useCallback(() => {
     // Handle add logic
@@ -214,16 +240,14 @@ const OptimizedFoodInventory = memo(() => {
   }, []);
 
   // Render item for virtualization
-  const renderFoodItem = useCallback((item: FoodItem, index: number) => (
-    <div className="p-2">
-      <FoodItemCard
-        item={item}
-        index={index}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
-    </div>
-  ), [handleEdit, handleDelete]);
+  const renderFoodItem = useCallback(
+    (item: FoodItem, index: number) => (
+      <div className="p-2">
+        <FoodItemCard item={item} index={index} onEdit={handleEdit} onDelete={handleDelete} />
+      </div>
+    ),
+    [handleEdit, handleDelete]
+  );
 
   if (loading) {
     return (
@@ -262,7 +286,8 @@ const OptimizedFoodInventory = memo(() => {
                   Despensa Digital
                 </CardTitle>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {filteredAndSortedItems.length} {filteredAndSortedItems.length === 1 ? 'item' : 'itens'} na despensa
+                  {filteredAndSortedItems.length}{' '}
+                  {filteredAndSortedItems.length === 1 ? 'item' : 'itens'} na despensa
                 </p>
               </div>
               <HoverAnimation scale={1.05}>
@@ -286,7 +311,7 @@ const OptimizedFoodInventory = memo(() => {
                 <Input
                   placeholder="Buscar alimentos..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={e => setSearchTerm(e.target.value)}
                   className="pl-10"
                 />
               </div>
@@ -294,18 +319,20 @@ const OptimizedFoodInventory = memo(() => {
                 <select
                   title="Filtrar por categoria"
                   value={filterGroup}
-                  onChange={(e) => setFilterGroup(e.target.value as FoodGroup | "all")}
+                  onChange={e => setFilterGroup(e.target.value as FoodGroup | 'all')}
                   className="px-3 py-2 rounded-md border border-input bg-background text-sm"
                 >
                   <option value="all">Todas as categorias</option>
                   {Object.entries(FOOD_GROUP_LABELS).map(([value, label]) => (
-                    <option key={value} value={value}>{label}</option>
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
                   ))}
                 </select>
                 <select
                   title="Ordenar por"
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as "name" | "expiration" | "group")}
+                  onChange={e => setSortBy(e.target.value as 'name' | 'expiration' | 'group')}
                   className="px-3 py-2 rounded-md border border-input bg-background text-sm"
                 >
                   <option value="name">Ordenar por nome</option>
@@ -326,12 +353,11 @@ const OptimizedFoodInventory = memo(() => {
               <Package className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-50" />
               <h3 className="text-lg font-semibold mb-2">Nenhum item encontrado</h3>
               <p className="text-muted-foreground mb-4">
-                {searchTerm || filterGroup !== "all" 
-                  ? "Tente ajustar os filtros de busca" 
-                  : "Adicione seus primeiros alimentos à despensa"
-                }
+                {searchTerm || filterGroup !== 'all'
+                  ? 'Tente ajustar os filtros de busca'
+                  : 'Adicione seus primeiros alimentos à despensa'}
               </p>
-              {(!searchTerm && filterGroup === "all") && (
+              {!searchTerm && filterGroup === 'all' && (
                 <Button onClick={handleAdd}>
                   <Plus className="w-4 h-4 mr-2" />
                   Adicionar Primeiro Item
@@ -377,7 +403,7 @@ const OptimizedFoodInventory = memo(() => {
         <Card className="border-yellow-200 bg-yellow-50 dark:bg-yellow-900/10">
           <CardContent className="p-4">
             <div className="text-sm text-yellow-800 dark:text-yellow-200">
-              <strong>Performance Info:</strong> {filteredAndSortedItems.length} items, 
+              <strong>Performance Info:</strong> {filteredAndSortedItems.length} items,
               {metrics.renderTime}ms last render
               {metrics.memoryUsage && `, ${metrics.memoryUsage.toFixed(1)}MB memory`}
             </div>

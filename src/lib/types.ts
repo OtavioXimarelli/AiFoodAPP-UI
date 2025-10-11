@@ -1,14 +1,14 @@
 // Data models matching the backend API
 
 export enum FoodGroup {
-  FRUITS = "FRUITS",
-  VEGETABLES = "VEGETABLES", 
-  GRAINS = "GRAINS",
-  PROTEIN = "PROTEIN",
-  DAIRY = "DAIRY",
-  FATS_OILS = "FATS_OILS",
-  BEVERAGES = "BEVERAGES",
-  SWEETS_SNACKS = "SWEETS_SNACKS"
+  FRUITS = 'FRUITS',
+  VEGETABLES = 'VEGETABLES',
+  GRAINS = 'GRAINS',
+  PROTEIN = 'PROTEIN',
+  DAIRY = 'DAIRY',
+  FATS_OILS = 'FATS_OILS',
+  BEVERAGES = 'BEVERAGES',
+  SWEETS_SNACKS = 'SWEETS_SNACKS',
 }
 
 export interface FoodItem {
@@ -112,15 +112,15 @@ export interface User {
 // Validation utility
 export const validateFoodItem = (item: Partial<CreateFoodPayload>) => {
   const errors: Record<string, string> = {};
-  
+
   if (!item.name?.trim()) {
     errors.name = 'Name is required';
   }
-  
+
   if (!item.quantity || item.quantity <= 0) {
     errors.quantity = 'Quantity must be positive';
   }
-  
+
   if (!item.expiration) {
     errors.expiration = 'Expiration date is required';
   } else {
@@ -165,21 +165,21 @@ export const validateFoodItem = (item: Partial<CreateFoodPayload>) => {
   if (!item.tags?.trim()) {
     errors.tags = 'Tags are required';
   }
-  
+
   return {
     isValid: Object.keys(errors).length === 0,
-    errors
+    errors,
   };
 };
 
 // Food group display names
 export const FOOD_GROUP_LABELS: Record<FoodGroup, string> = {
-  [FoodGroup.FRUITS]: "Fruits",
-  [FoodGroup.VEGETABLES]: "Vegetables",
-  [FoodGroup.GRAINS]: "Grains",
-  [FoodGroup.PROTEIN]: "Protein",
-  [FoodGroup.DAIRY]: "Dairy",
-  [FoodGroup.FATS_OILS]: "Fats & Oils",
-  [FoodGroup.BEVERAGES]: "Beverages",
-  [FoodGroup.SWEETS_SNACKS]: "Sweets & Snacks"
+  [FoodGroup.FRUITS]: 'Fruits',
+  [FoodGroup.VEGETABLES]: 'Vegetables',
+  [FoodGroup.GRAINS]: 'Grains',
+  [FoodGroup.PROTEIN]: 'Protein',
+  [FoodGroup.DAIRY]: 'Dairy',
+  [FoodGroup.FATS_OILS]: 'Fats & Oils',
+  [FoodGroup.BEVERAGES]: 'Beverages',
+  [FoodGroup.SWEETS_SNACKS]: 'Sweets & Snacks',
 };

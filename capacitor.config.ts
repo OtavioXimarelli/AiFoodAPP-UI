@@ -6,13 +6,13 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   server: {
     url: 'https://3eee5194-6ef6-415c-8da1-27affd3cf39c.lovableproject.com?forceHideBadge=true',
-    cleartext: true
+    cleartext: true,
   },
   plugins: {
     SplashScreen: {
-      launchShowDuration: 0
-    }
-  }
+      launchShowDuration: 0,
+    },
+  },
 };
 
 export default config;

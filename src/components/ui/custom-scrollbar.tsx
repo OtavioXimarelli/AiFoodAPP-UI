@@ -45,12 +45,12 @@ const CustomScrollbar: React.FC<CustomScrollbarProps> = ({
 }) => {
   const { theme } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   // Apply theme-specific CSS custom properties based on current theme
   useEffect(() => {
     if (containerRef.current) {
       const container = containerRef.current;
-      
+
       // Apply theme class for CSS custom properties
       container.classList.remove('light', 'dark');
       if (theme === 'dark') {
@@ -64,41 +64,21 @@ const CustomScrollbar: React.FC<CustomScrollbarProps> = ({
 
   // Custom thumb component
   const renderThumb = (props: any) => {
-    return (
-      <div
-        {...props}
-        className="scrollbar-thumb"
-      />
-    );
+    return <div {...props} className="scrollbar-thumb" />;
   };
 
   // Custom track components
   const renderTrackVertical = (props: any) => {
-    return (
-      <div
-        {...props}
-        className="scrollbar-track-vertical"
-      />
-    );
+    return <div {...props} className="scrollbar-track-vertical" />;
   };
 
   const renderTrackHorizontal = (props: any) => {
-    return (
-      <div
-        {...props}
-        className="scrollbar-track-horizontal"
-      />
-    );
+    return <div {...props} className="scrollbar-track-horizontal" />;
   };
 
   // Custom view component
   const renderView = (props: any) => {
-    return (
-      <div
-        {...props}
-        className="scrollbar-view"
-      />
-    );
+    return <div {...props} className="scrollbar-view" />;
   };
 
   const containerStyle = {
@@ -109,7 +89,7 @@ const CustomScrollbar: React.FC<CustomScrollbarProps> = ({
   };
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className={cn('custom-scrollbar-container', `scrollbar-${variant}`, className)}
     >

@@ -1,12 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { 
-  Home, 
-  Package, 
-  ChefHat, 
-  TrendingUp, 
-  BookOpen
-} from 'lucide-react';
+import { Home, Package, ChefHat, TrendingUp, BookOpen } from 'lucide-react';
 import { Dock } from '@/components/ui/dock';
 import { useAuth } from '@/hooks/useAuth';
 import { DEV_CONFIG } from '@/config/dev';
@@ -25,36 +19,36 @@ const NavigationDock = () => {
       icon: <Home className="w-5 h-5" />,
       label: 'Início',
       href: basePath,
-      active: location.pathname === basePath
+      active: location.pathname === basePath,
     },
     {
       id: 'inventory',
       icon: <Package className="w-5 h-5" />,
       label: 'Despensa',
       href: `${basePath}/inventory`,
-      active: location.pathname === `${basePath}/inventory`
+      active: location.pathname === `${basePath}/inventory`,
     },
     {
       id: 'recipes',
       icon: <ChefHat className="w-5 h-5" />,
       label: 'Receitas',
       href: `${basePath}/recipes`,
-      active: location.pathname === `${basePath}/recipes`
+      active: location.pathname === `${basePath}/recipes`,
     },
     {
       id: 'insights',
       icon: <TrendingUp className="w-5 h-5" />,
       label: 'Insights',
       href: `${basePath}/nutrition`,
-      active: location.pathname === `${basePath}/nutrition`
+      active: location.pathname === `${basePath}/nutrition`,
     },
     {
       id: 'saved',
       icon: <BookOpen className="w-5 h-5" />,
       label: 'Salvos',
       href: `${basePath}/saved`,
-      active: location.pathname === `${basePath}/saved`
-    }
+      active: location.pathname === `${basePath}/saved`,
+    },
   ];
 
   const handleNavigation = (href: string) => {
@@ -64,18 +58,13 @@ const NavigationDock = () => {
   // Add navigation handlers to items
   const navigationItems = mainNavigationItems.map(item => ({
     ...item,
-    onClick: () => handleNavigation(item.href)
+    onClick: () => handleNavigation(item.href),
   }));
 
   return (
     <>
       {/* Main Navigation Dock */}
-      <Dock
-        items={navigationItems}
-        position="bottom"
-  className=""
-  centerIndex={2}
-      />
+      <Dock items={navigationItems} position="bottom" className="" centerIndex={2} />
     </>
   );
 };

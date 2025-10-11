@@ -15,10 +15,10 @@ export const useLocalRecipes = () => {
     searchData: searchRecipes,
     getSortedData,
     getStorageInfo,
-    totalItems: totalRecipes
+    totalItems: totalRecipes,
   } = useLocalStorage<Recipe>(STORAGE_KEY, {
     maxItems: 50, // Keep last 50 recipes
-    expiryDays: 90 // Recipes expire after 90 days
+    expiryDays: 90, // Recipes expire after 90 days
   });
 
   // Get recipes by difficulty
@@ -28,18 +28,16 @@ export const useLocalRecipes = () => {
 
   // Get recipes by tags
   const getRecipesByTags = (tags: string[]) => {
-    return storedRecipes.filter(recipe => 
-      recipe.tags?.some(tag => tags.includes(tag))
-    );
+    return storedRecipes.filter(recipe => recipe.tags?.some(tag => tags.includes(tag)));
   };
 
   // Get recent recipes (last 7 days)
   const getRecentRecipes = () => {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    
-    return storedRecipes.filter(recipe => 
-      recipe.createdAt && new Date(recipe.createdAt) > sevenDaysAgo
+
+    return storedRecipes.filter(
+      recipe => recipe.createdAt && new Date(recipe.createdAt) > sevenDaysAgo
     );
   };
 
@@ -65,6 +63,6 @@ export const useLocalRecipes = () => {
     getFavoriteRecipes,
     getSortedData,
     getStorageInfo,
-    totalRecipes
+    totalRecipes,
   };
 };

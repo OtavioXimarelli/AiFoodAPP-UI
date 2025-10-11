@@ -59,6 +59,6 @@ export const useRecipes = () => {
     generateRecipe,
     analyzeRecipe,
     clearRecipes,
-    clearError
+    clearError,
   };
 };

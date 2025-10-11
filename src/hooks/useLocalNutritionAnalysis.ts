@@ -15,10 +15,10 @@ export const useLocalNutritionAnalysis = () => {
     searchData: searchAnalyses,
     getSortedData,
     getStorageInfo,
-    totalItems: totalAnalyses
+    totalItems: totalAnalyses,
   } = useLocalStorage<NutritionAnalysis>(STORAGE_KEY, {
     maxItems: 30, // Keep last 30 analyses
-    expiryDays: 60 // Analyses expire after 60 days
+    expiryDays: 60, // Analyses expire after 60 days
   });
 
   // Get analyses by period
@@ -30,9 +30,9 @@ export const useLocalNutritionAnalysis = () => {
   const getRecentAnalyses = () => {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    
-    return storedAnalyses.filter(analysis => 
-      analysis.createdAt && new Date(analysis.createdAt) > thirtyDaysAgo
+
+    return storedAnalyses.filter(
+      analysis => analysis.createdAt && new Date(analysis.createdAt) > thirtyDaysAgo
     );
   };
 
@@ -48,7 +48,7 @@ export const useLocalNutritionAnalysis = () => {
   // Get nutrition trends (compare different analyses)
   const getNutritionTrends = () => {
     const sortedAnalyses = getSortedData('createdAt').slice(0, 10);
-    
+
     if (sortedAnalyses.length < 2) return null;
 
     const trends = {
@@ -56,7 +56,7 @@ export const useLocalNutritionAnalysis = () => {
       protein: [],
       carbohydrates: [],
       fat: [],
-      fiber: []
+      fiber: [],
     } as Record<string, number[]>;
 
     sortedAnalyses.forEach(analysis => {
@@ -73,10 +73,11 @@ export const useLocalNutritionAnalysis = () => {
       averages: {
         calories: trends.calories.reduce((a, b) => a + b, 0) / trends.calories.length,
         protein: trends.protein.reduce((a, b) => a + b, 0) / trends.protein.length,
-        carbohydrates: trends.carbohydrates.reduce((a, b) => a + b, 0) / trends.carbohydrates.length,
+        carbohydrates:
+          trends.carbohydrates.reduce((a, b) => a + b, 0) / trends.carbohydrates.length,
         fat: trends.fat.reduce((a, b) => a + b, 0) / trends.fat.length,
         fiber: trends.fiber.reduce((a, b) => a + b, 0) / trends.fiber.length,
-      }
+      },
     };
   };
 
@@ -84,10 +85,16 @@ export const useLocalNutritionAnalysis = () => {
   const getSummaryStats = () => {
     if (storedAnalyses.length === 0) return null;
 
-    const totalCalories = storedAnalyses.reduce((sum, analysis) => sum + analysis.analysis.calories, 0);
+    const totalCalories = storedAnalyses.reduce(
+      (sum, analysis) => sum + analysis.analysis.calories,
+      0
+    );
     const avgCalories = totalCalories / storedAnalyses.length;
 
-    const totalProtein = storedAnalyses.reduce((sum, analysis) => sum + analysis.analysis.protein, 0);
+    const totalProtein = storedAnalyses.reduce(
+      (sum, analysis) => sum + analysis.analysis.protein,
+      0
+    );
     const avgProtein = totalProtein / storedAnalyses.length;
 
     return {
@@ -95,14 +102,14 @@ export const useLocalNutritionAnalysis = () => {
       averageCalories: Math.round(avgCalories),
       averageProtein: Math.round(avgProtein),
       mostCommonFoods: getMostCommonFoods(),
-      lastAnalysisDate: storedAnalyses[0]?.createdAt
+      lastAnalysisDate: storedAnalyses[0]?.createdAt,
     };
   };
 
   // Get most common foods across all analyses
   const getMostCommonFoods = () => {
     const foodCount: Record<string, number> = {};
-    
+
     storedAnalyses.forEach(analysis => {
       analysis.foodItems.forEach(food => {
         foodCount[food] = (foodCount[food] || 0) + 1;
@@ -132,6 +139,6 @@ export const useLocalNutritionAnalysis = () => {
     getMostCommonFoods,
     getSortedData,
     getStorageInfo,
-    totalAnalyses
+    totalAnalyses,
   };
 };

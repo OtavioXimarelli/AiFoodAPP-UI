@@ -1,6 +1,6 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { EnhancedClickSpark } from "./enhanced-click-spark"
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+import { EnhancedClickSpark } from './enhanced-click-spark';
 
 export interface ClickableCardProps extends React.HTMLAttributes<HTMLDivElement> {
   enableClickSpark?: boolean;
@@ -14,8 +14,8 @@ const ClickableCard = React.forwardRef<HTMLDivElement, ClickableCardProps>(
       <div
         ref={ref}
         className={cn(
-          "rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-300",
-          enableClickSpark && "cursor-pointer hover:shadow-lg hover:-translate-y-1",
+          'rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-300',
+          enableClickSpark && 'cursor-pointer hover:shadow-lg hover:-translate-y-1',
           className
         )}
         {...props}
@@ -26,7 +26,7 @@ const ClickableCard = React.forwardRef<HTMLDivElement, ClickableCardProps>(
 
     if (enableClickSpark) {
       return (
-        <EnhancedClickSpark 
+        <EnhancedClickSpark
           sparkColor={sparkColor}
           sparkCount={sparkCount}
           className="w-full h-full"
@@ -40,6 +40,6 @@ const ClickableCard = React.forwardRef<HTMLDivElement, ClickableCardProps>(
   }
 );
 
-ClickableCard.displayName = "ClickableCard";
+ClickableCard.displayName = 'ClickableCard';
 
 export { ClickableCard };

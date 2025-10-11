@@ -3,15 +3,9 @@
 */
 
 /* eslint-disable react/no-unknown-property */
-import * as THREE from "three";
-import { useRef, useState, useEffect, memo, ReactNode } from "react";
-import {
-  Canvas,
-  createPortal,
-  useFrame,
-  useThree,
-  ThreeElements,
-} from "@react-three/fiber";
+import * as THREE from 'three';
+import { useRef, useState, useEffect, memo, ReactNode } from 'react';
+import { Canvas, createPortal, useFrame, useThree, ThreeElements } from '@react-three/fiber';
 import {
   useFBO,
   useGLTF,
@@ -22,10 +16,10 @@ import {
   ScrollControls,
   MeshTransmissionMaterial,
   Text,
-} from "@react-three/drei";
-import { easing } from "maath";
+} from '@react-three/drei';
+import { easing } from 'maath';
 
-type Mode = "lens" | "bar" | "cube";
+type Mode = 'lens' | 'bar' | 'cube';
 
 interface NavItem {
   label: string;
@@ -42,20 +36,19 @@ interface FluidGlassProps {
 }
 
 export default function FluidGlass({
-  mode = "lens",
+  mode = 'lens',
   lensProps = {},
   barProps = {},
   cubeProps = {},
 }: FluidGlassProps) {
-  const Wrapper = mode === "bar" ? Bar : mode === "cube" ? Cube : Lens;
-  const rawOverrides =
-    mode === "bar" ? barProps : mode === "cube" ? cubeProps : lensProps;
+  const Wrapper = mode === 'bar' ? Bar : mode === 'cube' ? Cube : Lens;
+  const rawOverrides = mode === 'bar' ? barProps : mode === 'cube' ? cubeProps : lensProps;
 
   const {
     navItems = [
-      { label: "Home", link: "" },
-      { label: "About", link: "" },
-      { label: "Contact", link: "" },
+      { label: 'Home', link: '' },
+      { label: 'About', link: '' },
+      { label: 'Contact', link: '' },
     ],
     ...modeProps
   } = rawOverrides;
@@ -63,7 +56,7 @@ export default function FluidGlass({
   return (
     <Canvas camera={{ position: [0, 0, 20], fov: 15 }} gl={{ alpha: true }}>
       <ScrollControls damping={0.2} pages={3} distance={0.4}>
-        {mode === "bar" && <NavItems items={navItems as NavItem[]} />}
+        {mode === 'bar' && <NavItems items={navItems as NavItem[]} />}
         <Wrapper modeProps={modeProps}>
           <Scroll>
             <Typography />
@@ -77,7 +70,7 @@ export default function FluidGlass({
   );
 }
 
-type MeshProps = ThreeElements["mesh"];
+type MeshProps = ThreeElements['mesh'];
 
 interface ModeWrapperProps extends MeshProps {
   children?: ReactNode;
@@ -142,14 +135,7 @@ const ModeWrapper = memo(function ModeWrapper({
     gl.setClearColor(0x5227ff, 1);
   });
 
-  const {
-    scale,
-    ior,
-    thickness,
-    anisotropy,
-    chromaticAberration,
-    ...extraMat
-  } = modeProps as {
+  const { scale, ior, thickness, anisotropy, chromaticAberration, ...extraMat } = modeProps as {
     scale?: number;
     ior?: number;
     thickness?: number;
@@ -178,9 +164,7 @@ const ModeWrapper = memo(function ModeWrapper({
           thickness={thickness ?? 5}
           anisotropy={anisotropy ?? 0.01}
           chromaticAberration={chromaticAberration ?? 0.1}
-          {...(typeof extraMat === "object" && extraMat !== null
-            ? extraMat
-            : {})}
+          {...(typeof extraMat === 'object' && extraMat !== null ? extraMat : {})}
         />
       </mesh>
     </>
@@ -217,8 +201,8 @@ function Bar({ modeProps = {}, ...p }: { modeProps?: ModeProps } & MeshProps) {
     roughness: 0,
     thickness: 10,
     ior: 1.15,
-    color: "#ffffff",
-    attenuationColor: "#ffffff",
+    color: '#ffffff',
+    attenuationColor: '#ffffff',
     attenuationDistance: 0.25,
   };
 
@@ -245,19 +229,15 @@ function NavItems({ items }: { items: NavItem[] }) {
   };
   const getDevice = () => {
     const w = window.innerWidth;
-    return w <= DEVICE.mobile.max
-      ? "mobile"
-      : w <= DEVICE.tablet.max
-        ? "tablet"
-        : "desktop";
+    return w <= DEVICE.mobile.max ? 'mobile' : w <= DEVICE.tablet.max ? 'tablet' : 'desktop';
   };
 
   const [device, setDevice] = useState<keyof typeof DEVICE>(getDevice());
 
   useEffect(() => {
     const onResize = () => setDevice(getDevice());
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, []);
 
   const { spacing, fontSize } = DEVICE[device];
@@ -274,9 +254,7 @@ function NavItems({ items }: { items: NavItem[] }) {
 
   const handleNavigate = (link: string) => {
     if (!link) return;
-    link.startsWith("#")
-      ? (window.location.hash = link)
-      : (window.location.href = link);
+    link.startsWith('#') ? (window.location.hash = link) : (window.location.href = link);
   };
 
   return (
@@ -294,12 +272,12 @@ function NavItems({ items }: { items: NavItem[] }) {
           outlineColor="#000"
           outlineOpacity={0.5}
           renderOrder={10}
-          onClick={(e) => {
+          onClick={e => {
             e.stopPropagation();
             handleNavigate(link);
           }}
-          onPointerOver={() => (document.body.style.cursor = "pointer")}
-          onPointerOut={() => (document.body.style.cursor = "auto")}
+          onPointerOver={() => (document.body.style.cursor = 'pointer')}
+          onPointerOut={() => (document.body.style.cursor = 'auto')}
         >
           {label}
         </Text>
@@ -311,17 +289,14 @@ function NavItems({ items }: { items: NavItem[] }) {
 function Images() {
   const group = useRef<ZoomGroup>(null!);
   const data = useScroll();
-  const { height } = useThree((s) => s.viewport);
+  const { height } = useThree(s => s.viewport);
 
   useFrame(() => {
     group.current.children[0].material.zoom = 1 + data.range(0, 1 / 3) / 3;
     group.current.children[1].material.zoom = 1 + data.range(0, 1 / 3) / 3;
-    group.current.children[2].material.zoom =
-      1 + data.range(1.15 / 3, 1 / 3) / 2;
-    group.current.children[3].material.zoom =
-      1 + data.range(1.15 / 3, 1 / 3) / 2;
-    group.current.children[4].material.zoom =
-      1 + data.range(1.15 / 3, 1 / 3) / 2;
+    group.current.children[2].material.zoom = 1 + data.range(1.15 / 3, 1 / 3) / 2;
+    group.current.children[3].material.zoom = 1 + data.range(1.15 / 3, 1 / 3) / 2;
+    group.current.children[4].material.zoom = 1 + data.range(1.15 / 3, 1 / 3) / 2;
   });
 
   return (
@@ -363,15 +338,15 @@ function Typography() {
   };
   const getDevice = () => {
     const w = window.innerWidth;
-    return w <= 639 ? "mobile" : w <= 1023 ? "tablet" : "desktop";
+    return w <= 639 ? 'mobile' : w <= 1023 ? 'tablet' : 'desktop';
   };
 
   const [device, setDevice] = useState<keyof typeof DEVICE>(getDevice());
 
   useEffect(() => {
     const onResize = () => setDevice(getDevice());
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, []);
 
   const { fontSize } = DEVICE[device];
