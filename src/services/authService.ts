@@ -99,7 +99,12 @@ export const authService = {
       console.log('🔑 Iniciando redirecionamento para o login OAuth2...');
 
       // A URL base da API deve vir das suas variáveis de ambiente
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://api.aifoodapp.site';
+      let apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://api.aifoodapp.site';
+      
+      // Remove /api suffix if present (OAuth2 doesn't use /api prefix)
+      if (apiBaseUrl.endsWith('/api')) {
+        apiBaseUrl = apiBaseUrl.slice(0, -4);
+      }
 
       // Monta a URL de autorização completa.
       // Nota: O caminho NÃO tem /api porque o security filter do Spring

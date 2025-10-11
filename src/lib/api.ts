@@ -199,11 +199,6 @@ export class ApiClient {
     return response.data;
   }
 
-  async getAuthLoginUrl() {
-    const response = await api.get('/api/auth/login/google');
-    return response.data;
-  }
-
   // Private method for debugging cookies (apenas em desenvolvimento)
   #logCookiesForDebugging() {
     if (!isDevelopment) return;
@@ -519,8 +514,14 @@ export class ApiClient {
       sessionStorage.setItem('oauth_login_started_at', new Date().toISOString());
       localStorage.removeItem('is_authenticated');
 
-      // URL direta do OAuth2 - o baseURL já está configurado corretamente
-      const oauthUrl = `${baseURL}/oauth2/authorization/${provider}`;
+      // Remove /api suffix if present (OAuth2 doesn't use /api prefix)
+      let oauthBaseUrl = baseURL;
+      if (oauthBaseUrl.endsWith('/api')) {
+        oauthBaseUrl = oauthBaseUrl.slice(0, -4);
+      }
+
+      // URL direta do OAuth2 - Spring Security intercepta antes do context-path
+      const oauthUrl = `${oauthBaseUrl}/oauth2/authorization/${provider}`;
 
       if (isDevelopment) {
         console.log('🔑 Redirecting to:', oauthUrl);
