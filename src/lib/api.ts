@@ -195,7 +195,12 @@ api.interceptors.response.use(
 export class ApiClient {
   // Authentication endpoints
   async getCurrentUser() {
-    const response = await api.get('/auth');
+    const response = await api.get('/api/auth/me');
+    return response.data;
+  }
+
+  async getAuthLoginUrl() {
+    const response = await api.get('/api/auth/login/google');
     return response.data;
   }
 
@@ -283,7 +288,7 @@ export class ApiClient {
             this.#logCookiesForDebugging();
           }
 
-          const response = await api.get('/auth/status');
+          const response = await api.get('/api/auth/status');
           const statusData =
             typeof response.data === 'object' ? response.data : { authenticated: false };
 
@@ -327,7 +332,7 @@ export class ApiClient {
                 }
                 await this.refreshToken();
 
-                const refreshResponse = await api.get('/auth/status');
+                const refreshResponse = await api.get('/api/auth/status');
                 const refreshStatusData =
                   typeof refreshResponse.data === 'object'
                     ? refreshResponse.data
@@ -371,20 +376,22 @@ export class ApiClient {
   #refreshPromise: Promise<any> | null = null;
 
   async refreshToken() {
+    // Spring Security OAuth2 gerencia refresh automaticamente via cookies de sessão
+    // Este método apenas verifica o status de autenticação atual
     const now = Date.now();
 
     // Rate limiting (máximo 1x a cada 5 segundos)
     if (now - this.#lastRefreshTime < 5000) {
       if (isDevelopment) {
-        console.log('🔄 Rate limiting token refresh');
+        console.log('🔄 Rate limiting auth status check');
       }
-      return Promise.reject(new Error('Token refresh rate limited'));
+      return Promise.reject(new Error('Auth status check rate limited'));
     }
 
     // Reusar promise pendente
     if (this.#refreshPromise) {
       if (isDevelopment) {
-        console.log('🔄 Reusing pending token refresh');
+        console.log('🔄 Reusing pending auth status check');
       }
       return this.#refreshPromise;
     }
@@ -397,10 +404,10 @@ export class ApiClient {
     // Limitar tentativas (máximo 3)
     if (this.#refreshAttempts >= 3) {
       if (isDevelopment) {
-        console.error('🔄 Maximum refresh attempts exceeded');
+        console.error('🔄 Maximum auth check attempts exceeded');
       }
       localStorage.removeItem('is_authenticated');
-      return Promise.reject(new Error('Maximum refresh attempts exceeded'));
+      return Promise.reject(new Error('Maximum auth check attempts exceeded'));
     }
 
     this.#refreshAttempts++;
@@ -408,21 +415,26 @@ export class ApiClient {
 
     try {
       this.#refreshPromise = api
-        .post('/auth/refresh')
+        .get('/api/auth/status')
         .then(response => {
           if (isDevelopment) {
-            console.log('🔄 Token refresh successful');
+            console.log('🔄 Auth status check successful');
           }
 
-          this.#authStatusCache.data = { authenticated: true };
+          this.#authStatusCache.data = { authenticated: response.data.authenticated };
           this.#authStatusCache.timestamp = Date.now();
-          localStorage.setItem('is_authenticated', 'true');
+          
+          if (response.data.authenticated) {
+            localStorage.setItem('is_authenticated', 'true');
+          } else {
+            localStorage.removeItem('is_authenticated');
+          }
 
           return response.data;
         })
         .catch(error => {
           if (isDevelopment) {
-            console.error('🔄 Token refresh failed:', error.message);
+            console.error('🔄 Auth status check failed:', error.message);
           }
 
           const errorStatus = error.response?.status;
@@ -457,7 +469,7 @@ export class ApiClient {
       }
 
       await api.post(
-        '/auth/logout',
+        '/api/auth/logout',
         {},
         {
           headers: {
@@ -527,12 +539,12 @@ export class ApiClient {
 
   // Food endpoints
   async getFoodItems() {
-    const response = await api.get('/api/food-items');
+    const response = await api.get('/api/foods');
     return response.data;
   }
 
   async getFoodItem(id: number) {
-    const response = await api.get(`/api/food-items/${id}`);
+    const response = await api.get(`/api/foods/${id}`);
     return response.data;
   }
 
@@ -540,7 +552,7 @@ export class ApiClient {
     if (isDevelopment) {
       console.log('🍕 Creating food item:', foodItem);
     }
-    const response = await api.post('/api/food-items', foodItem);
+    const response = await api.post('/api/foods/create', foodItem);
     return response.data;
   }
 
@@ -548,12 +560,12 @@ export class ApiClient {
     if (isDevelopment) {
       console.log('🔄 Updating food item:', foodItem.id);
     }
-    const response = await api.put(`/api/food-items/${foodItem.id}`, foodItem);
+    const response = await api.put(`/api/foods/${foodItem.id}`, foodItem);
     return response.data;
   }
 
   async deleteFoodItem(id: number) {
-    await api.delete(`/api/food-items/${id}`);
+    await api.delete(`/api/foods/${id}`);
   }
 
   // Nutrition AI analysis
@@ -571,7 +583,11 @@ export class ApiClient {
     return response.data;
   }
 
+  // NOTE: This endpoint doesn't exist in the backend API
+  // The backend only has /api/recipes/gen and /api/recipes/analyze/{id}
+  // Keeping this method for potential future implementation
   async getRecipe(id: number) {
+    console.warn('⚠️ /api/recipes/{id} endpoint not implemented in backend');
     const response = await api.get(`/api/recipes/${id}`);
     return response.data;
   }

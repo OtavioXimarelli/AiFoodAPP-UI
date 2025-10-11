@@ -37,27 +37,29 @@ export const authService = {
   },
 
   // Refresh the authentication token
+  // Note: Spring Security OAuth2 handles token refresh automatically via session cookies
+  // This method just checks the current auth status
   async refreshToken(): Promise<void> {
     try {
-      console.log('🔄 Refreshing authentication token...');
+      console.log('🔄 Checking authentication status...');
 
-      // Tentar refresh do token com retry
+      // Tentar verificar status com retry
       let retryCount = 0;
       const maxRetries = 2;
 
       while (retryCount <= maxRetries) {
         try {
           if (retryCount > 0) {
-            console.log(`🔄 Retry attempt ${retryCount}/${maxRetries} for token refresh`);
+            console.log(`🔄 Retry attempt ${retryCount}/${maxRetries} for auth status check`);
             // Esperar um pouco antes de retry
             await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
           }
 
           await apiClient.refreshToken();
-          console.log('🔄 Token refreshed successfully');
+          console.log('🔄 Auth status verified successfully');
           return;
         } catch (retryError: any) {
-          console.error(`🔄 Token refresh attempt ${retryCount + 1} failed:`, retryError);
+          console.error(`🔄 Auth status check attempt ${retryCount + 1} failed:`, retryError);
           retryCount++;
 
           if (retryCount > maxRetries) {
@@ -66,7 +68,7 @@ export const authService = {
         }
       }
     } catch (error: any) {
-      console.error('🔄 All token refresh attempts failed:', error);
+      console.error('🔄 All auth status check attempts failed:', error);
       // Remover marcadores de autenticação local
       localStorage.removeItem('is_authenticated');
       localStorage.removeItem('session_established_at');
