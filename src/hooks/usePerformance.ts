@@ -13,7 +13,7 @@ export const usePerformance = (componentName?: string) => {
     componentMountTime: 0,
     isLowEndDevice: false,
   });
-  
+
   const mountTime = useRef<number>(Date.now());
   const renderCount = useRef<number>(0);
 
@@ -21,17 +21,17 @@ export const usePerformance = (componentName?: string) => {
   const detectLowEndDevice = useCallback(() => {
     // Check for hardware concurrency (CPU cores)
     const cores = navigator.hardwareConcurrency || 2;
-    
+
     // Check for memory (if available)
     const memory = (navigator as any).deviceMemory;
-    
+
     // Check for connection quality
     const connection = (navigator as any).connection;
-    const slowConnection = connection && (
-      connection.effectiveType === 'slow-2g' || 
-      connection.effectiveType === '2g' ||
-      connection.saveData
-    );
+    const slowConnection =
+      connection &&
+      (connection.effectiveType === 'slow-2g' ||
+        connection.effectiveType === '2g' ||
+        connection.saveData);
 
     return cores <= 2 || (memory && memory <= 2) || slowConnection;
   }, []);
@@ -39,10 +39,10 @@ export const usePerformance = (componentName?: string) => {
   // Performance observer for render timing
   useEffect(() => {
     const isLowEnd = detectLowEndDevice();
-    
-    const observer = new PerformanceObserver((list) => {
+
+    const observer = new PerformanceObserver(list => {
       const entries = list.getEntries();
-      entries.forEach((entry) => {
+      entries.forEach(entry => {
         if (entry.entryType === 'measure' && componentName && entry.name.includes(componentName)) {
           setMetrics(prev => ({
             ...prev,
@@ -86,7 +86,7 @@ export const usePerformance = (componentName?: string) => {
     if ('performance' in window && 'mark' in performance) {
       const startMark = `${measureName}-start`;
       const endMark = `${measureName}-end`;
-      
+
       performance.mark(startMark);
       fn();
       performance.mark(endMark);
@@ -97,20 +97,23 @@ export const usePerformance = (componentName?: string) => {
   }, []);
 
   // Report performance issues
-  const reportPerformanceIssue = useCallback((issue: string, severity: 'low' | 'medium' | 'high') => {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn(`🚨 Performance Issue [${severity}]: ${issue}`, {
-        component: componentName,
-        metrics,
-        timestamp: new Date().toISOString(),
-      });
-    }
-  }, [componentName, metrics]);
+  const reportPerformanceIssue = useCallback(
+    (issue: string, severity: 'low' | 'medium' | 'high') => {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(`🚨 Performance Issue [${severity}]: ${issue}`, {
+          component: componentName,
+          metrics,
+          timestamp: new Date().toISOString(),
+        });
+      }
+    },
+    [componentName, metrics]
+  );
 
   // Increment render count
   useEffect(() => {
     renderCount.current += 1;
-    
+
     // Warn about excessive re-renders
     if (renderCount.current > 10 && process.env.NODE_ENV === 'development') {
       reportPerformanceIssue(
@@ -176,7 +179,7 @@ export const useOptimizedAnimation = () => {
     // Adjust frame rate based on device performance
     const cores = navigator.hardwareConcurrency || 2;
     const memory = (navigator as any).deviceMemory;
-    
+
     if (cores <= 2 || (memory && memory <= 2)) {
       setPreferredFrameRate(30); // Lower frame rate for low-end devices
     }
@@ -192,7 +195,7 @@ export const useOptimizedAnimation = () => {
     // Optimized animation config
     animationConfig: {
       duration: shouldReduceMotion ? 0 : preferredFrameRate === 30 ? 0.4 : 0.3,
-      ease: shouldReduceMotion ? "linear" : "easeOut",
-    }
+      ease: shouldReduceMotion ? 'linear' : 'easeOut',
+    },
   };
 };

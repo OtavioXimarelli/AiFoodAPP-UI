@@ -39,21 +39,24 @@ export const ClickSpark: React.FC<ClickSparkProps> = ({
   const [sparks, setSparks] = useState<SparkProps[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const createSparks = useCallback((event: React.MouseEvent) => {
-    if (disabled || !containerRef.current) return;
+  const createSparks = useCallback(
+    (event: React.MouseEvent) => {
+      if (disabled || !containerRef.current) return;
 
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+      const rect = containerRef.current.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
 
-    const newSparks = generateSparks(count, x, y);
-    setSparks(prev => [...prev, ...newSparks]);
+      const newSparks = generateSparks(count, x, y);
+      setSparks(prev => [...prev, ...newSparks]);
 
-    // Clean up sparks after animation
-    setTimeout(() => {
-      setSparks(prev => prev.filter(spark => !newSparks.includes(spark)));
-    }, 1200);
-  }, [count, disabled]);
+      // Clean up sparks after animation
+      setTimeout(() => {
+        setSparks(prev => prev.filter(spark => !newSparks.includes(spark)));
+      }, 1200);
+    },
+    [count, disabled]
+  );
 
   return (
     <div
@@ -62,9 +65,9 @@ export const ClickSpark: React.FC<ClickSparkProps> = ({
       onClick={createSparks}
     >
       {children}
-      
+
       <AnimatePresence>
-        {sparks.map((spark) => {
+        {sparks.map(spark => {
           const distance = 20 + Math.random() * 20;
           const radian = (spark.angle * Math.PI) / 180;
           const deltaX = Math.cos(radian) * distance;

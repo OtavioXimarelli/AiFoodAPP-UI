@@ -1,13 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useLocalRecipes } from "@/hooks/useLocalRecipes";
-import { Recipe } from "@/lib/types";
-import { Clock, Users, ChefHat, Trash2, Eye } from "lucide-react";
-import { format } from "date-fns";
-import { formatPrepTime, formatCalories, formatServings } from "@/lib/format";
-import { ptBR } from "date-fns/locale";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useLocalRecipes } from '@/hooks/useLocalRecipes';
+import { Recipe } from '@/lib/types';
+import { Clock, Users, ChefHat, Trash2, Eye } from 'lucide-react';
+import { format } from 'date-fns';
+import { formatPrepTime, formatCalories, formatServings } from '@/lib/format';
+import { ptBR } from 'date-fns/locale';
 
 interface RecipeHistoryProps {
   onViewRecipe?: (recipe: Recipe) => void;
@@ -39,8 +39,8 @@ const RecipeHistory = ({ onViewRecipe }: RecipeHistoryProps) => {
             Receitas Salvas ({totalRecipes})
           </CardTitle>
           {totalRecipes > 0 && (
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={clearAllRecipes}
               className="text-destructive hover:text-destructive"
@@ -53,8 +53,11 @@ const RecipeHistory = ({ onViewRecipe }: RecipeHistoryProps) => {
       <CardContent>
         <ScrollArea className="h-[400px] w-full pr-4">
           <div className="space-y-3">
-            {storedRecipes.map((recipe) => (
-              <Card key={recipe.id} className="bg-muted/30 border-border/50 hover:bg-muted/50 transition-colors">
+            {storedRecipes.map(recipe => (
+              <Card
+                key={recipe.id}
+                className="bg-muted/30 border-border/50 hover:bg-muted/50 transition-colors"
+              >
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start gap-3">
                     <div className="flex-1 min-w-0">
@@ -64,12 +67,12 @@ const RecipeHistory = ({ onViewRecipe }: RecipeHistoryProps) => {
                       <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
                         {recipe.description}
                       </p>
-                      
+
                       <div className="flex items-center gap-3 text-xs text-muted-foreground mb-2">
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            <span>{formatPrepTime(recipe.prepTime) ?? 'N/A'}</span>
-                          </div>
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          <span>{formatPrepTime(recipe.prepTime) ?? 'N/A'}</span>
+                        </div>
                         <div className="flex items-center gap-1">
                           <Users className="h-3 w-3" />
                           <span>{formatServings(recipe.servings) ?? 'N/A'}</span>
@@ -82,7 +85,9 @@ const RecipeHistory = ({ onViewRecipe }: RecipeHistoryProps) => {
                         </Badge>
                         {recipe.createdAt && (
                           <span className="text-xs text-muted-foreground">
-                            {format(new Date(recipe.createdAt), "dd/MM 'às' HH:mm", { locale: ptBR })}
+                            {format(new Date(recipe.createdAt), "dd/MM 'às' HH:mm", {
+                              locale: ptBR,
+                            })}
                           </span>
                         )}
                       </div>

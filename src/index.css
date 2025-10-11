@@ -43,22 +43,27 @@ All colors MUST be HSL.
 
     /* Design system tokens */
     --radius: 1rem;
-    
+
     /* Modern gradients - yellow/orange theme */
     --gradient-primary: linear-gradient(135deg, hsl(47 96% 53%), hsl(45 93% 58%));
     --gradient-secondary: linear-gradient(180deg, hsl(24 9% 12%), hsl(24 9% 10%));
     --gradient-accent: linear-gradient(135deg, hsl(24 9% 18%), hsl(24 9% 15%));
-    --gradient-hero: linear-gradient(135deg, hsl(24 9% 10%) 0%, hsl(24 9% 12%) 50%, hsl(24 9% 14%) 100%);
+    --gradient-hero: linear-gradient(
+      135deg,
+      hsl(24 9% 10%) 0%,
+      hsl(24 9% 12%) 50%,
+      hsl(24 9% 14%) 100%
+    );
     --gradient-card: linear-gradient(145deg, hsl(24 9% 12%), hsl(24 9% 14%));
     --gradient-orange: linear-gradient(135deg, hsl(47 96% 53%), hsl(45 93% 58%));
-    
+
     /* Enhanced shadows with yellow/orange colors */
     --shadow-soft: 0 4px 20px -2px hsl(0 0% 0% / 0.4);
     --shadow-card: 0 8px 32px -4px hsl(0 0% 0% / 0.5);
     --shadow-glow: 0 0 40px hsl(47 96% 53% / 0.3);
     --shadow-hover: 0 12px 40px -8px hsl(0 0% 0% / 0.6);
     --shadow-orange: 0 8px 32px -4px hsl(47 96% 53% / 0.4);
-    
+
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -67,7 +72,7 @@ All colors MUST be HSL.
     --success: 142 76% 36%;
     --warning: 45 93% 47%;
     --error: 0 84% 60%;
-    
+
     /* Food category colors */
     --vegetables: 120 100% 25%;
     --fruits: 350 100% 50%;
@@ -108,7 +113,7 @@ All colors MUST be HSL.
     --border: 214 31% 91%;
     --input: 214 31% 91%;
     --ring: 220 90% 56%;
-    
+
     /* Enhanced colors for light theme */
     --success: 142 76% 36%;
     --success-foreground: 355 100% 97%;
@@ -118,7 +123,7 @@ All colors MUST be HSL.
     --info-foreground: 210 40% 98%;
 
     --radius: 1rem;
-    
+
     /* Chart colors - warm and vibrant */
     --chart-1: 47 96% 53%;
     --chart-2: 25 95% 53%;
@@ -127,24 +132,50 @@ All colors MUST be HSL.
     --chart-5: 350 100% 50%;
 
     /* Enhanced gradients for light theme */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 100%);
-    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(var(--accent)) 100%);
+    --gradient-primary: linear-gradient(
+      135deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--primary-glow)) 100%
+    );
+    --gradient-secondary: linear-gradient(
+      135deg,
+      hsl(var(--secondary)) 0%,
+      hsl(var(--accent)) 100%
+    );
     --gradient-accent: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--muted)) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-hover)) 50%, hsl(var(--secondary)) 100%);
+    --gradient-hero: linear-gradient(
+      135deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--primary-hover)) 50%,
+      hsl(var(--secondary)) 100%
+    );
     --gradient-card: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(var(--muted) / 0.2) 100%);
-    --gradient-warm: linear-gradient(135deg, hsl(var(--warning) / 0.1) 0%, hsl(var(--info) / 0.1) 100%);
-    --gradient-success: linear-gradient(135deg, hsl(var(--success) / 0.1) 0%, hsl(var(--primary) / 0.1) 100%);
+    --gradient-warm: linear-gradient(
+      135deg,
+      hsl(var(--warning) / 0.1) 0%,
+      hsl(var(--info) / 0.1) 100%
+    );
+    --gradient-success: linear-gradient(
+      135deg,
+      hsl(var(--success) / 0.1) 0%,
+      hsl(var(--primary) / 0.1) 100%
+    );
     --gradient-orange: linear-gradient(135deg, hsl(47 96% 53%), hsl(45 93% 58%));
-    
+
     /* Enhanced shadows for light theme */
     --shadow-soft: 0 1px 3px hsl(var(--foreground) / 0.12), 0 1px 2px hsl(var(--foreground) / 0.08);
-    --shadow-card: 0 4px 6px -1px hsl(var(--foreground) / 0.15), 0 2px 4px -1px hsl(var(--foreground) / 0.1);
-    --shadow-glow: 0 10px 25px -3px hsl(var(--primary) / 0.15), 0 4px 6px -2px hsl(var(--primary) / 0.08);
-    --shadow-hover: 0 20px 25px -5px hsl(var(--foreground) / 0.15), 0 10px 10px -5px hsl(var(--foreground) / 0.08);
+    --shadow-card:
+      0 4px 6px -1px hsl(var(--foreground) / 0.15), 0 2px 4px -1px hsl(var(--foreground) / 0.1);
+    --shadow-glow:
+      0 10px 25px -3px hsl(var(--primary) / 0.15), 0 4px 6px -2px hsl(var(--primary) / 0.08);
+    --shadow-hover:
+      0 20px 25px -5px hsl(var(--foreground) / 0.15), 0 10px 10px -5px hsl(var(--foreground) / 0.08);
     --shadow-orange: 0 10px 25px -3px hsl(25 95% 53% / 0.25), 0 4px 6px -2px hsl(25 95% 53% / 0.15);
-    --shadow-success: 0 10px 25px -3px hsl(var(--success) / 0.2), 0 4px 6px -2px hsl(var(--success) / 0.1);
-    --shadow-warm: 0 8px 20px -2px hsl(var(--warning) / 0.2), 0 3px 6px -1px hsl(var(--warning) / 0.12);
-    
+    --shadow-success:
+      0 10px 25px -3px hsl(var(--success) / 0.2), 0 4px 6px -2px hsl(var(--success) / 0.1);
+    --shadow-warm:
+      0 8px 20px -2px hsl(var(--warning) / 0.2), 0 3px 6px -1px hsl(var(--warning) / 0.12);
+
     /* Enhanced transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -231,12 +262,12 @@ All colors MUST be HSL.
   * {
     /* Fallback for older browsers */
     -ms-overflow-style: auto;
-    
+
     /* Modern browsers with feature detection */
     scrollbar-width: thin;
     scrollbar-color: hsl(var(--muted-foreground) / 0.3) hsl(var(--background));
   }
-  
+
   /* Support check for browsers that don't support modern scrollbar properties */
   @supports not (scrollbar-width: thin) {
     /* Use webkit scrollbar styles as fallback for browsers that don't support scrollbar-width */
@@ -302,11 +333,15 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
   }
 
   /* Ensure full height on mobile */
-  html, body, #root {
+  html,
+  body,
+  #root {
     @apply min-h-screen;
   }
 }
@@ -314,23 +349,37 @@ All colors MUST be HSL.
 /* Enhanced animations for mobile-first design */
 @layer utilities {
   /* Animation delays */
-  [data-anim-delay="0"] { animation-delay: 0ms; }
-  [data-anim-delay="50"] { animation-delay: 50ms; }
-  [data-anim-delay="100"] { animation-delay: 100ms; }
-  [data-anim-delay="150"] { animation-delay: 150ms; }
-  [data-anim-delay="200"] { animation-delay: 200ms; }
-  [data-anim-delay="250"] { animation-delay: 250ms; }
-  [data-anim-delay="300"] { animation-delay: 300ms; }
+  [data-anim-delay='0'] {
+    animation-delay: 0ms;
+  }
+  [data-anim-delay='50'] {
+    animation-delay: 50ms;
+  }
+  [data-anim-delay='100'] {
+    animation-delay: 100ms;
+  }
+  [data-anim-delay='150'] {
+    animation-delay: 150ms;
+  }
+  [data-anim-delay='200'] {
+    animation-delay: 200ms;
+  }
+  [data-anim-delay='250'] {
+    animation-delay: 250ms;
+  }
+  [data-anim-delay='300'] {
+    animation-delay: 300ms;
+  }
 
   /* Performance optimized classes */
   .will-change-transform {
     will-change: transform;
   }
-  
+
   .will-change-opacity {
     will-change: opacity;
   }
-  
+
   .gpu-accelerated {
     transform: translateZ(0);
     backface-visibility: hidden;
@@ -344,53 +393,53 @@ All colors MUST be HSL.
   [data-hero-bg]:where([data-hero-bg]) {
     --tw-url: attr(data-hero-bg url);
   }
-  
+
   /* Modern micro-interactions */
   .hover-lift {
     @apply transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 will-change-transform;
   }
-  
+
   .hover-lift:hover {
     box-shadow: var(--shadow-hover);
   }
-  
+
   .hover-glow {
     @apply transition-all duration-300 will-change-transform;
   }
-  
+
   .hover-glow:hover {
     box-shadow: var(--shadow-glow);
     transform: translateY(-2px);
   }
-  
+
   .pulse-soft {
     @apply animate-pulse opacity-70 hover:opacity-100 transition-opacity duration-300;
   }
-  
+
   /* Button interactions */
   .btn-press {
     @apply transition-transform duration-75 active:scale-95;
   }
-  
+
   .btn-bounce {
     @apply transition-transform duration-200 hover:scale-105 active:scale-95;
   }
-  
+
   /* Card interactions */
   .card-hover {
     @apply transition-all duration-300 hover:shadow-card hover:-translate-y-1;
   }
-  
+
   /* Stagger animations */
   .stagger-animation > * {
     animation-delay: calc(var(--stagger, 0) * 100ms);
   }
-  
+
   /* Fade in on scroll */
   .fade-in-up {
     @apply opacity-0 translate-y-4 transition-all duration-700 ease-out;
   }
-  
+
   .fade-in-up.in-view {
     @apply opacity-100 translate-y-0;
   }
@@ -455,7 +504,8 @@ All colors MUST be HSL.
   }
 
   @keyframes float {
-    0%, 100% {
+    0%,
+    100% {
       transform: translateY(0px);
     }
     50% {
@@ -476,7 +526,8 @@ All colors MUST be HSL.
 
   /* Subtle floating animation - much slower and more elegant */
   @keyframes gentleFloat {
-    0%, 100% {
+    0%,
+    100% {
       transform: translateY(0px);
     }
     50% {
@@ -485,23 +536,23 @@ All colors MUST be HSL.
   }
 
   /* Breathing animation for icons */
-@keyframes spin-once {
-  from {
-    transform: rotate(0deg);
+  @keyframes spin-once {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
-  to {
-    transform: rotate(360deg);
-  }
-}
 
-@keyframes gentle-spin {
-  from {
-    transform: rotate(0deg);
+  @keyframes gentle-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(180deg);
+    }
   }
-  to {
-    transform: rotate(180deg);
-  }
-}
 
   /* Subtle glow pulse */
   @keyframes spin-once {
@@ -514,7 +565,8 @@ All colors MUST be HSL.
   }
 
   @keyframes glowPulse {
-    0%, 100% {
+    0%,
+    100% {
       box-shadow: 0 0 20px rgba(var(--primary-rgb, 34, 197, 94), 0.1);
     }
     50% {
@@ -627,7 +679,7 @@ All colors MUST be HSL.
   .scroll-smooth {
     scroll-behavior: smooth;
   }
-  
+
   /* Legacy iOS smooth scrolling support */
   @supports (-webkit-overflow-scrolling: touch) {
     .scroll-smooth {
@@ -664,12 +716,20 @@ All colors MUST be HSL.
   }
 
   .scrollbar-accent::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, hsl(var(--accent-foreground) / 0.6), hsl(var(--accent-foreground) / 0.4));
+    background: linear-gradient(
+      135deg,
+      hsl(var(--accent-foreground) / 0.6),
+      hsl(var(--accent-foreground) / 0.4)
+    );
     border: 2px solid hsl(var(--background));
   }
 
   .scrollbar-accent::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, hsl(var(--accent-foreground) / 0.8), hsl(var(--accent-foreground) / 0.6));
+    background: linear-gradient(
+      135deg,
+      hsl(var(--accent-foreground) / 0.8),
+      hsl(var(--accent-foreground) / 0.6)
+    );
   }
 
   .scrollbar-success::-webkit-scrollbar-thumb {

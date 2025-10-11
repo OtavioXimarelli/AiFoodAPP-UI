@@ -35,15 +35,15 @@ export const animationVariants: Record<string, Variants> = {
   },
   bounce: {
     hidden: { opacity: 0, y: 20, scale: 0.8 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
+    visible: {
+      opacity: 1,
+      y: 0,
       scale: 1,
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 400,
-        damping: 10
-      }
+        damping: 10,
+      },
     },
   },
 };
@@ -59,54 +59,56 @@ interface AnimatedElementProps extends MotionProps {
 }
 
 // Memoized animated element component
-export const AnimatedElement = memo<AnimatedElementProps>(({
-  children,
-  variant = 'fadeIn',
-  delay = 0,
-  duration,
-  triggerOnce = true,
-  className,
-  as = 'div',
-  ...motionProps
-}) => {
-  const { shouldReduceMotion, animationConfig } = useOptimizedAnimation();
-  const { ref, hasIntersected, isIntersecting } = useIntersectionObserver({
-    triggerOnce,
-    threshold: 0.1,
-  });
+export const AnimatedElement = memo<AnimatedElementProps>(
+  ({
+    children,
+    variant = 'fadeIn',
+    delay = 0,
+    duration,
+    triggerOnce = true,
+    className,
+    as = 'div',
+    ...motionProps
+  }) => {
+    const { shouldReduceMotion, animationConfig } = useOptimizedAnimation();
+    const { ref, hasIntersected, isIntersecting } = useIntersectionObserver({
+      triggerOnce,
+      threshold: 0.1,
+    });
 
-  const MotionComponent = motion[as];
-  const variants = animationVariants[variant];
-  
-  const finalDuration = duration ?? animationConfig.duration;
-  const isVisible = triggerOnce ? hasIntersected : isIntersecting;
+    const MotionComponent = motion[as];
+    const variants = animationVariants[variant];
 
-  if (shouldReduceMotion) {
+    const finalDuration = duration ?? animationConfig.duration;
+    const isVisible = triggerOnce ? hasIntersected : isIntersecting;
+
+    if (shouldReduceMotion) {
+      return (
+        <div ref={ref} className={className}>
+          {children}
+        </div>
+      );
+    }
+
     return (
-      <div ref={ref} className={className}>
+      <motion.div
+        ref={ref}
+        className={className}
+        variants={variants}
+        initial="hidden"
+        animate={isVisible ? 'visible' : 'hidden'}
+        transition={{
+          duration: finalDuration,
+          delay,
+          ease: 'easeOut',
+        }}
+        {...motionProps}
+      >
         {children}
-      </div>
+      </motion.div>
     );
   }
-
-  return (
-    <motion.div
-      ref={ref}
-      className={className}
-      variants={variants}
-      initial="hidden"
-      animate={isVisible ? "visible" : "hidden"}
-      transition={{
-        duration: finalDuration,
-        delay,
-        ease: "easeOut",
-      }}
-      {...motionProps}
-    >
-      {children}
-    </motion.div>
-  );
-});
+);
 
 AnimatedElement.displayName = 'AnimatedElement';
 
@@ -118,54 +120,48 @@ interface StaggerContainerProps {
   variant?: keyof typeof animationVariants;
 }
 
-export const StaggerContainer = memo<StaggerContainerProps>(({
-  children,
-  className,
-  staggerDelay = 0.1,
-  variant = 'slideUp'
-}) => {
-  const { shouldReduceMotion } = useOptimizedAnimation();
-  const { ref, hasIntersected } = useIntersectionObserver({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
+export const StaggerContainer = memo<StaggerContainerProps>(
+  ({ children, className, staggerDelay = 0.1, variant = 'slideUp' }) => {
+    const { shouldReduceMotion } = useOptimizedAnimation();
+    const { ref, hasIntersected } = useIntersectionObserver({
+      triggerOnce: true,
+      threshold: 0.1,
+    });
 
-  const containerVariants: Variants = {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: shouldReduceMotion ? 0 : staggerDelay,
+    const containerVariants: Variants = {
+      hidden: {},
+      visible: {
+        transition: {
+          staggerChildren: shouldReduceMotion ? 0 : staggerDelay,
+        },
       },
-    },
-  };
+    };
 
-  if (shouldReduceMotion) {
+    if (shouldReduceMotion) {
+      return (
+        <div ref={ref} className={className}>
+          {children}
+        </div>
+      );
+    }
+
     return (
-      <div ref={ref} className={className}>
-        {children}
-      </div>
+      <motion.div
+        ref={ref}
+        className={className}
+        variants={containerVariants}
+        initial="hidden"
+        animate={hasIntersected ? 'visible' : 'hidden'}
+      >
+        {React.Children.map(children, (child, index) => (
+          <motion.div key={index} variants={animationVariants[variant]}>
+            {child}
+          </motion.div>
+        ))}
+      </motion.div>
     );
   }
-
-  return (
-    <motion.div
-      ref={ref}
-      className={className}
-      variants={containerVariants}
-      initial="hidden"
-      animate={hasIntersected ? "visible" : "hidden"}
-    >
-      {React.Children.map(children, (child, index) => (
-        <motion.div
-          key={index}
-          variants={animationVariants[variant]}
-        >
-          {child}
-        </motion.div>
-      ))}
-    </motion.div>
-  );
-});
+);
 
 StaggerContainer.displayName = 'StaggerContainer';
 
@@ -178,33 +174,29 @@ interface HoverAnimationProps {
   disabled?: boolean;
 }
 
-export const HoverAnimation = memo<HoverAnimationProps>(({
-  children,
-  scale = 1.02,
-  y = -2,
-  className,
-  disabled = false
-}) => {
-  const { shouldReduceMotion } = useOptimizedAnimation();
+export const HoverAnimation = memo<HoverAnimationProps>(
+  ({ children, scale = 1.02, y = -2, className, disabled = false }) => {
+    const { shouldReduceMotion } = useOptimizedAnimation();
 
-  if (shouldReduceMotion || disabled) {
-    return <div className={className}>{children}</div>;
+    if (shouldReduceMotion || disabled) {
+      return <div className={className}>{children}</div>;
+    }
+
+    return (
+      <motion.div
+        className={className}
+        whileHover={{
+          scale,
+          y,
+          transition: { duration: 0.2 },
+        }}
+        whileTap={{ scale: 0.98 }}
+      >
+        {children}
+      </motion.div>
+    );
   }
-
-  return (
-    <motion.div
-      className={className}
-      whileHover={{
-        scale,
-        y,
-        transition: { duration: 0.2 }
-      }}
-      whileTap={{ scale: 0.98 }}
-    >
-      {children}
-    </motion.div>
-  );
-});
+);
 
 HoverAnimation.displayName = 'HoverAnimation';
 
@@ -214,10 +206,7 @@ interface LoadingAnimationProps {
   className?: string;
 }
 
-export const LoadingAnimation = memo<LoadingAnimationProps>(({
-  size = 'md',
-  className
-}) => {
+export const LoadingAnimation = memo<LoadingAnimationProps>(({ size = 'md', className }) => {
   const { shouldReduceMotion } = useOptimizedAnimation();
 
   const sizeClasses = {
@@ -228,7 +217,9 @@ export const LoadingAnimation = memo<LoadingAnimationProps>(({
 
   if (shouldReduceMotion) {
     return (
-      <div className={`${sizeClasses[size]} border-2 border-primary/20 border-t-primary rounded-full ${className}`}>
+      <div
+        className={`${sizeClasses[size]} border-2 border-primary/20 border-t-primary rounded-full ${className}`}
+      >
         <span className="sr-only">Loading...</span>
       </div>
     );
@@ -241,7 +232,7 @@ export const LoadingAnimation = memo<LoadingAnimationProps>(({
       transition={{
         duration: 1,
         repeat: Infinity,
-        ease: "linear"
+        ease: 'linear',
       }}
     >
       <span className="sr-only">Loading...</span>
@@ -268,7 +259,7 @@ export const SkeletonPulse = memo<{ className?: string }>(({ className }) => {
       transition={{
         duration: 1.5,
         repeat: Infinity,
-        ease: "easeInOut"
+        ease: 'easeInOut',
       }}
     />
   );
@@ -291,7 +282,7 @@ export const PageTransition = memo<{ children: React.ReactNode }>(({ children })
       exit={{ opacity: 0, y: -20 }}
       transition={{
         duration: animationConfig.duration,
-        ease: "easeOut"
+        ease: 'easeOut',
       }}
     >
       {children}

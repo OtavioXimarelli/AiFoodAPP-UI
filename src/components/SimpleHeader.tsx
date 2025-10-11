@@ -8,9 +8,21 @@ const SimpleHeader: React.FC = () => {
         <h1 className="text-lg font-bold">Dashboard</h1>
         <nav>
           <ul className="flex space-x-4">
-            <li><Link to="/dashboard" className="hover:underline">Home</Link></li>
-            <li><Link to="/dashboard/profile" className="hover:underline">Profile</Link></li>
-            <li><Link to="/dashboard/settings" className="hover:underline">Settings</Link></li>
+            <li>
+              <Link to="/dashboard" className="hover:underline">
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link to="/dashboard/profile" className="hover:underline">
+                Profile
+              </Link>
+            </li>
+            <li>
+              <Link to="/dashboard/settings" className="hover:underline">
+                Settings
+              </Link>
+            </li>
           </ul>
         </nav>
       </div>

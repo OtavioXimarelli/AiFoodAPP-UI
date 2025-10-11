@@ -33,7 +33,7 @@ export const SpringCard = forwardRef<
 
   return (
     <animated.div
-      ref={(node) => {
+      ref={node => {
         inViewRef(node);
         if (typeof ref === 'function') ref(node);
         else if (ref) ref.current = node;
@@ -43,9 +43,7 @@ export const SpringCard = forwardRef<
       onMouseEnter={hover ? () => setHover({ transform: 'scale(1.02)' }) : undefined}
       onMouseLeave={hover ? () => setHover({ transform: 'scale(1)' }) : undefined}
     >
-      <animated.div style={hover ? hoverProps : undefined}>
-        {children}
-      </animated.div>
+      <animated.div style={hover ? hoverProps : undefined}>{children}</animated.div>
     </animated.div>
   );
 });
@@ -97,14 +95,14 @@ export const FloatingButton = forwardRef<
 FloatingButton.displayName = 'FloatingButton';
 
 // Parallax container
-export const ParallaxContainer = ({ 
-  children, 
-  speed = 0.5, 
-  className 
-}: { 
-  children: ReactNode; 
-  speed?: number; 
-  className?: string; 
+export const ParallaxContainer = ({
+  children,
+  speed = 0.5,
+  className,
+}: {
+  children: ReactNode;
+  speed?: number;
+  className?: string;
 }) => {
   const [{ y }, set] = useSpring(() => ({ y: 0 }));
 
@@ -119,22 +117,19 @@ export const ParallaxContainer = ({
   }, [speed, set]);
 
   return (
-    <animated.div
-      style={{ transform: y.to(y => `translateY(${y}px)`) }}
-      className={className}
-    >
+    <animated.div style={{ transform: y.to(y => `translateY(${y}px)`) }} className={className}>
       {children}
     </animated.div>
   );
 };
 
 // Staggered list animation
-export const StaggeredList = ({ 
-  children, 
+export const StaggeredList = ({
+  children,
   stagger = 100,
-  className 
-}: { 
-  children: ReactNode[]; 
+  className,
+}: {
+  children: ReactNode[];
   stagger?: number;
   className?: string;
 }) => {
@@ -182,7 +177,7 @@ export const MagneticButton = forwardRef<
     const centerY = rect.top + rect.height / 2;
     const distanceX = (event.clientX - centerX) * strength;
     const distanceY = (event.clientY - centerY) * strength;
-    
+
     set({ x: distanceX, y: distanceY });
   };
 
@@ -209,11 +204,11 @@ export const MagneticButton = forwardRef<
 MagneticButton.displayName = 'MagneticButton';
 
 // Morphing shape
-export const MorphingShape = ({ 
+export const MorphingShape = ({
   className,
   shapes = ['circle', 'square', 'triangle'],
-  duration = 2000 
-}: { 
+  duration = 2000,
+}: {
   className?: string;
   shapes?: string[];
   duration?: number;
@@ -228,27 +223,22 @@ export const MorphingShape = ({
 
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setShapeIndex((prev) => (prev + 1) % shapes.length);
+      setShapeIndex(prev => (prev + 1) % shapes.length);
     }, duration);
 
     return () => clearInterval(interval);
   }, [shapes.length, duration]);
 
-  return (
-    <animated.div
-      style={springProps}
-      className={cn('w-20 h-20 bg-primary', className)}
-    />
-  );
+  return <animated.div style={springProps} className={cn('w-20 h-20 bg-primary', className)} />;
 };
 
 // Reveal animation
-export const RevealAnimation = ({ 
-  children, 
+export const RevealAnimation = ({
+  children,
   direction = 'up',
-  className 
-}: { 
-  children: ReactNode; 
+  className,
+}: {
+  children: ReactNode;
   direction?: 'up' | 'down' | 'left' | 'right';
   className?: string;
 }) => {
@@ -259,11 +249,16 @@ export const RevealAnimation = ({
 
   const getInitialTransform = () => {
     switch (direction) {
-      case 'up': return 'translateY(50px)';
-      case 'down': return 'translateY(-50px)';
-      case 'left': return 'translateX(50px)';
-      case 'right': return 'translateX(-50px)';
-      default: return 'translateY(50px)';
+      case 'up':
+        return 'translateY(50px)';
+      case 'down':
+        return 'translateY(-50px)';
+      case 'left':
+        return 'translateX(50px)';
+      case 'right':
+        return 'translateX(-50px)';
+      default:
+        return 'translateY(50px)';
     }
   };
 

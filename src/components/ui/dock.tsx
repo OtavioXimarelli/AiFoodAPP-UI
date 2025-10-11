@@ -21,12 +21,12 @@ interface DockProps {
   centerIndex?: number;
 }
 
-export const Dock = ({ 
-  items, 
-  position = 'bottom', 
+export const Dock = ({
+  items,
+  position = 'bottom',
   className,
   orientation = position === 'left' || position === 'right' ? 'vertical' : 'horizontal',
-  centerIndex
+  centerIndex,
 }: DockProps) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -53,16 +53,17 @@ export const Dock = ({
   }, [centerIndex, items.length]);
 
   const positionClasses = {
-  // Use safe-area on mobile to avoid home indicator overlap
-  bottom: 'fixed left-1/2 transform -translate-x-1/2 bottom-[calc(env(safe-area-inset-bottom,0px)+1rem)]',
+    // Use safe-area on mobile to avoid home indicator overlap
+    bottom:
+      'fixed left-1/2 transform -translate-x-1/2 bottom-[calc(env(safe-area-inset-bottom,0px)+1rem)]',
     top: 'fixed top-6 left-1/2 transform -translate-x-1/2',
     left: 'fixed left-6 top-1/2 transform -translate-y-1/2',
-    right: 'fixed right-6 top-1/2 transform -translate-y-1/2'
+    right: 'fixed right-6 top-1/2 transform -translate-y-1/2',
   };
 
   const orientationClasses = {
     horizontal: 'flex-row space-x-2',
-    vertical: 'flex-col space-y-2'
+    vertical: 'flex-col space-y-2',
   };
 
   return (
@@ -70,10 +71,10 @@ export const Dock = ({
       role="navigation"
       aria-label="Barra de navegação"
       className={cn(
-    'z-50 flex items-center justify-center pointer-events-auto',
-    // Non-glass solid surface
-    'bg-card border border-border',
-    'rounded-2xl p-2 sm:p-3 shadow-2xl',
+        'z-50 flex items-center justify-center pointer-events-auto',
+        // Non-glass solid surface
+        'bg-card border border-border',
+        'rounded-2xl p-2 sm:p-3 shadow-2xl',
         positionClasses[position],
         className
       )}
@@ -91,7 +92,7 @@ export const Dock = ({
             hoveredIndex={hoveredIndex}
             setHoveredIndex={setHoveredIndex}
             orientation={orientation}
-            setRef={(el) => (itemRefs.current[index] = el)}
+            setRef={el => (itemRefs.current[index] = el)}
           />
         ))}
       </div>
@@ -108,13 +109,13 @@ interface DockItemProps {
   setRef?: (el: HTMLDivElement | null) => void;
 }
 
-const DockItem = ({ 
-  item, 
-  index, 
-  hoveredIndex, 
-  setHoveredIndex, 
+const DockItem = ({
+  item,
+  index,
+  hoveredIndex,
+  setHoveredIndex,
   orientation,
-  setRef
+  setRef,
 }: DockItemProps) => {
   const isHovered = hoveredIndex === index;
   const isAdjacent = hoveredIndex !== null && Math.abs(hoveredIndex - index) === 1;
@@ -129,11 +130,11 @@ const DockItem = ({
     <motion.div
       className={cn(
         'relative flex items-center justify-center',
-  'w-12 h-12 sm:w-12 sm:h-12 rounded-xl cursor-pointer',
-  // Non-glass item backgrounds
-  'bg-muted hover:bg-accent border border-border/50',
+        'w-12 h-12 sm:w-12 sm:h-12 rounded-xl cursor-pointer',
+        // Non-glass item backgrounds
+        'bg-muted hover:bg-accent border border-border/50',
         'transition-colors duration-200',
-  item.active && 'bg-primary text-primary-foreground border-primary'
+        item.active && 'bg-primary text-primary-foreground border-primary'
       )}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
@@ -145,9 +146,7 @@ const DockItem = ({
       aria-label={item.label}
       ref={setRef}
     >
-      <div className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center">
-        {item.icon}
-      </div>
+      <div className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center">{item.icon}</div>
 
       {/* Badge */}
       {item.badge && item.badge > 0 && (
@@ -168,7 +167,7 @@ const DockItem = ({
             className={cn(
               'absolute bg-background/95 backdrop-blur-sm border border-border/30',
               'px-2 py-1 rounded-lg text-xs font-medium whitespace-nowrap shadow-lg',
-              orientation === 'horizontal' 
+              orientation === 'horizontal'
                 ? 'bottom-full mb-2 left-1/2 transform -translate-x-1/2'
                 : 'left-full ml-2 top-1/2 transform -translate-y-1/2'
             )}

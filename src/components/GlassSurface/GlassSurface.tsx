@@ -2,7 +2,7 @@
 	Installed from https://reactbits.dev/ts/tailwind/
 */
 
-import React, { useEffect, useRef, useState, useId } from "react";
+import React, { useEffect, useRef, useState, useId } from 'react';
 
 export interface GlassSurfaceProps {
   children?: React.ReactNode;
@@ -20,27 +20,27 @@ export interface GlassSurfaceProps {
   redOffset?: number;
   greenOffset?: number;
   blueOffset?: number;
-  xChannel?: "R" | "G" | "B";
-  yChannel?: "R" | "G" | "B";
+  xChannel?: 'R' | 'G' | 'B';
+  yChannel?: 'R' | 'G' | 'B';
   mixBlendMode?:
-    | "normal"
-    | "multiply"
-    | "screen"
-    | "overlay"
-    | "darken"
-    | "lighten"
-    | "color-dodge"
-    | "color-burn"
-    | "hard-light"
-    | "soft-light"
-    | "difference"
-    | "exclusion"
-    | "hue"
-    | "saturation"
-    | "color"
-    | "luminosity"
-    | "plus-darker"
-    | "plus-lighter";
+    | 'normal'
+    | 'multiply'
+    | 'screen'
+    | 'overlay'
+    | 'darken'
+    | 'lighten'
+    | 'color-dodge'
+    | 'color-burn'
+    | 'hard-light'
+    | 'soft-light'
+    | 'difference'
+    | 'exclusion'
+    | 'hue'
+    | 'saturation'
+    | 'color'
+    | 'luminosity'
+    | 'plus-darker'
+    | 'plus-lighter';
   className?: string;
   style?: React.CSSProperties;
 }
@@ -49,14 +49,14 @@ const useDarkMode = () => {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === 'undefined') return;
 
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     setIsDark(mediaQuery.matches);
 
     const handler = (e: MediaQueryListEvent) => setIsDark(e.matches);
-    mediaQuery.addEventListener("change", handler);
-    return () => mediaQuery.removeEventListener("change", handler);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
   }, []);
 
   return isDark;
@@ -78,13 +78,13 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   redOffset = 0,
   greenOffset = 10,
   blueOffset = 20,
-  xChannel = "R",
-  yChannel = "G",
-  mixBlendMode = "difference",
-  className = "",
+  xChannel = 'R',
+  yChannel = 'G',
+  mixBlendMode = 'difference',
+  className = '',
   style = {},
 }) => {
-  const uniqueId = useId().replace(/:/g, "-");
+  const uniqueId = useId().replace(/:/g, '-');
   const filterId = `glass-filter-${uniqueId}`;
   const redGradId = `red-grad-${uniqueId}`;
   const blueGradId = `blue-grad-${uniqueId}`;
@@ -127,7 +127,7 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   };
 
   const updateDisplacementMap = () => {
-    feImageRef.current?.setAttribute("href", generateDisplacementMap());
+    feImageRef.current?.setAttribute('href', generateDisplacementMap());
   };
 
   useEffect(() => {
@@ -138,16 +138,13 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
       { ref: blueChannelRef, offset: blueOffset },
     ].forEach(({ ref, offset }) => {
       if (ref.current) {
-        ref.current.setAttribute(
-          "scale",
-          (distortionScale + offset).toString(),
-        );
-        ref.current.setAttribute("xChannelSelector", xChannel);
-        ref.current.setAttribute("yChannelSelector", yChannel);
+        ref.current.setAttribute('scale', (distortionScale + offset).toString());
+        ref.current.setAttribute('xChannelSelector', xChannel);
+        ref.current.setAttribute('yChannelSelector', yChannel);
       }
     });
 
-    gaussianBlurRef.current?.setAttribute("stdDeviation", displace.toString());
+    gaussianBlurRef.current?.setAttribute('stdDeviation', displace.toString());
   }, [
     width,
     height,
@@ -199,42 +196,40 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   }, [width, height]);
 
   const supportsSVGFilters = () => {
-    const isWebkit =
-      /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+    const isWebkit = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
     const isFirefox = /Firefox/.test(navigator.userAgent);
 
     if (isWebkit || isFirefox) {
       return false;
     }
 
-    const div = document.createElement("div");
+    const div = document.createElement('div');
     div.style.backdropFilter = `url(#${filterId})`;
-    return div.style.backdropFilter !== "";
+    return div.style.backdropFilter !== '';
   };
 
   const supportsBackdropFilter = () => {
-    if (typeof window === "undefined") return false;
-    return CSS.supports("backdrop-filter", "blur(10px)");
+    if (typeof window === 'undefined') return false;
+    return CSS.supports('backdrop-filter', 'blur(10px)');
   };
 
   const getContainerStyles = (): React.CSSProperties => {
     const baseStyles: React.CSSProperties = {
       ...style,
       borderRadius: `${borderRadius}px`,
-      "--glass-frost": backgroundOpacity,
-      "--glass-saturation": saturation,
+      '--glass-frost': backgroundOpacity,
+      '--glass-saturation': saturation,
     } as React.CSSProperties;
 
     // Only set explicit width/height when props are provided. This allows
     // utility classes (e.g. `w-full`, `h-16`) to control sizing when no
     // width/height props are passed.
     if (width !== undefined) {
-      baseStyles.width = typeof width === "number" ? `${width}px` : width;
+      baseStyles.width = typeof width === 'number' ? `${width}px` : width;
     }
     if (height !== undefined) {
-      baseStyles.height = typeof height === "number" ? `${height}px` : height;
+      baseStyles.height = typeof height === 'number' ? `${height}px` : height;
     }
-    
 
     const svgSupported = supportsSVGFilters();
     const backdropFilterSupported = supportsBackdropFilter();
@@ -269,18 +264,18 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
         if (!backdropFilterSupported) {
           return {
             ...baseStyles,
-            background: "rgba(0, 0, 0, 0.4)",
-            border: "1px solid rgba(255, 255, 255, 0.2)",
+            background: 'rgba(0, 0, 0, 0.4)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
             boxShadow: `inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
                         inset 0 -1px 0 0 rgba(255, 255, 255, 0.1)`,
           };
         } else {
           return {
             ...baseStyles,
-            background: "rgba(255, 255, 255, 0.1)",
-            backdropFilter: "blur(12px) saturate(1.8) brightness(1.2)",
-            WebkitBackdropFilter: "blur(12px) saturate(1.8) brightness(1.2)",
-            border: "1px solid rgba(255, 255, 255, 0.2)",
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(12px) saturate(1.8) brightness(1.2)',
+            WebkitBackdropFilter: 'blur(12px) saturate(1.8) brightness(1.2)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
             boxShadow: `inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
                         inset 0 -1px 0 0 rgba(255, 255, 255, 0.1)`,
           };
@@ -289,18 +284,18 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
         if (!backdropFilterSupported) {
           return {
             ...baseStyles,
-            background: "rgba(255, 255, 255, 0.4)",
-            border: "1px solid rgba(255, 255, 255, 0.3)",
+            background: 'rgba(255, 255, 255, 0.4)',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
             boxShadow: `inset 0 1px 0 0 rgba(255, 255, 255, 0.5),
                         inset 0 -1px 0 0 rgba(255, 255, 255, 0.3)`,
           };
         } else {
           return {
             ...baseStyles,
-            background: "rgba(255, 255, 255, 0.25)",
-            backdropFilter: "blur(12px) saturate(1.8) brightness(1.1)",
-            WebkitBackdropFilter: "blur(12px) saturate(1.8) brightness(1.1)",
-            border: "1px solid rgba(255, 255, 255, 0.3)",
+            background: 'rgba(255, 255, 255, 0.25)',
+            backdropFilter: 'blur(12px) saturate(1.8) brightness(1.1)',
+            WebkitBackdropFilter: 'blur(12px) saturate(1.8) brightness(1.1)',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
             boxShadow: `0 8px 32px 0 rgba(31, 38, 135, 0.2),
                         0 2px 16px 0 rgba(31, 38, 135, 0.1),
                         inset 0 1px 0 0 rgba(255, 255, 255, 0.4),
@@ -312,11 +307,11 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   };
 
   const glassSurfaceClasses =
-    "relative flex items-center justify-center overflow-hidden transition-opacity duration-300 ease-out";
+    'relative flex items-center justify-center overflow-hidden transition-opacity duration-300 ease-out';
 
   const focusVisibleClasses = isDarkMode
-    ? "focus-visible:outline-2 focus-visible:outline-[#0A84FF] focus-visible:outline-offset-2"
-    : "focus-visible:outline-2 focus-visible:outline-[#007AFF] focus-visible:outline-offset-2";
+    ? 'focus-visible:outline-2 focus-visible:outline-[#0A84FF] focus-visible:outline-offset-2'
+    : 'focus-visible:outline-2 focus-visible:outline-[#007AFF] focus-visible:outline-offset-2';
 
   return (
     <div
@@ -400,16 +395,12 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
 
             <feBlend in="red" in2="green" mode="screen" result="rg" />
             <feBlend in="rg" in2="blue" mode="screen" result="output" />
-            <feGaussianBlur
-              ref={gaussianBlurRef}
-              in="output"
-              stdDeviation="0.7"
-            />
+            <feGaussianBlur ref={gaussianBlurRef} in="output" stdDeviation="0.7" />
           </filter>
         </defs>
       </svg>
 
-  <div className="w-full h-full flex items-center justify-center p-3 sm:p-4 rounded-[inherit] relative z-10">
+      <div className="w-full h-full flex items-center justify-center p-3 sm:p-4 rounded-[inherit] relative z-10">
         {children}
       </div>
     </div>

@@ -1,9 +1,9 @@
-import { Link } from "react-router-dom";
-import { DEV_CONFIG } from "@/config/dev";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Wrench, ArrowRight } from "lucide-react";
+import { Link } from 'react-router-dom';
+import { DEV_CONFIG } from '@/config/dev';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Wrench, ArrowRight } from 'lucide-react';
 
 export const DevAccess = () => {
   // Só renderizar se estivermos em modo de desenvolvimento
@@ -17,7 +17,10 @@ export const DevAccess = () => {
         <Wrench className="h-4 w-4" />
         <AlertDescription className="flex items-center justify-between w-full">
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="bg-yellow-500/20 text-yellow-700 dark:text-yellow-300 border-yellow-500/30">
+            <Badge
+              variant="outline"
+              className="bg-yellow-500/20 text-yellow-700 dark:text-yellow-300 border-yellow-500/30"
+            >
               DESENVOLVIMENTO
             </Badge>
             <span>Dashboard disponível para testes locais</span>

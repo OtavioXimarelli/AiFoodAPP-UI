@@ -13,7 +13,9 @@ export const ClickSparkToggle: React.FC<ClickSparkToggleProps> = ({ className })
 
   return (
     <div className={`flex items-center space-x-2 ${className}`}>
-      <Sparkles className={`h-4 w-4 ${isGlobalClickSparkEnabled ? 'text-primary' : 'text-muted-foreground'}`} />
+      <Sparkles
+        className={`h-4 w-4 ${isGlobalClickSparkEnabled ? 'text-primary' : 'text-muted-foreground'}`}
+      />
       <Label htmlFor="clickspark-toggle" className="text-sm font-medium">
         Efeitos de clique
       </Label>

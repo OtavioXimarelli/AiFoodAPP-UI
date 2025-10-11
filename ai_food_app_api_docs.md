@@ -1,6 +1,7 @@
 # AI Food App - Frontend Developer API Documentation
 
 ## Table of Contents
+
 1. [Overview](#overview)
 2. [Authentication & Security](#authentication--security)
 3. [API Base Configuration](#api-base-configuration)
@@ -15,6 +16,7 @@
 The AI Food App is a Spring Boot application that provides food management and AI-powered recipe generation. The backend uses OAuth2 authentication, PostgreSQL database, and integrates with Maritaca AI for recipe generation and nutritional analysis.
 
 ### Key Features
+
 - Food item CRUD operations
 - AI-powered recipe generation
 - Nutritional analysis
@@ -24,20 +26,24 @@ The AI Food App is a Spring Boot application that provides food management and A
 ## Authentication & Security
 
 ### Authentication Flow
+
 The application uses **OAuth2** with session-based authentication, not JWT tokens as initially planned. The security configuration shows OAuth2 login is the primary authentication method.
 
 ### Security Headers
+
 ```javascript
 // Required headers for authenticated requests
 const headers = {
   'Content-Type': 'application/json',
   'X-Requested-With': 'XMLHttpRequest',
-  'Accept': 'application/json'
+  Accept: 'application/json',
 };
 ```
 
 ### CSRF Protection
+
 CSRF protection is enabled with cookie-based tokens:
+
 ```javascript
 // Get CSRF token from cookie
 function getCsrfToken() {
@@ -51,6 +57,7 @@ headers['X-CSRF-TOKEN'] = getCsrfToken();
 ```
 
 ### Authentication Endpoints
+
 ```
 GET  /oauth2/authorization/{provider}  # Initiate OAuth2 login
 GET  /api/auth                        # Get current user info
@@ -58,25 +65,30 @@ POST /api/auth/logout                 # Logout user
 ```
 
 ### Credentials & CORS
+
 All requests must include credentials:
+
 ```javascript
 fetch(url, {
   method: 'GET',
   credentials: 'include', // IMPORTANT: Include cookies
-  headers: headers
+  headers: headers,
 });
 ```
 
 ## API Base Configuration
 
 ### Base URL
+
 ```javascript
 const API_BASE_URL = 'http://localhost:8080'; // Development
 // const API_BASE_URL = 'https://your-domain.com'; // Production
 ```
 
 ### Frontend URL Configuration
+
 The backend expects the frontend URL to be configured in `application.properties`:
+
 ```properties
 app.frontend.url=http://localhost:3000  # Your frontend URL
 ```
@@ -84,6 +96,7 @@ app.frontend.url=http://localhost:3000  # Your frontend URL
 ## Data Models
 
 ### FoodItem Model
+
 ```typescript
 interface FoodItem {
   id?: number;
@@ -102,18 +115,19 @@ interface FoodItem {
 }
 
 enum FoodGroup {
-  FRUITS = "FRUITS",
-  VEGETABLES = "VEGETABLES", 
-  GRAINS = "GRAINS",
-  PROTEIN = "PROTEIN",
-  DAIRY = "DAIRY",
-  FATS_OILS = "FATS_OILS",
-  BEVERAGES = "BEVERAGES",
-  SWEETS_SNACKS = "SWEETS_SNACKS"
+  FRUITS = 'FRUITS',
+  VEGETABLES = 'VEGETABLES',
+  GRAINS = 'GRAINS',
+  PROTEIN = 'PROTEIN',
+  DAIRY = 'DAIRY',
+  FATS_OILS = 'FATS_OILS',
+  BEVERAGES = 'BEVERAGES',
+  SWEETS_SNACKS = 'SWEETS_SNACKS',
 }
 ```
 
 ### Recipe Model
+
 ```typescript
 interface Recipe {
   id?: number;
@@ -133,6 +147,7 @@ interface RecipeIngredient {
 ```
 
 ### User Model
+
 ```typescript
 interface User {
   id?: number;
@@ -143,7 +158,9 @@ interface User {
 ```
 
 ### Validation Requirements
+
 Based on the DTO validation annotations:
+
 - All food item fields marked as `@NotNull` are required
 - Authentication fields cannot be empty
 - Use client-side validation to match server expectations
@@ -153,12 +170,14 @@ Based on the DTO validation annotations:
 ### Authentication Endpoints
 
 #### Get Current User
+
 ```http
 GET /api/auth
 Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "id": 1,
@@ -169,6 +188,7 @@ Content-Type: application/json
 ```
 
 **Error Responses:**
+
 - `401 Unauthorized` - User not authenticated
 - `404 Not Found` - User not found
 
@@ -177,12 +197,14 @@ Content-Type: application/json
 ### Food Items Endpoints
 
 #### Create Food Items
+
 ```http
 POST /api/foods/create
 Content-Type: application/json
 ```
 
 **Request Body:**
+
 ```json
 [
   {
@@ -203,6 +225,7 @@ Content-Type: application/json
 ```
 
 **Response:** `201 Created`
+
 ```json
 [
   {
@@ -224,11 +247,13 @@ Content-Type: application/json
 ```
 
 #### Get All Food Items
+
 ```http
 GET /api/foods/list
 ```
 
 **Response:** `200 OK`
+
 ```json
 [
   {
@@ -250,6 +275,7 @@ GET /api/foods/list
 ```
 
 #### Get Food Item by ID
+
 ```http
 GET /api/foods/list/{id}
 ```
@@ -258,12 +284,14 @@ GET /api/foods/list/{id}
 **Error:** `404 Not Found` if item doesn't exist
 
 #### Update Food Item
+
 ```http
 PUT /api/foods/update
 Content-Type: application/json
 ```
 
 **Request Body:**
+
 ```json
 {
   "id": 1,
@@ -286,6 +314,7 @@ Content-Type: application/json
 **Error:** `404 Not Found` with message "The item was not found, please try again and check the item ID"
 
 #### Delete Food Item
+
 ```http
 DELETE /api/foods/delete/{id}
 ```
@@ -298,23 +327,20 @@ DELETE /api/foods/delete/{id}
 ### Recipe Endpoints
 
 #### Generate Recipe with AI
+
 ```http
 GET /api/recipes/gen
 ```
 
 **Response:** `200 OK`
+
 ```json
 [
   {
     "id": 1,
     "name": "Apple Cinnamon Oatmeal",
     "description": "15 minutes",
-    "nutritionalInfo": [
-      "Calories: 320 kcal",
-      "Protein: 8 g",
-      "Carbohydrates: 58 g",
-      "Fat: 7 g"
-    ],
+    "nutritionalInfo": ["Calories: 320 kcal", "Protein: 8 g", "Carbohydrates: 58 g", "Fat: 7 g"],
     "instructions": [
       "Heat water in a pot",
       "Add oats and cook for 5 minutes",
@@ -343,11 +369,13 @@ GET /api/recipes/gen
 **Error:** `404 Not Found` if no food items available or generation fails
 
 #### Analyze Recipe Nutrition
+
 ```http
 GET /api/recipes/analyze/{id}
 ```
 
 **Response:** `200 OK`
+
 ```json
 "Esta receita de Aveia com Maçã e Canela oferece um perfil nutricional equilibrado. Com aproximadamente 320 calorias por porção, é uma excelente opção para o café da manhã. Rica em fibras provenientes da aveia e da maçã, ajuda na digestão e saciedade..."
 ```
@@ -363,6 +391,7 @@ GET /api/recipes/analyze/{id}
 The application uses `@RestControllerAdvice` for global error handling:
 
 #### Validation Errors (`400 Bad Request`)
+
 ```json
 {
   "name": "Name is required",
@@ -372,19 +401,23 @@ The application uses `@RestControllerAdvice` for global error handling:
 ```
 
 #### Authentication Errors (`401 Unauthorized`)
+
 ```json
 "Invalid username or password"
 ```
 
 #### Not Found Errors (`404 Not Found`)
+
 ```json
 "User not found with username: johndoe"
 ```
 
 #### Server Errors (`500 Internal Server Error`)
+
 Generic server error response - check server logs.
 
 ### HTTP Status Codes Used
+
 - `200` - OK (successful GET, PUT requests)
 - `201` - Created (successful POST requests)
 - `204` - No Content (successful DELETE requests)
@@ -399,6 +432,7 @@ Generic server error response - check server logs.
 ### React/Next.js Implementation
 
 #### API Client Setup
+
 ```javascript
 // api/client.js
 class ApiClient {
@@ -413,9 +447,9 @@ class ApiClient {
       headers: {
         'Content-Type': 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
-        ...options.headers
+        ...options.headers,
       },
-      ...options
+      ...options,
     };
 
     // Add CSRF token if available
@@ -426,11 +460,11 @@ class ApiClient {
 
     try {
       const response = await fetch(url, config);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       // Handle different content types
       const contentType = response.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
@@ -445,9 +479,7 @@ class ApiClient {
 
   getCsrfToken() {
     const cookies = document.cookie.split(';');
-    const csrfCookie = cookies.find(cookie => 
-      cookie.trim().startsWith('XSRF-TOKEN=')
-    );
+    const csrfCookie = cookies.find(cookie => cookie.trim().startsWith('XSRF-TOKEN='));
     return csrfCookie ? decodeURIComponent(csrfCookie.split('=')[1]) : null;
   }
 
@@ -459,20 +491,20 @@ class ApiClient {
   async createFoodItems(items) {
     return this.request('/api/foods/create', {
       method: 'POST',
-      body: JSON.stringify(items)
+      body: JSON.stringify(items),
     });
   }
 
   async updateFoodItem(item) {
     return this.request('/api/foods/update', {
       method: 'PUT',
-      body: JSON.stringify(item)
+      body: JSON.stringify(item),
     });
   }
 
   async deleteFoodItem(id) {
     return this.request(`/api/foods/delete/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
     });
   }
 
@@ -495,6 +527,7 @@ export const apiClient = new ApiClient('http://localhost:8080');
 ```
 
 #### React Hook Example
+
 ```javascript
 // hooks/useFoodItems.js
 import { useState, useEffect } from 'react';
@@ -518,7 +551,7 @@ export const useFoodItems = () => {
     }
   };
 
-  const createFoodItem = async (items) => {
+  const createFoodItem = async items => {
     try {
       const newItems = await apiClient.createFoodItems(items);
       setFoodItems(prev => [...prev, ...newItems]);
@@ -529,7 +562,7 @@ export const useFoodItems = () => {
     }
   };
 
-  const deleteFoodItem = async (id) => {
+  const deleteFoodItem = async id => {
     try {
       await apiClient.deleteFoodItem(id);
       setFoodItems(prev => prev.filter(item => item.id !== id));
@@ -549,25 +582,26 @@ export const useFoodItems = () => {
     error,
     refetch: fetchFoodItems,
     createFoodItem,
-    deleteFoodItem
+    deleteFoodItem,
   };
 };
 ```
 
 #### Form Validation Example
+
 ```javascript
 // utils/validation.js
-export const validateFoodItem = (item) => {
+export const validateFoodItem = item => {
   const errors = {};
-  
+
   if (!item.name?.trim()) {
     errors.name = 'Name is required';
   }
-  
+
   if (!item.quantity || item.quantity <= 0) {
     errors.quantity = 'Quantity must be positive';
   }
-  
+
   if (!item.expiration) {
     errors.expiration = 'Expiration date is required';
   } else {
@@ -576,19 +610,20 @@ export const validateFoodItem = (item) => {
       errors.expiration = 'Expiration date must be in the future';
     }
   }
-  
+
   if (!item.foodGroup) {
     errors.foodGroup = 'Food group is required';
   }
-  
+
   return {
     isValid: Object.keys(errors).length === 0,
-    errors
+    errors,
   };
 };
 ```
 
 ### Vue.js Implementation Example
+
 ```javascript
 // composables/useApi.js
 import { ref, reactive } from 'vue';
@@ -600,15 +635,15 @@ export function useApi() {
   const request = async (url, options = {}) => {
     loading.value = true;
     error.value = null;
-    
+
     try {
       const response = await fetch(url, {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
+          'X-Requested-With': 'XMLHttpRequest',
         },
-        ...options
+        ...options,
       });
 
       if (!response.ok) {
@@ -639,22 +674,25 @@ Currently, the application doesn't implement WebSocket connections. All communic
 ## Development Tips
 
 ### 1. Environment Configuration
+
 Set up environment variables for different stages:
+
 ```javascript
 // config/environment.js
 const config = {
   development: {
-    API_BASE_URL: 'http://localhost:8080'
+    API_BASE_URL: 'http://localhost:8080',
   },
   production: {
-    API_BASE_URL: 'https://api.yourapp.com'
-  }
+    API_BASE_URL: 'https://api.yourapp.com',
+  },
 };
 
 export default config[process.env.NODE_ENV || 'development'];
 ```
 
 ### 2. Error Handling Best Practices
+
 ```javascript
 // Create a centralized error handler
 export const handleApiError = (error, showToast) => {
@@ -670,7 +708,9 @@ export const handleApiError = (error, showToast) => {
 ```
 
 ### 3. Loading States
+
 Always show loading states for better UX:
+
 ```javascript
 const [loading, setLoading] = useState(false);
 
@@ -688,6 +728,7 @@ const handleSubmit = async () => {
 ```
 
 ### 4. Authentication Flow
+
 ```javascript
 // Check authentication status on app load
 useEffect(() => {
@@ -701,7 +742,7 @@ useEffect(() => {
       // Redirect to OAuth login if needed
     }
   };
-  
+
   checkAuth();
 }, []);
 ```

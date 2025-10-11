@@ -27,10 +27,12 @@ export const ClickSparkProvider: React.FC<ClickSparkProviderProps> = ({ children
   };
 
   return (
-    <ClickSparkContext.Provider value={{
-      isGlobalClickSparkEnabled,
-      toggleGlobalClickSpark
-    }}>
+    <ClickSparkContext.Provider
+      value={{
+        isGlobalClickSparkEnabled,
+        toggleGlobalClickSpark,
+      }}
+    >
       {children}
     </ClickSparkContext.Provider>
   );

@@ -61,9 +61,7 @@ export const useFoodItems = () => {
     try {
       setError(null);
       const updatedItem = await foodService.updateFoodItem(payload);
-      setFoodItems(prev => 
-        prev.map(item => item.id === updatedItem.id ? updatedItem : item)
-      );
+      setFoodItems(prev => prev.map(item => (item.id === updatedItem.id ? updatedItem : item)));
       return updatedItem;
     } catch (error: any) {
       console.error('Failed to update food item:', error);
@@ -104,6 +102,6 @@ export const useFoodItems = () => {
     createMultipleFoodItems,
     updateFoodItem,
     deleteFoodItem,
-    clearError
+    clearError,
   };
 };

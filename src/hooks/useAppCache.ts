@@ -9,10 +9,10 @@ export const useAppCache = () => {
   const getStorageInfo = () => {
     const recipeInfo = recipes.getStorageInfo();
     const nutritionInfo = nutritionAnalyses.getStorageInfo();
-    
+
     const totalSizeInBytes = (recipeInfo?.sizeInBytes || 0) + (nutritionInfo?.sizeInBytes || 0);
-    const totalSizeInKB = Math.round(totalSizeInBytes / 1024 * 100) / 100;
-    const totalSizeInMB = Math.round(totalSizeInKB / 1024 * 100) / 100;
+    const totalSizeInKB = Math.round((totalSizeInBytes / 1024) * 100) / 100;
+    const totalSizeInMB = Math.round((totalSizeInKB / 1024) * 100) / 100;
 
     return {
       recipes: recipeInfo,
@@ -21,7 +21,7 @@ export const useAppCache = () => {
       totalSizeInBytes,
       totalSizeInKB,
       totalSizeInMB,
-      storageUsagePercent: Math.round((totalSizeInBytes / (5 * 1024 * 1024)) * 100) // Assuming 5MB localStorage limit
+      storageUsagePercent: Math.round((totalSizeInBytes / (5 * 1024 * 1024)) * 100), // Assuming 5MB localStorage limit
     };
   };
 
@@ -29,7 +29,7 @@ export const useAppCache = () => {
   const clearAllCache = () => {
     const recipeResult = recipes.clearAllRecipes();
     const nutritionResult = nutritionAnalyses.clearAllAnalyses();
-    
+
     return recipeResult && nutritionResult;
   };
 
@@ -41,9 +41,9 @@ export const useAppCache = () => {
       version: '1.0',
       data: {
         recipes: recipes.storedRecipes,
-        nutritionAnalyses: nutritionAnalyses.storedAnalyses
+        nutritionAnalyses: nutritionAnalyses.storedAnalyses,
       },
-      metadata: getStorageInfo()
+      metadata: getStorageInfo(),
     };
   };
 
@@ -77,13 +77,13 @@ export const useAppCache = () => {
         success: true,
         importedRecipes,
         importedAnalyses,
-        total: importedRecipes + importedAnalyses
+        total: importedRecipes + importedAnalyses,
       };
     } catch (error) {
       console.error('Erro ao importar dados:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Erro desconhecido'
+        error: error instanceof Error ? error.message : 'Erro desconhecido',
       };
     }
   };
@@ -98,11 +98,11 @@ export const useAppCache = () => {
   const getCacheHealth = () => {
     const info = getStorageInfo();
     const isNearLimit = isStorageNearLimit();
-    
+
     const health = {
       status: 'healthy' as 'healthy' | 'warning' | 'critical',
       issues: [] as string[],
-      recommendations: [] as string[]
+      recommendations: [] as string[],
     };
 
     if (isNearLimit) {
@@ -136,6 +136,6 @@ export const useAppCache = () => {
     isStorageNearLimit,
     getCacheHealth,
     loading: recipes.loading || nutritionAnalyses.loading,
-    hasError: !!recipes.error || !!nutritionAnalyses.error
+    hasError: !!recipes.error || !!nutritionAnalyses.error,
   };
 };

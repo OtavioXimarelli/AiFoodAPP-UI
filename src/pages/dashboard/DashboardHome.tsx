@@ -1,29 +1,29 @@
-import { useState, useEffect, useMemo } from "react";
-import { motion } from "framer-motion";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { 
-  ChefHat, 
-  Package, 
-  TrendingUp, 
-  Clock, 
+import { useState, useEffect, useMemo } from 'react';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  ChefHat,
+  Package,
+  TrendingUp,
+  Clock,
   Star,
   Plus,
   Activity,
-  ArrowRight
-} from "lucide-react";
-import { formatPrepTime, formatCalories, formatServings } from "@/lib/format";
-import { FOOD_GROUP_LABELS } from "@/lib/types";
-import { differenceInDays } from "date-fns";
-import { Progress } from "@/components/ui/progress";
-import { useAuth } from "@/hooks/useAuth";
-import { useFoodItems } from "@/hooks/useFoodItems";
-import { useLocalRecipes } from "@/hooks/useLocalRecipes";
-import { cn } from "@/lib/utils";
-import { ReactBitsCard, TextReveal } from "@/components/ui/reactbits-components";
-import { NavLink } from "react-router-dom";
-import { EnhancedClickSpark } from "@/components/ui/enhanced-click-spark";
+  ArrowRight,
+} from 'lucide-react';
+import { formatPrepTime, formatCalories, formatServings } from '@/lib/format';
+import { FOOD_GROUP_LABELS } from '@/lib/types';
+import { differenceInDays } from 'date-fns';
+import { Progress } from '@/components/ui/progress';
+import { useAuth } from '@/hooks/useAuth';
+import { useFoodItems } from '@/hooks/useFoodItems';
+import { useLocalRecipes } from '@/hooks/useLocalRecipes';
+import { cn } from '@/lib/utils';
+import { ReactBitsCard, TextReveal } from '@/components/ui/reactbits-components';
+import { NavLink } from 'react-router-dom';
+import { EnhancedClickSpark } from '@/components/ui/enhanced-click-spark';
 
 const DashboardHome = () => {
   const { user } = useAuth();
@@ -36,25 +36,31 @@ const DashboardHome = () => {
   }, []);
 
   // Memoize calculations for better performance
-  const stats = useMemo(() => ({
-    totalItems: foodItems?.length || 0,
-    expiringItems: foodItems?.filter(item => {
-      if (!item.expiration) return false;
-      const expirationDate = new Date(item.expiration);
-      const today = new Date();
-      const daysUntilExpiration = Math.ceil((expirationDate.getTime() - today.getTime()) / (1000 * 3600 * 24));
-      return daysUntilExpiration <= 3 && daysUntilExpiration >= 0;
-    }).length || 0,
-    totalRecipes: storedRecipes?.length || 0,
-    recentRecipes: storedRecipes?.slice(0, 3) || []
-  }), [foodItems, storedRecipes]);
+  const stats = useMemo(
+    () => ({
+      totalItems: foodItems?.length || 0,
+      expiringItems:
+        foodItems?.filter(item => {
+          if (!item.expiration) return false;
+          const expirationDate = new Date(item.expiration);
+          const today = new Date();
+          const daysUntilExpiration = Math.ceil(
+            (expirationDate.getTime() - today.getTime()) / (1000 * 3600 * 24)
+          );
+          return daysUntilExpiration <= 3 && daysUntilExpiration >= 0;
+        }).length || 0,
+      totalRecipes: storedRecipes?.length || 0,
+      recentRecipes: storedRecipes?.slice(0, 3) || [],
+    }),
+    [foodItems, storedRecipes]
+  );
 
   // Quick Insights derived from real pantry data
   const insights = useMemo(() => {
     const items = Array.isArray(foodItems) ? foodItems : [];
     const today = new Date();
 
-    const withDates = items.map((i) => {
+    const withDates = items.map(i => {
       const exp = i.expiration ? new Date(i.expiration) : null;
       const validDate = exp && !isNaN(exp.getTime()) ? exp : null;
       const daysLeft = validDate ? differenceInDays(validDate, today) : null;
@@ -62,11 +68,11 @@ const DashboardHome = () => {
     });
 
     const expiringSoon = withDates
-      .filter((x) => x.daysLeft !== null && x.daysLeft >= 0 && x.daysLeft <= 3)
-      .sort((a, b) => (a.daysLeft! - b.daysLeft!))
+      .filter(x => x.daysLeft !== null && x.daysLeft >= 0 && x.daysLeft <= 3)
+      .sort((a, b) => a.daysLeft! - b.daysLeft!)
       .slice(0, 3);
 
-    const expiredCount = withDates.filter((x) => x.daysLeft !== null && x.daysLeft < 0).length;
+    const expiredCount = withDates.filter(x => x.daysLeft !== null && x.daysLeft < 0).length;
 
     const groupCounts: Record<string, number> = {};
     for (const i of items) {
@@ -81,46 +87,52 @@ const DashboardHome = () => {
         key,
         label: (FOOD_GROUP_LABELS as any)[key] || key,
         count,
-        pct: Math.round((count / totalGroups) * 100)
+        pct: Math.round((count / totalGroups) * 100),
       }));
 
     // Basic nutrition totals (only sum if present)
-    const totals = items.reduce((acc, it: any) => ({
-      calories: acc.calories + (Number(it.calories) || 0),
-      protein: acc.protein + (Number(it.protein) || 0),
-      carbohydrates: acc.carbohydrates + (Number(it.carbohydrates) || 0),
-      fat: acc.fat + (Number(it.fat) || 0)
-    }), { calories: 0, protein: 0, carbohydrates: 0, fat: 0 });
+    const totals = items.reduce(
+      (acc, it: any) => ({
+        calories: acc.calories + (Number(it.calories) || 0),
+        protein: acc.protein + (Number(it.protein) || 0),
+        carbohydrates: acc.carbohydrates + (Number(it.carbohydrates) || 0),
+        fat: acc.fat + (Number(it.fat) || 0),
+      }),
+      { calories: 0, protein: 0, carbohydrates: 0, fat: 0 }
+    );
 
     return { expiringSoon, expiredCount, topGroups, totals };
   }, [foodItems]);
 
-  const quickActions = useMemo(() => [
-    {
-      title: "Adicionar Ingrediente",
-      description: "Adicione novos itens à sua despensa",
-      icon: Package,
-      to: "/dashboard/food",
-      color: "from-blue-500 to-blue-600",
-      bgColor: "bg-blue-50 dark:bg-blue-950/20"
-    },
-    {
-      title: "Gerar Receita",
-      description: "Crie receitas com seus ingredientes",
-      icon: ChefHat,
-      to: "/dashboard/recipes",
-      color: "from-green-500 to-green-600",
-      bgColor: "bg-green-50 dark:bg-green-950/20"
-    },
-    {
-      title: "Ver Insights",
-      description: "Analise suas informações nutricionais",
-      icon: TrendingUp,
-      to: "/dashboard/insights",
-      color: "from-purple-500 to-purple-600",
-      bgColor: "bg-purple-50 dark:bg-purple-950/20"
-    }
-  ], []);
+  const quickActions = useMemo(
+    () => [
+      {
+        title: 'Adicionar Ingrediente',
+        description: 'Adicione novos itens à sua despensa',
+        icon: Package,
+        to: '/dashboard/food',
+        color: 'from-blue-500 to-blue-600',
+        bgColor: 'bg-blue-50 dark:bg-blue-950/20',
+      },
+      {
+        title: 'Gerar Receita',
+        description: 'Crie receitas com seus ingredientes',
+        icon: ChefHat,
+        to: '/dashboard/recipes',
+        color: 'from-green-500 to-green-600',
+        bgColor: 'bg-green-50 dark:bg-green-950/20',
+      },
+      {
+        title: 'Ver Insights',
+        description: 'Analise suas informações nutricionais',
+        icon: TrendingUp,
+        to: '/dashboard/insights',
+        color: 'from-purple-500 to-purple-600',
+        bgColor: 'bg-purple-50 dark:bg-purple-950/20',
+      },
+    ],
+    []
+  );
 
   if (!mounted) {
     return (
@@ -138,7 +150,7 @@ const DashboardHome = () => {
   return (
     <div className="space-y-8">
       {/* Welcome Header */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -154,7 +166,7 @@ const DashboardHome = () => {
 
       {/* Stats Overview */}
       <div className="grid gap-6 md:grid-cols-3">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
@@ -181,7 +193,7 @@ const DashboardHome = () => {
           </EnhancedClickSpark>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
@@ -206,7 +218,7 @@ const DashboardHome = () => {
           </EnhancedClickSpark>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
@@ -223,9 +235,7 @@ const DashboardHome = () => {
                 <div className="text-2xl font-bold text-green-800 dark:text-green-200">
                   {stats.totalRecipes}
                 </div>
-                <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                  receitas criadas
-                </p>
+                <p className="text-xs text-green-600 dark:text-green-400 mt-1">receitas criadas</p>
               </CardContent>
             </Card>
           </EnhancedClickSpark>
@@ -233,7 +243,7 @@ const DashboardHome = () => {
       </div>
 
       {/* Insights Rápidos (dados reais) */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.35 }}
@@ -252,12 +262,16 @@ const DashboardHome = () => {
             </CardHeader>
             <CardContent className="space-y-2">
               {insights.expiringSoon.length === 0 ? (
-                <p className="text-xs text-muted-foreground">Nenhum item expira nos próximos 3 dias.</p>
+                <p className="text-xs text-muted-foreground">
+                  Nenhum item expira nos próximos 3 dias.
+                </p>
               ) : (
                 <ul className="space-y-2">
                   {insights.expiringSoon.map(({ item, daysLeft }) => (
                     <li key={item.id} className="flex items-center justify-between text-sm">
-                      <span className="truncate max-w-[60%]" title={item.name}>{item.name}</span>
+                      <span className="truncate max-w-[60%]" title={item.name}>
+                        {item.name}
+                      </span>
                       <Badge className="bg-red-600 text-white text-[10px]">
                         {daysLeft === 0 ? 'Hoje' : `${daysLeft}d`}
                       </Badge>
@@ -280,20 +294,26 @@ const DashboardHome = () => {
                 <Activity className="h-4 w-4 text-primary" />
                 Distribuição por grupo
               </CardTitle>
-              <CardDescription className="text-xs">Principais categorias da sua despensa</CardDescription>
+              <CardDescription className="text-xs">
+                Principais categorias da sua despensa
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
               {insights.topGroups.length === 0 ? (
                 <p className="text-xs text-muted-foreground">Sem dados de grupos por enquanto.</p>
               ) : (
                 <div className="space-y-2">
-          {insights.topGroups.map((g) => (
+                  {insights.topGroups.map(g => (
                     <div key={g.key} className="space-y-1">
                       <div className="flex items-center justify-between text-xs">
                         <span>{g.label}</span>
                         <span className="text-muted-foreground">{g.count}</span>
                       </div>
-            <Progress value={g.pct} className="h-1.5" aria-label={`Percentual de ${g.label}`} />
+                      <Progress
+                        value={g.pct}
+                        className="h-1.5"
+                        aria-label={`Percentual de ${g.label}`}
+                      />
                     </div>
                   ))}
                 </div>
@@ -338,7 +358,7 @@ const DashboardHome = () => {
       </motion.div>
 
       {/* Quick Actions */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
@@ -359,10 +379,12 @@ const DashboardHome = () => {
                   <Card className="cursor-pointer group transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-gradient-to-br from-card to-card/80">
                     <NavLink to={action.to} className="block h-full p-6">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className={cn(
-                          "p-2 rounded-lg bg-gradient-to-r transition-transform duration-300 group-hover:scale-110",
-                          action.color
-                        )}>
+                        <div
+                          className={cn(
+                            'p-2 rounded-lg bg-gradient-to-r transition-transform duration-300 group-hover:scale-110',
+                            action.color
+                          )}
+                        >
                           <Icon className="h-5 w-5 text-white" />
                         </div>
                         <div className="flex-1">
@@ -372,9 +394,7 @@ const DashboardHome = () => {
                         </div>
                         <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all duration-300" />
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {action.description}
-                      </p>
+                      <p className="text-sm text-muted-foreground">{action.description}</p>
                     </NavLink>
                   </Card>
                 </EnhancedClickSpark>
@@ -386,7 +406,7 @@ const DashboardHome = () => {
 
       {/* Recent Recipes */}
       {stats.recentRecipes.length > 0 && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.8 }}
@@ -414,9 +434,9 @@ const DashboardHome = () => {
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
                         <CardTitle className="text-sm font-medium line-clamp-2 group-hover:text-primary transition-colors">
-                          {recipe.name || "Receita Deliciosa"}
+                          {recipe.name || 'Receita Deliciosa'}
                         </CardTitle>
-                        {((recipe as any).rating) ? (
+                        {(recipe as any).rating ? (
                           <Badge variant="secondary" className="ml-2 flex-shrink-0">
                             <Star className="h-3 w-3 mr-1" />
                             {(recipe as any).rating}
@@ -426,7 +446,7 @@ const DashboardHome = () => {
                     </CardHeader>
                     <CardContent>
                       <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
-                        {recipe.description || "Receita deliciosa criada com IA"}
+                        {recipe.description || 'Receita deliciosa criada com IA'}
                       </p>
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <span className="flex items-center gap-1">

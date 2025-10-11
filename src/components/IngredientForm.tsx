@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
-import { Plus, X, Apple, Sparkles } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { EnhancedClickSpark } from "@/components/ui/enhanced-click-spark";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import { Plus, X, Apple, Sparkles } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { EnhancedClickSpark } from '@/components/ui/enhanced-click-spark';
 
 interface Ingredient {
   id: string;
@@ -15,7 +15,7 @@ interface Ingredient {
 
 const IngredientForm = () => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState('');
   const { toast } = useToast();
 
   const addIngredient = () => {
@@ -23,13 +23,13 @@ const IngredientForm = () => {
       const newIngredient: Ingredient = {
         id: Date.now().toString(),
         name: inputValue.trim(),
-        category: "personalizado"
+        category: 'personalizado',
       };
       setIngredients([...ingredients, newIngredient]);
-      setInputValue("");
+      setInputValue('');
       toast({
-        title: "Ingrediente adicionado!",
-        description: `${newIngredient.name} foi adicionado à sua lista.`
+        title: 'Ingrediente adicionado!',
+        description: `${newIngredient.name} foi adicionado à sua lista.`,
       });
     }
   };
@@ -41,16 +41,16 @@ const IngredientForm = () => {
   const generateRecipes = () => {
     if (ingredients.length === 0) {
       toast({
-        title: "Adicione ingredientes",
-        description: "Você precisa adicionar pelo menos um ingrediente para gerar receitas.",
-        variant: "destructive"
+        title: 'Adicione ingredientes',
+        description: 'Você precisa adicionar pelo menos um ingrediente para gerar receitas.',
+        variant: 'destructive',
       });
       return;
     }
-    
+
     toast({
-      title: "Gerando receitas...",
-      description: "Nossa IA está criando receitas personalizadas para você!"
+      title: 'Gerando receitas...',
+      description: 'Nossa IA está criando receitas personalizadas para você!',
     });
   };
 
@@ -59,9 +59,7 @@ const IngredientForm = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-foreground mb-4">
-              Cadastre seus Ingredientes
-            </h3>
+            <h3 className="text-3xl font-bold text-foreground mb-4">Cadastre seus Ingredientes</h3>
             <p className="text-muted-foreground text-lg">
               Adicione os alimentos que você tem disponível e nossa IA criará receitas incríveis
             </p>
@@ -72,8 +70,8 @@ const IngredientForm = () => {
               <Input
                 placeholder="Digite um ingrediente (ex: frango, brócolis, quinoa...)"
                 value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && addIngredient()}
+                onChange={e => setInputValue(e.target.value)}
+                onKeyPress={e => e.key === 'Enter' && addIngredient()}
                 className="flex-1"
               />
               <Button onClick={addIngredient} className="bg-primary hover:bg-primary-hover">
@@ -89,10 +87,10 @@ const IngredientForm = () => {
                   Seus Ingredientes ({ingredients.length})
                 </h4>
                 <div className="flex flex-wrap gap-2">
-                  {ingredients.map((ingredient) => (
-                    <Badge 
-                      key={ingredient.id} 
-                      variant="secondary" 
+                  {ingredients.map(ingredient => (
+                    <Badge
+                      key={ingredient.id}
+                      variant="secondary"
                       className="px-3 py-2 bg-accent text-accent-foreground"
                     >
                       {ingredient.name}
@@ -110,7 +108,7 @@ const IngredientForm = () => {
               </div>
             )}
 
-            <Button 
+            <Button
               onClick={generateRecipes}
               size="lg"
               className="w-full bg-gradient-primary hover:bg-primary-hover text-primary-foreground"

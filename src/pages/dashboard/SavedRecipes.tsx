@@ -10,16 +10,7 @@ import { Recipe } from '@/lib/types';
 import { EnhancedClickSpark } from '@/components/ui/enhanced-click-spark';
 import PageToolbar from '@/components/shared/PageToolbar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import {
-  Search,
-  Clock,
-  Users,
-  Flame,
-  Trash2,
-  Eye,
-  ChefHat,
-  Calendar
-} from 'lucide-react';
+import { Search, Clock, Users, Flame, Trash2, Eye, ChefHat, Calendar } from 'lucide-react';
 
 interface SavedRecipesProps {
   onViewRecipe: (recipe: Recipe) => void;
@@ -28,25 +19,23 @@ interface SavedRecipesProps {
 const SavedRecipes = ({ onViewRecipe }: SavedRecipesProps) => {
   const { storedRecipes, searchRecipes, deleteRecipe } = useLocalRecipes();
   const { toast } = useToast();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredRecipes = searchTerm 
-    ? searchRecipes(searchTerm)
-    : storedRecipes;
+  const filteredRecipes = searchTerm ? searchRecipes(searchTerm) : storedRecipes;
 
   const handleDeleteRecipe = (recipeId: string | number) => {
     const success = deleteRecipe(recipeId);
     if (success) {
       toast({
-        title: "Receita removida",
-        description: "A receita foi removida da sua coleção",
-        variant: "default"
+        title: 'Receita removida',
+        description: 'A receita foi removida da sua coleção',
+        variant: 'default',
       });
     } else {
       toast({
-        title: "Erro ao remover",
-        description: "Não foi possível remover a receita",
-        variant: "destructive"
+        title: 'Erro ao remover',
+        description: 'Não foi possível remover a receita',
+        variant: 'destructive',
       });
     }
   };
@@ -56,15 +45,15 @@ const SavedRecipes = ({ onViewRecipe }: SavedRecipesProps) => {
     return date.toLocaleDateString('pt-BR', {
       day: '2-digit',
       month: '2-digit',
-      year: 'numeric'
+      year: 'numeric',
     });
   };
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <PageToolbar 
-        title="Receitas Salvas" 
+      <PageToolbar
+        title="Receitas Salvas"
         subtitle={`${storedRecipes.length} receita${storedRecipes.length !== 1 ? 's' : ''} na sua coleção`}
       />
 
@@ -74,7 +63,7 @@ const SavedRecipes = ({ onViewRecipe }: SavedRecipesProps) => {
         <Input
           placeholder="Buscar receitas salvas..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={e => setSearchTerm(e.target.value)}
           className="pl-10"
         />
       </div>
@@ -90,17 +79,16 @@ const SavedRecipes = ({ onViewRecipe }: SavedRecipesProps) => {
                   {searchTerm ? 'Nenhuma receita encontrada' : 'Nenhuma receita salva'}
                 </h3>
                 <p className="text-muted-foreground">
-                  {searchTerm 
+                  {searchTerm
                     ? 'Tente ajustar sua busca'
-                    : 'As receitas que você gerar serão salvas automaticamente aqui'
-                  }
+                    : 'As receitas que você gerar serão salvas automaticamente aqui'}
                 </p>
               </div>
             </CardContent>
           </Card>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredRecipes.map((recipe) => (
+            {filteredRecipes.map(recipe => (
               <EnhancedClickSpark key={recipe.id} sparkColor="hsl(var(--primary))" sparkCount={6}>
                 <Card className="hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                   <CardHeader className="pb-3">
@@ -138,58 +126,62 @@ const SavedRecipes = ({ onViewRecipe }: SavedRecipesProps) => {
                       </div>
                     </div>
                   </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground line-clamp-2">
-                    {recipe.description}
-                  </p>
-                  
-                  {/* Recipe Info */}
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    {recipe.prepTime && (
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        <span>{typeof recipe.prepTime === 'string' ? recipe.prepTime : `${recipe.prepTime}min`}</span>
-                      </div>
-                    )}
-                    {recipe.servings && (
-                      <div className="flex items-center gap-1">
-                        <Users className="h-3 w-3" />
-                        <span>{recipe.servings}</span>
-                      </div>
-                    )}
-                    {recipe.calories && (
-                      <div className="flex items-center gap-1">
-                        <Flame className="h-3 w-3" />
-                        <span>{recipe.calories}</span>
-                      </div>
-                    )}
-                  </div>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {recipe.description}
+                    </p>
 
-                  {/* Tags */}
-                  {recipe.tags && recipe.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {recipe.tags.slice(0, 3).map((tag, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                      {recipe.tags.length > 3 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{recipe.tags.length - 3}
-                        </Badge>
+                    {/* Recipe Info */}
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      {recipe.prepTime && (
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          <span>
+                            {typeof recipe.prepTime === 'string'
+                              ? recipe.prepTime
+                              : `${recipe.prepTime}min`}
+                          </span>
+                        </div>
+                      )}
+                      {recipe.servings && (
+                        <div className="flex items-center gap-1">
+                          <Users className="h-3 w-3" />
+                          <span>{recipe.servings}</span>
+                        </div>
+                      )}
+                      {recipe.calories && (
+                        <div className="flex items-center gap-1">
+                          <Flame className="h-3 w-3" />
+                          <span>{recipe.calories}</span>
+                        </div>
                       )}
                     </div>
-                  )}
 
-                  {/* Created Date */}
-                  {recipe.createdAt && (
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground pt-2 border-t">
-                      <Calendar className="h-3 w-3" />
-                      <span>Salva em {formatDate(recipe.createdAt)}</span>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                    {/* Tags */}
+                    {recipe.tags && recipe.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {recipe.tags.slice(0, 3).map((tag, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs">
+                            {tag}
+                          </Badge>
+                        ))}
+                        {recipe.tags.length > 3 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{recipe.tags.length - 3}
+                          </Badge>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Created Date */}
+                    {recipe.createdAt && (
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground pt-2 border-t">
+                        <Calendar className="h-3 w-3" />
+                        <span>Salva em {formatDate(recipe.createdAt)}</span>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               </EnhancedClickSpark>
             ))}
           </div>

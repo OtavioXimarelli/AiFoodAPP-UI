@@ -46,14 +46,16 @@
 }
 
 /* Theme-specific CSS custom properties for light theme */
-[data-theme="light"], .light {
+[data-theme='light'],
+.light {
   --scrollbar-thumb-color: hsl(220, 90%, 56%);
   --scrollbar-thumb-hover-color: hsl(220, 90%, 65%);
   --scrollbar-track-color: hsl(220, 15%, 97%);
 }
 
 /* Theme-specific CSS custom properties for dark theme */
-[data-theme="dark"], .dark {
+[data-theme='dark'],
+.dark {
   --scrollbar-thumb-color: hsl(47, 96%, 53%);
   --scrollbar-thumb-hover-color: hsl(47, 96%, 60%);
   --scrollbar-track-color: hsl(24, 9%, 12%);

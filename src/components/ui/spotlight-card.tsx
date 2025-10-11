@@ -17,7 +17,7 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
   spotlightColor = 'hsl(var(--primary))',
   fromColor = 'hsl(var(--primary))',
   viaColor = 'hsl(var(--primary-foreground))',
-  toColor = 'transparent'
+  toColor = 'transparent',
 }) => {
   const divRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
@@ -72,7 +72,7 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
           background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, ${spotlightColor}40, transparent 40%)`,
         }}
       />
-      
+
       <motion.div
         className="pointer-events-none absolute -inset-px rounded-xl opacity-0 transition duration-300"
         style={{
@@ -85,13 +85,11 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
         transition={{
           duration: 8,
           repeat: Infinity,
-          ease: "linear"
+          ease: 'linear',
         }}
       />
-      
-      <div className="relative z-10">
-        {children}
-      </div>
+
+      <div className="relative z-10">{children}</div>
     </div>
   );
 };

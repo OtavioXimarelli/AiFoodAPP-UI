@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import { User } from "@/lib/types";
+import { create } from 'zustand';
+import { User } from '@/lib/types';
 
 interface AuthState {
   user: User | null;
@@ -17,7 +17,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isAuthenticated: false,
   isLoading: false,
   hasCheckedAuth: false, // Start with false
-  setAuth: (user) => {
+  setAuth: user => {
     console.log('🔄 Setting auth state:', user);
     set({ user, isAuthenticated: true, isLoading: false, hasCheckedAuth: true });
   },
@@ -25,12 +25,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     console.log('🔄 Clearing auth state');
     set({ user: null, isAuthenticated: false, isLoading: false, hasCheckedAuth: true });
   },
-  setLoading: (loading) => {
+  setLoading: loading => {
     console.log('🔄 Setting loading state:', loading);
     set({ isLoading: loading });
   },
-  setHasCheckedAuth: (checked) => {
+  setHasCheckedAuth: checked => {
     console.log('🔄 Setting hasCheckedAuth:', checked);
     set({ hasCheckedAuth: checked });
-  }
+  },
 }));

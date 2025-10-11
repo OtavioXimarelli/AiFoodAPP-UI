@@ -8,26 +8,26 @@ interface FluidGlassProps {
   intensity?: 'low' | 'medium' | 'high';
 }
 
-export const FluidGlass: React.FC<FluidGlassProps> = ({ 
-  children, 
+export const FluidGlass: React.FC<FluidGlassProps> = ({
+  children,
   className,
   variant = 'default',
-  intensity = 'medium'
+  intensity = 'medium',
 }) => {
   const variants = {
     default: 'backdrop-blur-md bg-white/10 border border-white/20',
     subtle: 'backdrop-blur-sm bg-white/5 border border-white/10',
-    strong: 'backdrop-blur-xl bg-white/20 border border-white/30'
+    strong: 'backdrop-blur-xl bg-white/20 border border-white/30',
   };
 
   const intensityClasses = {
     low: 'shadow-lg',
     medium: 'shadow-xl',
-    high: 'shadow-2xl'
+    high: 'shadow-2xl',
   };
 
   return (
-    <div 
+    <div
       className={cn(
         'relative overflow-hidden rounded-xl',
         variants[variant],
@@ -37,63 +37,44 @@ export const FluidGlass: React.FC<FluidGlassProps> = ({
         className
       )}
     >
-      <div className="relative z-10">
-        {children}
-      </div>
+      <div className="relative z-10">{children}</div>
     </div>
   );
 };
 
 // Fluid Glass Card variant
-export const FluidGlassCard: React.FC<FluidGlassProps & {
-  title?: string;
-  description?: string;
-}> = ({ 
-  children, 
-  title, 
-  description,
-  className,
-  variant = 'default',
-  intensity = 'medium'
-}) => {
+export const FluidGlassCard: React.FC<
+  FluidGlassProps & {
+    title?: string;
+    description?: string;
+  }
+> = ({ children, title, description, className, variant = 'default', intensity = 'medium' }) => {
   return (
-    <FluidGlass 
-      variant={variant} 
-      intensity={intensity}
-      className={cn('p-6', className)}
-    >
-      {title && (
-        <h3 className="text-xl font-semibold text-foreground mb-2">
-          {title}
-        </h3>
-      )}
-      {description && (
-        <p className="text-muted-foreground mb-4">
-          {description}
-        </p>
-      )}
+    <FluidGlass variant={variant} intensity={intensity} className={cn('p-6', className)}>
+      {title && <h3 className="text-xl font-semibold text-foreground mb-2">{title}</h3>}
+      {description && <p className="text-muted-foreground mb-4">{description}</p>}
       {children}
     </FluidGlass>
   );
 };
 
 // Animated Fluid Glass with hover effects
-export const AnimatedFluidGlass: React.FC<FluidGlassProps> = ({ 
-  children, 
+export const AnimatedFluidGlass: React.FC<FluidGlassProps> = ({
+  children,
   className,
   variant = 'default',
-  intensity = 'medium'
+  intensity = 'medium',
 }) => {
   return (
-    <div 
+    <div
       className={cn(
         'group relative overflow-hidden rounded-xl transition-all duration-300',
         'hover:scale-[1.02] hover:shadow-2xl',
         className
       )}
     >
-      <FluidGlass 
-        variant={variant} 
+      <FluidGlass
+        variant={variant}
         intensity={intensity}
         className={cn(
           'transition-all duration-300',
