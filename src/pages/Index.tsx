@@ -115,7 +115,7 @@ const Index = () => {
   const { reportPerformanceIssue } = usePerformance('IndexPage');
   const [showAppStatus, setShowAppStatus] = useState(false);
 
-  // Redirect authenticated users to dashboard
+  // Redirect authenticated users to dashboard - memoized to prevent re-renders
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
       navigate('/dashboard');
