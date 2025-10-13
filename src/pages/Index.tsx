@@ -148,10 +148,7 @@ const FeatureCard = memo<{
   };
   index: number;
 }>(({ feature, index }) => {
-  const { ref, hasIntersected } = useIntersectionObserver({
-    triggerOnce: true,
-    threshold: 0.2,
-  });
+  const { ref, hasIntersected } = useIntersectionObserver(INTERSECTION_OPTIONS);
 
   return (
     <div ref={ref}>
@@ -194,6 +191,12 @@ const FeatureCard = memo<{
 });
 
 FeatureCard.displayName = 'FeatureCard';
+
+// Memoize the intersection observer options outside component
+const INTERSECTION_OPTIONS = {
+  triggerOnce: true,
+  threshold: 0.2,
+} as const;
 
 const Index = () => {
   const { isAuthenticated, isLoading } = useAuth();

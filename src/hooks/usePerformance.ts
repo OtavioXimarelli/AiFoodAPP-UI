@@ -96,26 +96,29 @@ export const usePerformance = (componentName?: string) => {
     }
   }, []);
 
-  // Report performance issues
+  // Report performance issues - simplified without metrics dependency
   const reportPerformanceIssue = useCallback(
     (issue: string, severity: 'low' | 'medium' | 'high') => {
       if (process.env.NODE_ENV === 'development') {
         console.warn(`🚨 Performance Issue [${severity}]: ${issue}`, {
           component: componentName,
-          metrics,
           timestamp: new Date().toISOString(),
         });
       }
     },
-    [componentName, metrics]
+    [componentName]
   );
 
-  // Increment render count - track on every render but report only once at threshold
+  // Track render count and report only at specific thresholds
+  const hasReported11 = useRef(false);
+  const hasReported30 = useRef(false);
+
   useEffect(() => {
     renderCount.current += 1;
 
     // Warn only once when hitting threshold
-    if (renderCount.current === 11 && process.env.NODE_ENV === 'development') {
+    if (renderCount.current === 11 && !hasReported11.current && process.env.NODE_ENV === 'development') {
+      hasReported11.current = true;
       reportPerformanceIssue(
         `Component ${componentName} has rendered ${renderCount.current} times`,
         'medium'
@@ -123,10 +126,11 @@ export const usePerformance = (componentName?: string) => {
     }
     
     // Critical warning at 30 renders
-    if (renderCount.current === 30 && process.env.NODE_ENV === 'development') {
+    if (renderCount.current === 30 && !hasReported30.current && process.env.NODE_ENV === 'development') {
+      hasReported30.current = true;
       console.error(`🔥 CRITICAL: ${componentName} has excessive re-renders (${renderCount.current})!`);
     }
-  });
+  }); // Intentionally no deps - runs every render to count
 
   return {
     metrics,
