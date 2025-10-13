@@ -1,4 +1,4 @@
-import { useEffect, memo, useCallback, useMemo } from 'react';
+import { useEffect, memo, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import Header from '@/components/Header';
@@ -50,6 +50,92 @@ import {
   Cloud,
 } from 'lucide-react';
 import { DevAccess } from '@/components/DevAccess';
+
+// Static data - defined outside component to avoid re-creation
+const features = [
+  {
+    icon: Brain,
+    title: 'IA Avançada',
+    description:
+      'Motor de IA que analisa milhares de combinações para criar receitas perfeitas baseadas nos seus ingredientes e preferências.',
+    gradient: 'from-violet-500 to-purple-600',
+    bgGlow: 'bg-violet-400/10',
+  },
+  {
+    icon: Smartphone,
+    title: 'Interface Intuitiva',
+    description:
+      'Design moderno e responsivo que torna o gerenciamento de alimentos e receitas uma experiência agradável em qualquer dispositivo.',
+    gradient: 'from-blue-500 to-cyan-600',
+    bgGlow: 'bg-blue-400/10',
+  },
+  {
+    icon: BarChart3,
+    title: 'Análises Avançadas',
+    description:
+      'Dashboard completo com insights nutricionais, tendências alimentares e relatórios personalizados para otimizar sua dieta.',
+    gradient: 'from-emerald-500 to-teal-600',
+    bgGlow: 'bg-emerald-400/10',
+  },
+  {
+    icon: Cloud,
+    title: 'Sincronização Total',
+    description:
+      'Acesse seus dados em qualquer lugar com sincronização automática e backup seguro na nuvem.',
+    gradient: 'from-orange-500 to-red-600',
+    bgGlow: 'bg-orange-400/10',
+  },
+  {
+    icon: Shield,
+    title: 'Segurança Máxima',
+    description:
+      'Criptografia de ponta a ponta e conformidade com LGPD garantem que seus dados pessoais estejam sempre protegidos.',
+    gradient: 'from-indigo-500 to-purple-600',
+    bgGlow: 'bg-indigo-400/10',
+  },
+  {
+    icon: Target,
+    title: 'Metas Personalizadas',
+    description:
+      'Defina objetivos nutricionais específicos e acompanhe seu progresso com recomendações personalizadas da IA.',
+    gradient: 'from-pink-500 to-rose-600',
+    bgGlow: 'bg-pink-400/10',
+  },
+];
+
+const benefits = [
+  {
+    icon: Brain,
+    title: 'Sugestões Inteligentes',
+    description:
+      'A IA analisa seus ingredientes e preferências dietéticas para sugerir receitas perfeitas.',
+    color: 'text-purple-700',
+    bg: 'bg-purple-100',
+  },
+  {
+    icon: Clock,
+    title: 'Economize Tempo',
+    description:
+      'Não perca mais tempo pensando no que cozinhar. Obtenha ideias instantâneas baseadas no que você tem.',
+    color: 'text-blue-700',
+    bg: 'bg-blue-100',
+  },
+  {
+    icon: Heart,
+    title: 'Alimentação Saudável',
+    description: 'Acompanhe a nutrição e tome decisões informadas sobre suas refeições.',
+    color: 'text-red-700',
+    bg: 'bg-red-100',
+  },
+  {
+    icon: Target,
+    title: 'Reduza o Desperdício',
+    description:
+      'Use ingredientes antes que estraguem com o rastreamento inteligente de validade.',
+    color: 'text-green-700',
+    bg: 'bg-green-100',
+  },
+];
 
 // Memoized FeatureCard component for better performance
 const FeatureCard = memo<{
@@ -115,99 +201,12 @@ const Index = () => {
   const { reportPerformanceIssue } = usePerformance('IndexPage');
   const [showAppStatus, setShowAppStatus] = useState(false);
 
-  // Redirect authenticated users to dashboard - memoized to prevent re-renders
+  // Redirect authenticated users to dashboard
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
       navigate('/dashboard');
     }
   }, [isAuthenticated, isLoading, navigate]);
-
-  // Memoize features to prevent re-creation on every render
-  const features = useMemo(() => [
-    {
-      icon: Brain,
-      title: 'IA Avançada',
-      description:
-        'Motor de IA que analisa milhares de combinações para criar receitas perfeitas baseadas nos seus ingredientes e preferências.',
-      gradient: 'from-violet-500 to-purple-600',
-      bgGlow: 'bg-violet-400/10',
-    },
-    {
-      icon: Smartphone,
-      title: 'Interface Intuitiva',
-      description:
-        'Design moderno e responsivo que torna o gerenciamento de alimentos e receitas uma experiência agradável em qualquer dispositivo.',
-      gradient: 'from-blue-500 to-cyan-600',
-      bgGlow: 'bg-blue-400/10',
-    },
-    {
-      icon: BarChart3,
-      title: 'Análises Avançadas',
-      description:
-        'Dashboard completo com insights nutricionais, tendências alimentares e relatórios personalizados para otimizar sua dieta.',
-      gradient: 'from-emerald-500 to-teal-600',
-      bgGlow: 'bg-emerald-400/10',
-    },
-    {
-      icon: Cloud,
-      title: 'Sincronização Total',
-      description:
-        'Acesse seus dados em qualquer lugar com sincronização automática e backup seguro na nuvem.',
-      gradient: 'from-orange-500 to-red-600',
-      bgGlow: 'bg-orange-400/10',
-    },
-    {
-      icon: Shield,
-      title: 'Segurança Máxima',
-      description:
-        'Criptografia de ponta a ponta e conformidade com LGPD garantem que seus dados pessoais estejam sempre protegidos.',
-      gradient: 'from-indigo-500 to-purple-600',
-      bgGlow: 'bg-indigo-400/10',
-    },
-    {
-      icon: Target,
-      title: 'Metas Personalizadas',
-      description:
-        'Defina objetivos nutricionais específicos e acompanhe seu progresso com recomendações personalizadas da IA.',
-      gradient: 'from-pink-500 to-rose-600',
-      bgGlow: 'bg-pink-400/10',
-    },
-  ], []);
-
-  // Memoize benefits to prevent re-creation on every render
-  const benefits = useMemo(() => [
-    {
-      icon: Brain,
-      title: 'Sugestões Inteligentes',
-      description:
-        'A IA analisa seus ingredientes e preferências dietéticas para sugerir receitas perfeitas.',
-      color: 'text-purple-700',
-      bg: 'bg-purple-100',
-    },
-    {
-      icon: Clock,
-      title: 'Economize Tempo',
-      description:
-        'Não perca mais tempo pensando no que cozinhar. Obtenha ideias instantâneas baseadas no que você tem.',
-      color: 'text-blue-700',
-      bg: 'bg-blue-100',
-    },
-    {
-      icon: Heart,
-      title: 'Alimentação Saudável',
-      description: 'Acompanhe a nutrição e tome decisões informadas sobre suas refeições.',
-      color: 'text-red-700',
-      bg: 'bg-red-100',
-    },
-    {
-      icon: Target,
-      title: 'Reduza o Desperdício',
-      description:
-        'Use ingredientes antes que estraguem com o rastreamento inteligente de validade.',
-      color: 'text-green-700',
-      bg: 'bg-green-100',
-    },
-  ], []);
 
   if (isLoading) {
     return (
