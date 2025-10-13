@@ -6,8 +6,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from '@/components/shared/ThemeProvider';
 import { ClickSparkProvider } from '@/components/ClickSparkProvider';
-import { SpeedInsights } from '@vercel/speed-insights/next';
-import { Analytics } from '@vercel/analytics/next';
 import { sessionService } from './services/sessionService';
 import { LoadingAnimation } from '@/components/ui/animated';
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary';

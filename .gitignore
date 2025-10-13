@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Environment variables - keep templates, ignore sensitive ones
+.env*
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -23,7 +27,6 @@ dist-ssr
 *.sln
 *.sw?
 .next
-.env*
 
 /android*
 rsync.txt

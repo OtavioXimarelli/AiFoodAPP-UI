@@ -122,7 +122,7 @@ const Index = () => {
     }
   }, [isAuthenticated, isLoading, navigate]);
 
-  // Memoize features array to prevent re-creation on every render
+  // Memoize features to prevent re-creation on every render
   const features = useMemo(() => [
     {
       icon: Brain,
@@ -174,7 +174,7 @@ const Index = () => {
     },
   ], []);
 
-  // Memoize benefits array
+  // Memoize benefits to prevent re-creation on every render
   const benefits = useMemo(() => [
     {
       icon: Brain,
