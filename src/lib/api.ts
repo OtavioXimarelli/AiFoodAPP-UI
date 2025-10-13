@@ -199,9 +199,13 @@ export class ApiClient {
     return response.data;
   }
 
-  // Private method for debugging cookies (apenas em desenvolvimento)
+  // Private method for debugging cookies (apenas em desenvolvimento e verboso)
   #logCookiesForDebugging() {
     if (!isDevelopment) return;
+    
+    // Reduzir logging noise - só logar se especificamente habilitado
+    const enableVerboseLogging = false; // Set to true only when debugging
+    if (!enableVerboseLogging) return;
 
     const cookies = document.cookie;
     if (!cookies) {
@@ -262,9 +266,7 @@ export class ApiClient {
     const cacheValidTime = isOAuth2Callback ? 1000 : 10000;
 
     if (this.#authStatusCache.data && cacheAge < cacheValidTime) {
-      if (isDevelopment) {
-        console.log(`🔍 Cached auth status (${(cacheAge / 1000).toFixed(1)}s old)`);
-      }
+      // Reduzir logging noise
       return this.#authStatusCache.data;
     }
 
@@ -272,7 +274,9 @@ export class ApiClient {
 
     try {
       this.#authStatusCache.pending = (async () => {
-        if (isDevelopment) {
+        // Logging reduzido
+        const enableVerboseLogging = false;
+        if (isDevelopment && enableVerboseLogging) {
           console.log('🔍 Checking auth status...');
         }
 

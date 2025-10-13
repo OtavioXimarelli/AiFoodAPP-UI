@@ -3,6 +3,10 @@ import { useAuthStore } from '@/store/authStore';
 import { authService } from '@/services/authService';
 import { apiClient } from '@/lib/api';
 
+// Performance optimization: reduce logging noise
+const isDevelopment = import.meta.env.MODE === 'development';
+const enableVerboseLogging = false; // Set to true only when debugging auth issues
+
 export const useAuth = () => {
   const {
     user,
@@ -24,8 +28,10 @@ export const useAuth = () => {
   // Referência para uma promessa compartilhada (evita múltiplas chamadas simultâneas)
   const authCheckPromise = useRef<Promise<void> | null>(null);
 
-  // Helper to debug cookie issues
+  // Helper to debug cookie issues (optimized)
   const logAuthCookies = () => {
+    if (!enableVerboseLogging) return;
+    
     const cookies = document.cookie;
     if (!cookies) {
       console.log('🍪 useAuth - No cookies found');
@@ -65,12 +71,16 @@ export const useAuth = () => {
 
       if (timeSinceLogout > 30000) {
         // Logout muito antigo, limpar marcadores órfãos
-        console.log('🔑 Clearing old logout markers (>30s ago)');
+        if (enableVerboseLogging) {
+          console.log('🔑 Clearing old logout markers (>30s ago)');
+        }
         sessionStorage.removeItem('logout_in_progress');
         sessionStorage.removeItem('logout_timestamp');
       } else if (timeSinceLogout < 5000) {
         // Logout recente, ainda bloquear
-        console.log('🔑 Recent logout detected, preventing automatic reauthentication');
+        if (enableVerboseLogging) {
+          console.log('🔑 Recent logout detected, preventing automatic reauthentication');
+        }
         return;
       }
     }
@@ -80,17 +90,23 @@ export const useAuth = () => {
       const timeSinceLogout = Date.now() - parseInt(logoutTimestamp);
       if (timeSinceLogout < 15000) {
         // Só bloquear por 15 segundos max (extended guard)
-        console.log('🔑 Logout in progress, skipping auth check');
+        if (enableVerboseLogging) {
+          console.log('🔑 Logout in progress, skipping auth check');
+        }
         return;
       } else {
         // Logout marker órfão, limpar
-        console.log('🔑 Clearing orphaned logout marker');
+        if (enableVerboseLogging) {
+          console.log('🔑 Clearing orphaned logout marker');
+        }
         sessionStorage.removeItem('logout_in_progress');
         sessionStorage.removeItem('logout_timestamp');
       }
     } else if (logoutInProgress && !logoutTimestamp) {
       // Logout marker sem timestamp = órfão, limpar
-      console.log('🔑 Clearing logout marker without timestamp');
+      if (enableVerboseLogging) {
+        console.log('🔑 Clearing logout marker without timestamp');
+      }
       sessionStorage.removeItem('logout_in_progress');
     }
 
@@ -99,13 +115,17 @@ export const useAuth = () => {
       window.location.pathname.includes('/oauth2/callback') ||
       window.location.pathname.includes('/login/oauth2/code/');
 
-    // Log cookies for debugging
-    console.log('🔍 useAuth checkAuthentication - checking cookies:');
-    logAuthCookies();
+    // Log cookies for debugging (reduced noise)
+    if (enableVerboseLogging) {
+      console.log('🔍 useAuth checkAuthentication - checking cookies:');
+      logAuthCookies();
+    }
 
     // Prevenção contra chamadas simultâneas - allow for OAuth2 callbacks
     if (isCheckingAuth.current && !isOAuth2Callback) {
-      console.log('🔄 Auth check already in progress, waiting for it to complete');
+      if (enableVerboseLogging) {
+        console.log('🔄 Auth check already in progress, waiting for it to complete');
+      }
 
       if (authCheckPromise.current) {
         await authCheckPromise.current;
@@ -115,7 +135,9 @@ export const useAuth = () => {
 
     // Verificar se já estamos autenticados no estado global (skip for OAuth2 callbacks)
     if (isAuthenticated && user && hasCheckedAuth && !isOAuth2Callback) {
-      console.log('✅ Already authenticated in global state, skipping check');
+      if (enableVerboseLogging) {
+        console.log('✅ Already authenticated in global state, skipping check');
+      }
       return;
     }
 
@@ -125,9 +147,11 @@ export const useAuth = () => {
     const rateLimitTime = isOAuth2Callback ? 500 : 5000; // 0.5s for OAuth2, 5s for normal
 
     if (timeSinceLastCheck < rateLimitTime && hasCheckedAuth && !isOAuth2Callback) {
-      console.log(
-        `⏱️ Rate limiting auth check (last check ${(timeSinceLastCheck / 1000).toFixed(1)}s ago)`
-      );
+      if (enableVerboseLogging) {
+        console.log(
+          `⏱️ Rate limiting auth check (last check ${(timeSinceLastCheck / 1000).toFixed(1)}s ago)`
+        );
+      }
       return;
     }
 
@@ -140,9 +164,11 @@ export const useAuth = () => {
       authCheckPromise.current = (async () => {
         try {
           setLoading(true);
-          console.log(
-            `🔍 Starting authentication check... ${isOAuth2Callback ? '(OAuth2 callback)' : ''}`
-          );
+          if (enableVerboseLogging || isOAuth2Callback) {
+            console.log(
+              `🔍 Starting authentication check... ${isOAuth2Callback ? '(OAuth2 callback)' : ''}`
+            );
+          }
 
           // Verificar o marcador local de autenticação
           const localAuthFlag = localStorage.getItem('is_authenticated') === 'true';
@@ -152,7 +178,9 @@ export const useAuth = () => {
 
           // Se autenticado pelo status
           if (status && status.authenticated === true) {
-            console.log('✅ Status endpoint confirms authenticated');
+            if (enableVerboseLogging) {
+              console.log('✅ Status endpoint confirms authenticated');
+            }
 
             // Obter detalhes do usuário
             try {
@@ -161,11 +189,15 @@ export const useAuth = () => {
               localStorage.setItem('is_authenticated', 'true');
               return;
             } catch (userError) {
-              console.log('⚠️ Failed to get user details despite authenticated status');
+              if (enableVerboseLogging) {
+                console.log('⚠️ Failed to get user details despite authenticated status');
+              }
 
               if (localAuthFlag && user) {
                 // Se temos um usuário em cache, continuar usando
-                console.log('✅ Using cached user data while authenticated');
+                if (enableVerboseLogging) {
+                  console.log('✅ Using cached user data while authenticated');
+                }
                 return;
               }
             }
@@ -190,9 +222,11 @@ export const useAuth = () => {
             }
           } else {
             // Não autenticado e sem marcador local
-            console.log(
-              `🔍 Not authenticated ${isOAuth2Callback ? '(waiting for OAuth2 to complete)' : ''}`
-            );
+            if (enableVerboseLogging || isOAuth2Callback) {
+              console.log(
+                `🔍 Not authenticated ${isOAuth2Callback ? '(waiting for OAuth2 to complete)' : ''}`
+              );
+            }
             if (!isOAuth2Callback) {
               localStorage.removeItem('is_authenticated');
               logout();
@@ -349,16 +383,19 @@ export const useAuth = () => {
 
   // Check authentication on mount - but only if we haven't checked yet
   useEffect(() => {
-    console.log(
-      '🚀 useAuth mounted - hasCheckedAuth:',
-      hasCheckedAuth,
-      'isAuthenticated:',
-      isAuthenticated
-    );
+    if (enableVerboseLogging) {
+      console.log(
+        '🚀 useAuth mounted - hasCheckedAuth:',
+        hasCheckedAuth,
+        'isAuthenticated:',
+        isAuthenticated
+      );
+    }
 
     if (!hasCheckedAuth && !isCheckingAuth.current) {
       checkAuthentication();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty dependency array - only run once on mount
 
   return {

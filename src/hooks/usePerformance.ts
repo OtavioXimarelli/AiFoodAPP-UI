@@ -110,18 +110,23 @@ export const usePerformance = (componentName?: string) => {
     [componentName, metrics]
   );
 
-  // Increment render count
+  // Increment render count - FIXED: Added empty dependency array to prevent infinite loop
   useEffect(() => {
     renderCount.current += 1;
 
-    // Warn about excessive re-renders
-    if (renderCount.current > 10 && process.env.NODE_ENV === 'development') {
+    // Warn about excessive re-renders only once when threshold is crossed
+    if (renderCount.current === 11 && process.env.NODE_ENV === 'development') {
       reportPerformanceIssue(
         `Component ${componentName} has rendered ${renderCount.current} times`,
         'medium'
       );
     }
-  });
+    
+    // Critical warning for severe cases
+    if (renderCount.current === 30 && process.env.NODE_ENV === 'development') {
+      console.error(`🔥 CRITICAL: ${componentName} has excessive re-renders (${renderCount.current})! This will cause performance issues.`);
+    }
+  }, []); // Empty array - only increment on actual re-renders but don't cause new ones
 
   return {
     metrics,

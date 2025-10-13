@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { User } from '@/lib/types';
+import { performanceUtils } from '@/config/performance';
 
 interface AuthState {
   user: User | null;
@@ -18,19 +19,27 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isLoading: false,
   hasCheckedAuth: false, // Start with false
   setAuth: user => {
-    console.log('🔄 Setting auth state:', user);
+    performanceUtils.log('🔄 Setting auth state:', user);
     set({ user, isAuthenticated: true, isLoading: false, hasCheckedAuth: true });
   },
   logout: () => {
-    console.log('🔄 Clearing auth state');
+    performanceUtils.log('🔄 Clearing auth state');
     set({ user: null, isAuthenticated: false, isLoading: false, hasCheckedAuth: true });
   },
   setLoading: loading => {
-    console.log('🔄 Setting loading state:', loading);
+    // Only log if state actually changes to reduce noise
+    const currentLoading = get().isLoading;
+    if (currentLoading !== loading) {
+      performanceUtils.log('🔄 Setting loading state:', loading);
+    }
     set({ isLoading: loading });
   },
   setHasCheckedAuth: checked => {
-    console.log('🔄 Setting hasCheckedAuth:', checked);
+    // Only log once when first checked
+    const current = get().hasCheckedAuth;
+    if (!current && checked) {
+      performanceUtils.log('🔄 Setting hasCheckedAuth:', checked);
+    }
     set({ hasCheckedAuth: checked });
   },
 }));

@@ -1,4 +1,4 @@
-import { useEffect, memo, useCallback } from 'react';
+import { useEffect, memo, useCallback, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import Header from '@/components/Header';
@@ -115,14 +115,15 @@ const Index = () => {
   const { reportPerformanceIssue } = usePerformance('IndexPage');
   const [showAppStatus, setShowAppStatus] = useState(false);
 
-  // Redirect authenticated users to dashboard
+  // Redirect authenticated users to dashboard - memoized to prevent re-renders
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
       navigate('/dashboard');
     }
   }, [isAuthenticated, isLoading, navigate]);
 
-  const features = [
+  // Memoize features array to prevent re-creation on every render
+  const features = useMemo(() => [
     {
       icon: Brain,
       title: 'IA Avançada',
@@ -171,9 +172,10 @@ const Index = () => {
       gradient: 'from-pink-500 to-rose-600',
       bgGlow: 'bg-pink-400/10',
     },
-  ];
+  ], []);
 
-  const benefits = [
+  // Memoize benefits array
+  const benefits = useMemo(() => [
     {
       icon: Brain,
       title: 'Sugestões Inteligentes',
@@ -205,7 +207,7 @@ const Index = () => {
       color: 'text-green-700',
       bg: 'bg-green-100',
     },
-  ];
+  ], []);
 
   if (isLoading) {
     return (
