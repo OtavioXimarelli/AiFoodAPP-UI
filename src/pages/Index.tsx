@@ -201,8 +201,10 @@ const INTERSECTION_OPTIONS = {
 const Index = () => {
   const { isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
-  const { reportPerformanceIssue } = usePerformance('IndexPage');
   const [showAppStatus, setShowAppStatus] = useState(false);
+  
+  // Track performance but don't extract the function
+  usePerformance('IndexPage');
 
   // Redirect authenticated users to dashboard
   useEffect(() => {
