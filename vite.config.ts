@@ -9,11 +9,24 @@ export default defineConfig(({ mode }) => ({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: undefined,
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
+        },
+      },
+    },
+    // Otimizações de produção
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: mode === 'production',
+        drop_debugger: mode === 'production',
       },
     },
     // Force rebuild to clear TypeScript cache
     emptyOutDir: true,
+    // Aumentar limite de chunk warning
+    chunkSizeWarningLimit: 1000,
   },
   resolve: {
     alias: {
@@ -22,7 +35,7 @@ export default defineConfig(({ mode }) => ({
   },
   server: {
     host: '::',
-    port: 8082,
+    port: 8083,
     proxy: {
       '/api': {
         target: 'http://localhost:8080',
