@@ -110,16 +110,21 @@ export const usePerformance = (componentName?: string) => {
     [componentName, metrics]
   );
 
-  // Increment render count
+  // Increment render count - track on every render but report only once at threshold
   useEffect(() => {
     renderCount.current += 1;
 
-    // Warn about excessive re-renders
-    if (renderCount.current > 10 && process.env.NODE_ENV === 'development') {
+    // Warn only once when hitting threshold
+    if (renderCount.current === 11 && process.env.NODE_ENV === 'development') {
       reportPerformanceIssue(
         `Component ${componentName} has rendered ${renderCount.current} times`,
         'medium'
       );
+    }
+    
+    // Critical warning at 30 renders
+    if (renderCount.current === 30 && process.env.NODE_ENV === 'development') {
+      console.error(`🔥 CRITICAL: ${componentName} has excessive re-renders (${renderCount.current})!`);
     }
   });
 

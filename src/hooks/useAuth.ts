@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { authService } from '@/services/authService';
 import { apiClient } from '@/lib/api';
@@ -347,19 +347,9 @@ export const useAuth = () => {
     }
   };
 
-  // Check authentication on mount - but only if we haven't checked yet
-  useEffect(() => {
-    console.log(
-      '🚀 useAuth mounted - hasCheckedAuth:',
-      hasCheckedAuth,
-      'isAuthenticated:',
-      isAuthenticated
-    );
-
-    if (!hasCheckedAuth && !isCheckingAuth.current) {
-      checkAuthentication();
-    }
-  }, []); // Empty dependency array - only run once on mount
+  // ⚠️ REMOVED: Auto check authentication on mount
+  // Authentication is now handled centrally by App.tsx via sessionService
+  // This prevents multiple components from triggering auth checks simultaneously
 
   return {
     user,
