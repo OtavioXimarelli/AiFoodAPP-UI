@@ -1,11 +1,15 @@
 // Configuração de desenvolvimento
 export const DEV_CONFIG = {
   // Ative esta flag para testar funcionalidades em desenvolvimento
+  // Permite dev.aifoodapp.site quando VITE_ENABLE_DEV_MODE=true
   ENABLE_DEV_ACCESS:
-    process.env.NODE_ENV === 'development' && window.location.hostname === 'localhost',
+    (process.env.NODE_ENV === 'development' && window.location.hostname === 'localhost') ||
+    import.meta.env.VITE_ENABLE_DEV_MODE === 'true',
 
   // Bypass de autenticação em desenvolvimento
-  BYPASS_AUTH: process.env.NODE_ENV === 'development' && window.location.hostname === 'localhost',
+  BYPASS_AUTH:
+    (process.env.NODE_ENV === 'development' && window.location.hostname === 'localhost') ||
+    import.meta.env.VITE_ENABLE_DEV_MODE === 'true',
 
   // Usuário mock para desenvolvimento
   MOCK_USER: {
