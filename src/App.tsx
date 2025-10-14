@@ -19,6 +19,11 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
 const OAuth2Callback = lazy(() => import('./pages/OAuth2Callback'));
+const Features = lazy(() => import('./pages/Features'));
+const Privacy = lazy(() => import('./pages/Privacy'));
+const Terms = lazy(() => import('./pages/Terms'));
+const Cookies = lazy(() => import('./pages/Cookies'));
+const Contact = lazy(() => import('./pages/Contact'));
 const DashboardLayout = lazy(() => import('./components/shared/DashboardLayout'));
 const ProtectedRoute = lazy(() => import('./components/shared/ProtectedRoute'));
 const FoodInventory = lazy(() => import('./pages/dashboard/FoodInventory'));
@@ -109,6 +114,11 @@ const App = () => {
                     <Route path="/" element={<Index />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Login />} />
+                    <Route path="/features" element={<Features />} />
+                    <Route path="/privacy" element={<Privacy />} />
+                    <Route path="/terms" element={<Terms />} />
+                    <Route path="/cookies" element={<Cookies />} />
+                    <Route path="/contact" element={<Contact />} />
                     <Route path="/oauth2/callback" element={<Login />} />
                     <Route path="/login/oauth2/code/google" element={<Login />} />
 
