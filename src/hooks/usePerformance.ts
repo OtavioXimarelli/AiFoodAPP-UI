@@ -16,8 +16,10 @@ export const usePerformance = (componentName?: string) => {
 
   const mountTime = useRef<number>(Date.now());
   const renderCount = useRef<number>(0);
+  const hasReported11 = useRef(false);
+  const hasReported30 = useRef(false);
 
-  // Detect low-end devices
+  // Detect low-end devices - memoized
   const detectLowEndDevice = useCallback(() => {
     // Check for hardware concurrency (CPU cores)
     const cores = navigator.hardwareConcurrency || 2;
@@ -110,14 +112,16 @@ export const usePerformance = (componentName?: string) => {
   );
 
   // Track render count and report only at specific thresholds
-  const hasReported11 = useRef(false);
-  const hasReported30 = useRef(false);
-
   useEffect(() => {
     renderCount.current += 1;
 
+    // Em desenvolvimento, o React.StrictMode causa double-render
+    // Considerar isso normal e só reportar se passar de 15 renders
+    const isDev = process.env.NODE_ENV === 'development';
+    const threshold = isDev ? 15 : 11;
+
     // Warn only once when hitting threshold
-    if (renderCount.current === 11 && !hasReported11.current && process.env.NODE_ENV === 'development') {
+    if (renderCount.current === threshold && !hasReported11.current && process.env.NODE_ENV === 'development') {
       hasReported11.current = true;
       reportPerformanceIssue(
         `Component ${componentName} has rendered ${renderCount.current} times`,

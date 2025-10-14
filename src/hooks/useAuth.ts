@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useMemo, useCallback } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { authService } from '@/services/authService';
 import { apiClient } from '@/lib/api';
@@ -60,7 +60,7 @@ export const useAuth = () => {
     }
   };
 
-  const checkAuthentication = async () => {
+  const checkAuthentication = useCallback(async () => {
     // Verificar e limpar marcadores de logout antigos/órfãos
     const logoutInProgress = sessionStorage.getItem('logout_in_progress') === 'true';
     const logoutTimestamp = sessionStorage.getItem('logout_timestamp');
@@ -250,9 +250,9 @@ export const useAuth = () => {
       isCheckingAuth.current = false;
       authCheckPromise.current = null;
     }
-  };
+  }, [isAuthenticated, user, hasCheckedAuth, setAuth, setLoading, setHasCheckedAuth, logout]);
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     try {
       console.log('🔑 Starting logout process...');
 
@@ -371,20 +371,21 @@ export const useAuth = () => {
         window.location.reload();
       }, 100);
     }
-  };
+  }, [logout]);
 
-  const redirectToLogin = async (provider: string = 'google') => {
+  const redirectToLogin = useCallback(async (provider: string = 'google') => {
     try {
       await authService.redirectToLogin(provider);
     } catch (error) {
       console.error('🔑 Failed to redirect to login:', error);
     }
-  };
+  }, []);
 
   // ⚠️ REMOVED: Auto check authentication on mount
   // Authentication is now handled centrally by App.tsx via sessionService
   // This prevents multiple components from triggering auth checks simultaneously
 
+  // Return stable object with memoized functions
   return {
     user,
     isAuthenticated,

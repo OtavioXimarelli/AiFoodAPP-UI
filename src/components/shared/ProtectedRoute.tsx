@@ -1,81 +1,66 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, memo } from 'react';
 
-const ProtectedRoute = () => {
+const ProtectedRoute = memo(() => {
   const { isAuthenticated, isLoading, checkAuthentication } = useAuth();
   const location = useLocation();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [hasChecked, setHasChecked] = useState(false);
 
-  // Effect to check authentication on mount and periodically refresh the token
-  useEffect(() => {
-    // Variável para rastrear a última verificação
-    let lastCheckTime = 0;
+  // Memoize check function
+  const performAuthCheck = useCallback(async () => {
+    if (hasChecked) {
+      console.log('🛡️ ProtectedRoute: Auth already checked, skipping');
+      return;
+    }
 
-    // Check authentication on mount
-    const initialCheck = async () => {
-      try {
-        console.log('🛡️ ProtectedRoute: Performing initial authentication check');
+    try {
+      console.log('🛡️ ProtectedRoute: Performing authentication check');
 
-        // Verificar e limpar marcadores de logout órfãos
-        const logoutInProgress = sessionStorage.getItem('logout_in_progress') === 'true';
+      // Verificar logout em progresso
+      const logoutInProgress = sessionStorage.getItem('logout_in_progress') === 'true';
+      if (logoutInProgress) {
         const logoutTimestamp = sessionStorage.getItem('logout_timestamp');
-
-        if (logoutInProgress) {
-          if (logoutTimestamp) {
-            const timeSinceLogout = Date.now() - parseInt(logoutTimestamp);
-            if (timeSinceLogout > 30000) {
-              console.log('🛡️ ProtectedRoute: Clearing old logout markers');
-              sessionStorage.removeItem('logout_in_progress');
-              sessionStorage.removeItem('logout_timestamp');
-            } else {
-              console.log('🛡️ ProtectedRoute: Logout in progress, skipping auth check');
-              setIsCheckingAuth(false);
-              return;
-            }
-          } else {
-            console.log('🛡️ ProtectedRoute: Clearing orphaned logout marker');
-            sessionStorage.removeItem('logout_in_progress');
+        if (logoutTimestamp) {
+          const timeSinceLogout = Date.now() - parseInt(logoutTimestamp);
+          if (timeSinceLogout < 30000) {
+            console.log('🛡️ ProtectedRoute: Logout in progress, skipping');
+            setIsCheckingAuth(false);
+            return;
           }
         }
-
-        // First check if the user is marked as authenticated locally
-        const isAuthLocal = localStorage.getItem('is_authenticated') === 'true';
-        console.log(
-          '🛡️ ProtectedRoute: Local auth status:',
-          isAuthLocal ? 'authenticated' : 'not authenticated'
-        );
-
-        // Se já estiver autenticado localmente, podemos ser mais rápidos
-        if (isAuthLocal && isAuthenticated) {
-          console.log('🛡️ ProtectedRoute: Already authenticated locally, skipping initial check');
-          setIsCheckingAuth(false);
-          return;
-        }
-
-        // Do a full auth check on mount
-        await checkAuthentication();
-        lastCheckTime = Date.now();
-
-        console.log('🛡️ ProtectedRoute: Authentication check completed');
-      } catch (error) {
-        console.error('🛡️ Failed initial authentication check:', error);
-        localStorage.removeItem('is_authenticated');
-      } finally {
-        setIsCheckingAuth(false);
+        // Limpar marcadores antigos
+        sessionStorage.removeItem('logout_in_progress');
+        sessionStorage.removeItem('logout_timestamp');
       }
-    };
 
-    initialCheck();
+      // Verificar auth local primeiro
+      const isAuthLocal = localStorage.getItem('is_authenticated') === 'true';
+      if (isAuthLocal && isAuthenticated) {
+        console.log('🛡️ ProtectedRoute: Already authenticated locally');
+        setIsCheckingAuth(false);
+        setHasChecked(true);
+        return;
+      }
 
-    // NÃO configurar intervalos aqui - App.tsx já cuida disso
-    // Este componente monta/desmonta várias vezes, criando múltiplos intervalos
+      // Verificar autenticação via API
+      await checkAuthentication();
+      setHasChecked(true);
+      console.log('🛡️ ProtectedRoute: Authentication check completed');
+    } catch (error) {
+      console.error('🛡️ Failed authentication check:', error);
+      localStorage.removeItem('is_authenticated');
+    } finally {
+      setIsCheckingAuth(false);
+    }
+  }, [hasChecked, isAuthenticated, checkAuthentication]);
 
-    return () => {
-      // Nenhum intervalo para limpar
-    };
-  }, [checkAuthentication, isAuthenticated]);
+  // Effect to check authentication on mount ONLY
+  useEffect(() => {
+    performAuthCheck();
+  }, [performAuthCheck]);
 
   // Show loading spinner while checking authentication
   if (isLoading || isCheckingAuth) {
@@ -115,6 +100,8 @@ const ProtectedRoute = () => {
 
   console.log('🛡️ ProtectedRoute: Authentication confirmed, rendering protected content');
   return <Outlet />;
-};
+});
+
+ProtectedRoute.displayName = 'ProtectedRoute';
 
 export default ProtectedRoute;
