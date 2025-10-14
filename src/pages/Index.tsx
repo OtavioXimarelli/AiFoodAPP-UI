@@ -148,11 +148,15 @@ const FeatureCard = memo<{
   index: number;
 }>(({ feature, index }) => {
   const { ref, hasIntersected } = useIntersectionObserver(INTERSECTION_OPTIONS);
+  const navigate = useNavigate();
 
   return (
     <div ref={ref}>
       <ReactBitsCard variant="tilt" className="h-full">
-        <Card className="group border-0 shadow-lg overflow-hidden h-full bg-card/95 backdrop-blur-sm">
+        <Card 
+          className="group border-0 shadow-lg overflow-hidden h-full bg-card/95 backdrop-blur-sm cursor-pointer transition-all duration-300 hover:shadow-2xl"
+          onClick={() => navigate('/features')}
+        >
           {/* Gradient overlay on hover */}
           <div
             className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}
@@ -174,7 +178,7 @@ const FeatureCard = memo<{
           </CardHeader>
           <CardContent className="relative">
             <p className="text-muted-foreground leading-relaxed mb-4">{feature.description}</p>
-            <div className="flex items-center text-primary font-medium text-sm group-hover:translate-x-2 transition-transform duration-300">
+            <div className="flex items-center text-amber-500 font-semibold text-sm group-hover:translate-x-2 transition-transform duration-300">
               Saiba mais <ArrowRight className="ml-2 h-4 w-4" />
             </div>
           </CardContent>
@@ -248,12 +252,12 @@ const Index = memo(() => {
           <section className="py-24 px-4 relative" data-section="features">
             <div className="container mx-auto">
               <AnimatedElement variant="slideUp" className="text-center mb-20">
-                <Badge className="mb-6 bg-primary/10 text-primary border-primary/20 px-4 py-2 text-sm font-medium">
+                <Badge className="mb-6 bg-amber-500/10 text-amber-600 border-amber-500/20 px-4 py-2 text-sm font-medium">
                   🚀 Funcionalidades Avançadas
                 </Badge>
                 <TextReveal className="text-4xl md:text-5xl font-bold text-foreground mb-6">
                   A plataforma mais{' '}
-                  <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 bg-clip-text text-transparent">
                     completa
                   </span>{' '}
                   para sua cozinha
@@ -273,14 +277,36 @@ const Index = memo(() => {
                 ))}
               </StaggerContainer>
 
+              {/* View All Features Button */}
+              <AnimatedElement variant="slideUp" delay={0.3} className="text-center mt-12">
+                <Button
+                  onClick={() => navigate('/features')}
+                  size="lg"
+                  variant="outline"
+                  className="group border-2 border-amber-500/80 bg-transparent hover:bg-amber-500 text-foreground hover:text-white transition-all duration-300 px-8 py-6 text-base font-semibold backdrop-blur-sm shadow-md hover:shadow-lg hover:shadow-amber-500/30 rounded-xl"
+                >
+                  <span className="flex items-center gap-2">
+                    Ver Todas as Funcionalidades
+                    <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                  </span>
+                </Button>
+              </AnimatedElement>
+
               {/* Simple stats without fake numbers */}
               <AnimatedElement variant="slideUp" delay={0.5}>
-                <div className="mt-24 bg-gradient-to-r from-primary/10 to-accent/10 rounded-3xl p-12 backdrop-blur-sm border border-primary/20">
+                <div className="mt-24 bg-gradient-to-br from-amber-500/10 via-orange-500/10 to-amber-500/10 rounded-3xl p-12 backdrop-blur-sm border border-amber-500/20 shadow-xl">
                   <div className="text-center">
-                    <h3 className="text-2xl font-bold text-foreground mb-4">
-                      A Revolução da Culinária Inteligente
+                    <div className="flex justify-center mb-6">
+                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg">
+                        <Sparkles className="w-8 h-8 text-white animate-pulse" />
+                      </div>
+                    </div>
+                    <h3 className="text-3xl font-bold mb-4">
+                      <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 bg-clip-text text-transparent">
+                        A Revolução da Culinária Inteligente
+                      </span>
                     </h3>
-                    <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                       Junte-se à nova era da culinária onde a tecnologia encontra a gastronomia.
                       Crie, explore e otimize suas receitas com o poder da inteligência artificial.
                     </p>
@@ -291,38 +317,42 @@ const Index = memo(() => {
           </section>
 
           {/* Benefits Section */}
-          <section className="py-20 px-4 relative bg-gradient-to-r from-background/80 via-primary/5 to-background/80 backdrop-blur-sm">
+          <section className="py-24 px-4 relative bg-gradient-to-br from-background via-amber-500/5 to-background backdrop-blur-sm">
             <div className="container mx-auto">
               <AnimatedElement variant="slideUp" className="text-center mb-16">
-                <Badge className="mb-4 bg-accent/10 text-accent border-accent/20">Benefícios</Badge>
-                <h2 className="text-4xl font-bold text-foreground mb-4">
-                  Por que escolher o AI Food App?
+                <Badge className="mb-6 bg-amber-500/10 text-amber-600 border-amber-500/20 px-4 py-2 text-sm font-medium">
+                  ✨ Benefícios
+                </Badge>
+                <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+                  Por que escolher o{' '}
+                  <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 bg-clip-text text-transparent">
+                    AI Food App?
+                  </span>
                 </h2>
-                <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                   Transforme sua experiência culinária com gerenciamento inteligente de alimentos
                 </p>
               </AnimatedElement>
 
               <StaggerContainer
-                className="grid grid-cols-1 md:grid-cols-2 gap-8"
+                className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 staggerDelay={0.15}
               >
                 {benefits.map((benefit, index) => (
                   <ReactBitsCard key={index} variant="hover-glow" className="h-full">
-                    <Card className="group border-0 bg-card/95 backdrop-blur-sm shadow-lg h-full">
-                      <CardContent className="p-8">
+                    <Card className="group border-0 bg-card/95 backdrop-blur-sm shadow-lg hover:shadow-2xl h-full transition-all duration-300 overflow-hidden">
+                      {/* Gradient overlay on hover */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      
+                      <CardContent className="p-8 relative">
                         <div className="flex items-start gap-4">
                           <HoverAnimation scale={1.15}>
-                            <div
-                              className={`w-12 h-12 rounded-xl ${benefit.bg} dark:bg-background/10 flex items-center justify-center flex-shrink-0 border border-border/20`}
-                            >
-                              <benefit.icon
-                                className={`h-6 w-6 ${benefit.color} dark:text-primary`}
-                              />
+                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0 shadow-lg">
+                              <benefit.icon className="h-7 w-7 text-white" />
                             </div>
                           </HoverAnimation>
-                          <div>
-                            <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                          <div className="flex-1">
+                            <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-amber-600 transition-colors">
                               {benefit.title}
                             </h3>
                             <p className="text-muted-foreground leading-relaxed">
@@ -331,6 +361,9 @@ const Index = memo(() => {
                           </div>
                         </div>
                       </CardContent>
+                      
+                      {/* Subtle glow effect */}
+                      <div className="absolute -inset-0.5 bg-amber-400/10 opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-500 -z-10"></div>
                     </Card>
                   </ReactBitsCard>
                 ))}
@@ -339,186 +372,266 @@ const Index = memo(() => {
           </section>
 
           {/* CTA Section */}
-          <section className="py-24 px-4 relative overflow-hidden">
-            {/* Background with modern gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary"></div>
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-accent/90"></div>
+          <section className="py-20 px-4 relative">
+            <div className="container mx-auto">
+              <AnimatedElement variant="scale">
+                <div className="relative overflow-hidden rounded-3xl">
+                  {/* Background with modern gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600"></div>
+                  
+                  {/* Subtle pattern overlay */}
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,_rgba(255,255,255,0.1)_0%,_transparent_50%)]"></div>
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,_rgba(255,255,255,0.05)_0%,_transparent_50%)]"></div>
 
-            {/* Floating elements */}
-            <div className="absolute top-20 left-20 w-20 h-20 bg-white/10 rounded-full blur-xl animate-float"></div>
-            <div className="absolute bottom-20 right-20 w-32 h-32 bg-white/5 rounded-full blur-2xl animate-float anim-delay-2s"></div>
+                  {/* Content */}
+                  <div className="relative z-10 text-center px-6 py-16 md:px-12 md:py-20">
+                    <AnimatedElement variant="slideUp" delay={0.1}>
+                      <Badge className="mb-6 bg-white/20 text-white border-white/30 px-4 py-2 text-sm backdrop-blur-sm shadow-lg">
+                        🎯 Comece Sua Jornada Culinária
+                      </Badge>
+                    </AnimatedElement>
 
-            <div className="container mx-auto text-center relative z-10">
-              <div className="max-w-4xl mx-auto">
-                <AnimatedElement variant="scale" delay={0.1}>
-                  <Badge className="mb-8 bg-white/20 text-white border-white/30 px-6 py-3 text-sm backdrop-blur-sm">
-                    🎯 Comece Sua Jornada Culinária
-                  </Badge>
-                </AnimatedElement>
+                    <AnimatedElement variant="slideUp" delay={0.2}>
+                      <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
+                        Revolucione sua
+                        <span className="block mt-1">experiência culinária</span>
+                      </h2>
+                    </AnimatedElement>
 
-                <AnimatedElement variant="slideUp" delay={0.2}>
-                  <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-                    Revolucione sua
-                    <span className="block bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent mt-2">
-                      experiência culinária
-                    </span>
-                  </h2>
-                </AnimatedElement>
+                    <AnimatedElement variant="fadeIn" delay={0.3}>
+                      <p className="text-lg md:text-xl text-white/95 mb-10 max-w-2xl mx-auto leading-relaxed">
+                        Descubra o poder da inteligência artificial aplicada à culinária.{' '}
+                        <span className="font-bold">Crie receitas incríveis</span> com os
+                        ingredientes que você tem em casa.
+                      </p>
+                    </AnimatedElement>
 
-                <AnimatedElement variant="fadeIn" delay={0.3}>
-                  <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
-                    Descubra o poder da inteligência artificial aplicada à culinária.
-                    <span className="font-bold text-white">Crie receitas incríveis</span> com os
-                    ingredientes que você tem em casa.
-                  </p>
-                </AnimatedElement>
+                    {/* Action buttons */}
+                    <AnimatedElement variant="slideUp" delay={0.4}>
+                      <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
+                        <Button
+                          asChild
+                          size="lg"
+                          className="group bg-white text-amber-600 hover:bg-gray-50 shadow-xl px-8 py-6 text-base font-bold transition-all duration-300 rounded-xl"
+                        >
+                          <Link to="/register">
+                            <Sparkles className="mr-2 h-5 w-5 group-hover:animate-pulse" />
+                            Começar Agora
+                          </Link>
+                        </Button>
+                        
+                        <Button
+                          asChild
+                          size="lg"
+                          variant="outline"
+                          className="group border-2 border-white text-white bg-white/10 hover:bg-white hover:text-amber-600 backdrop-blur-sm px-8 py-6 text-base font-bold shadow-lg transition-all duration-300 rounded-xl"
+                        >
+                          <Link to="/login">
+                            <Users className="mr-2 h-5 w-5" />
+                            Fazer Login
+                          </Link>
+                        </Button>
+                      </div>
+                    </AnimatedElement>
 
-                {/* Action buttons */}
-                <AnimatedElement variant="slideUp" delay={0.4}>
-                  <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
-                    <ReactBitsCard variant="magnetic" className="w-auto">
-                      <Button
-                        asChild
-                        size="lg"
-                        className="bg-white text-primary hover:bg-white/95 shadow-2xl px-8 py-4 text-lg font-semibold h-auto transition-all duration-300 border-0"
-                      >
-                        <Link to="/login">
-                          <Sparkles className="mr-3 h-6 w-6" />
-                          Começar Agora
-                        </Link>
-                      </Button>
-                    </ReactBitsCard>
-                    <ReactBitsCard variant="hover-glow" className="w-auto">
-                      <Button
-                        asChild
-                        size="lg"
-                        variant="outline"
-                        className="border-2 border-primary/60 text-primary bg-background/50 hover:bg-primary hover:text-primary-foreground hover:border-primary backdrop-blur-sm px-8 py-4 text-lg font-semibold h-auto shadow-lg transition-all duration-300 dark:border-white/30 dark:text-white dark:bg-white/10 dark:hover:bg-white dark:hover:text-primary dark:hover:border-white"
-                      >
-                        <Link to="/login">
-                          <Users className="mr-3 h-6 w-6" />
-                          Fazer Login
-                        </Link>
-                      </Button>
-                    </ReactBitsCard>
+                    {/* Trust indicators */}
+                    <AnimatedElement variant="fadeIn" delay={0.5}>
+                      <div className="flex flex-wrap justify-center gap-6 text-white/90 text-sm">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="w-4 h-4" />
+                          <span>100% Gratuito</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="w-4 h-4" />
+                          <span>Acesso Instantâneo</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="w-4 h-4" />
+                          <span>Suporte Brasileiro</span>
+                        </div>
+                      </div>
+                    </AnimatedElement>
                   </div>
-                </AnimatedElement>
-
-                {/* Trust indicators */}
-                <AnimatedElement variant="fadeIn" delay={0.6}>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-white/80 text-sm">
-                    <div className="flex items-center justify-center gap-2">
-                      <CheckCircle className="w-5 h-5" />
-                      <span>100% Gratuito</span>
-                    </div>
-                    <div className="flex items-center justify-center gap-2">
-                      <CheckCircle className="w-5 h-5" />
-                      <span>Acesso Instantâneo</span>
-                    </div>
-                    <div className="flex items-center justify-center gap-2">
-                      <CheckCircle className="w-5 h-5" />
-                      <span>Suporte Brasileiro</span>
-                    </div>
-                  </div>
-                </AnimatedElement>
-              </div>
+                </div>
+              </AnimatedElement>
             </div>
           </section>
 
           {/* Footer */}
-          <footer className="py-16 px-4 bg-gray-900 text-white relative overflow-hidden">
-            {/* Background pattern */}
-            <div className="absolute inset-0 opacity-5">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20"></div>
-            </div>
+          <footer className="relative py-16 px-4 overflow-hidden">
+            {/* Background with subtle gradient */}
+            <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-muted/20"></div>
+            
+            {/* Decorative top border */}
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
 
             <div className="container mx-auto relative z-10">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
+              {/* Main Footer Content */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
                 {/* Brand Section */}
-                <div className="lg:col-span-2">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center">
-                      <ChefHat className="w-6 h-6 text-white" />
-                    </div>
-                    <h3 className="text-2xl font-bold">AI Food App</h3>
+                <div className="lg:col-span-1">
+                  <AnimatedElement variant="slideUp" delay={0.1}>
+                    <Link to="/" className="inline-flex items-center gap-3 mb-4 group">
+                      <div className="w-12 h-12 bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                        <ChefHat className="w-7 h-7 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 bg-clip-text text-transparent">
+                          AI Food App
+                        </h3>
+                        <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-xs px-2 py-0">
+                          Beta
+                        </Badge>
+                      </div>
+                    </Link>
+                    <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
+                      Revolucione sua cozinha com inteligência artificial. Crie receitas
+                      personalizadas e otimize sua nutrição.
+                    </p>
+                  </AnimatedElement>
+                </div>
+
+                {/* Produto */}
+                <div>
+                  <AnimatedElement variant="slideUp" delay={0.2}>
+                    <h4 className="font-bold mb-4 text-sm uppercase tracking-wider text-foreground flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-amber-500" />
+                      Produto
+                    </h4>
+                    <ul className="space-y-3 text-sm">
+                      <li>
+                        <Link
+                          to="/features"
+                          className="text-muted-foreground hover:text-amber-500 transition-colors inline-flex items-center gap-2 group"
+                        >
+                          <ArrowRight className="w-3 h-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                          Funcionalidades
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/dashboard"
+                          className="text-muted-foreground hover:text-amber-500 transition-colors inline-flex items-center gap-2 group"
+                        >
+                          <ArrowRight className="w-3 h-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                          Dashboard
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/register"
+                          className="text-muted-foreground hover:text-amber-500 transition-colors inline-flex items-center gap-2 group"
+                        >
+                          <ArrowRight className="w-3 h-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                          Começar Grátis
+                        </Link>
+                      </li>
+                    </ul>
+                  </AnimatedElement>
+                </div>
+
+                {/* Legal */}
+                <div>
+                  <AnimatedElement variant="slideUp" delay={0.3}>
+                    <h4 className="font-bold mb-4 text-sm uppercase tracking-wider text-foreground flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-amber-500" />
+                      Legal
+                    </h4>
+                    <ul className="space-y-3 text-sm">
+                      <li>
+                        <Link
+                          to="/privacy"
+                          className="text-muted-foreground hover:text-amber-500 transition-colors inline-flex items-center gap-2 group"
+                        >
+                          <ArrowRight className="w-3 h-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                          Privacidade
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/terms"
+                          className="text-muted-foreground hover:text-amber-500 transition-colors inline-flex items-center gap-2 group"
+                        >
+                          <ArrowRight className="w-3 h-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                          Termos de Uso
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/cookies"
+                          className="text-muted-foreground hover:text-amber-500 transition-colors inline-flex items-center gap-2 group"
+                        >
+                          <ArrowRight className="w-3 h-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                          Cookies
+                        </Link>
+                      </li>
+                    </ul>
+                  </AnimatedElement>
+                </div>
+
+                {/* Suporte */}
+                <div>
+                  <AnimatedElement variant="slideUp" delay={0.4}>
+                    <h4 className="font-bold mb-4 text-sm uppercase tracking-wider text-foreground flex items-center gap-2">
+                      <Users className="w-4 h-4 text-amber-500" />
+                      Suporte
+                    </h4>
+                    <ul className="space-y-3 text-sm">
+                      <li>
+                        <Link
+                          to="/contact"
+                          className="text-muted-foreground hover:text-amber-500 transition-colors inline-flex items-center gap-2 group"
+                        >
+                          <ArrowRight className="w-3 h-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                          Contato
+                        </Link>
+                      </li>
+                      <li>
+                        <a
+                          href="mailto:contato@aifoodapp.com"
+                          className="text-muted-foreground hover:text-amber-500 transition-colors inline-flex items-center gap-2 group"
+                        >
+                          <ArrowRight className="w-3 h-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                          Email
+                        </a>
+                      </li>
+                      <li>
+                        <span className="text-muted-foreground text-xs flex items-center gap-2">
+                          <CheckCircle className="w-3 h-3 text-green-500" />
+                          Suporte Brasileiro
+                        </span>
+                      </li>
+                    </ul>
+                  </AnimatedElement>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent mb-8"></div>
+
+              {/* Bottom Bar */}
+              <AnimatedElement variant="fadeIn" delay={0.5}>
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <span>&copy; {new Date().getFullYear()} AI Food App.</span>
+                    <span className="hidden md:inline">•</span>
+                    <span className="hidden md:inline">Todos os direitos reservados.</span>
                   </div>
-                  <p className="text-gray-300 mb-6 max-w-md leading-relaxed">
-                    Revolucione sua cozinha com inteligência artificial. Crie receitas
-                    personalizadas, gerencie ingredientes e otimize sua nutrição.
-                  </p>
-                  <div className="flex items-center gap-4">
-                    <Badge className="bg-primary/20 text-primary border-primary/30">
-                      🚀 Em Desenvolvimento
+                  
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <span className="text-xs">Feito com</span>
+                    <Heart className="w-4 h-4 text-red-500 fill-red-500 animate-pulse" />
+                    <span className="text-xs">no Brasil</span>
+                    <Badge 
+                      variant="outline" 
+                      className="ml-2 border-green-500/30 text-green-600 dark:text-green-400 bg-green-500/5"
+                    >
+                      <Leaf className="w-3 h-3 mr-1" />
+                      Sustentável
                     </Badge>
                   </div>
                 </div>
-
-                {/* Quick Links */}
-                <div>
-                  <h4 className="font-semibold mb-6 text-lg">Produto</h4>
-                  <ul className="space-y-3 text-gray-300">
-                    <li className="hover:text-primary transition-colors cursor-pointer">
-                      Funcionalidades
-                    </li>
-                    <li className="hover:text-primary transition-colors cursor-pointer">API</li>
-                    <li className="hover:text-primary transition-colors cursor-pointer">
-                      Integrações
-                    </li>
-                    <li className="hover:text-primary transition-colors cursor-pointer">Roadmap</li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h4 className="font-semibold mb-6 text-lg">Empresa</h4>
-                  <ul className="space-y-3 text-gray-300">
-                    <li className="hover:text-primary transition-colors cursor-pointer">
-                      Sobre Nós
-                    </li>
-                    <li className="hover:text-primary transition-colors cursor-pointer">Blog</li>
-                    <li className="hover:text-primary transition-colors cursor-pointer">
-                      Carreiras
-                    </li>
-                    <li className="hover:text-primary transition-colors cursor-pointer">Contato</li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h4 className="font-semibold mb-6 text-lg">Suporte</h4>
-                  <ul className="space-y-3 text-gray-300">
-                    <li className="hover:text-primary transition-colors cursor-pointer">
-                      Central de Ajuda
-                    </li>
-                    <li className="hover:text-primary transition-colors cursor-pointer">
-                      Documentação
-                    </li>
-                    <li className="hover:text-primary transition-colors cursor-pointer">Status</li>
-                    <li className="hover:text-primary transition-colors cursor-pointer">
-                      Comunidade
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Bottom section */}
-              <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p className="text-gray-400 text-center md:text-left">
-                  &copy; 2024 AI Food App. Todos os direitos reservados.
-                  <span className="mx-2">•</span>
-                  <a href="#" className="hover:text-primary transition-colors">
-                    Privacidade
-                  </a>
-                  <span className="mx-2">•</span>
-                  <a href="#" className="hover:text-primary transition-colors">
-                    Termos
-                  </a>
-                </p>
-                <div className="flex items-center gap-4">
-                  <span className="text-gray-400 text-sm">Feito com ❤️ no Brasil</span>
-                  <Badge variant="outline" className="border-green-500/30 text-green-400">
-                    🌱 Sustentável
-                  </Badge>
-                </div>
-              </div>
+              </AnimatedElement>
             </div>
           </footer>
         </div>
