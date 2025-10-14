@@ -5,7 +5,6 @@ import { ThemeToggle } from '@/components/shared/ThemeToggle';
 import { ChefHat, LogIn, LogOut, User, Info } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import GlassSurface from '@/components/GlassSurface/GlassSurface';
-import SimpleHeader from './SimpleHeader';
 
 const Header = ({
   containerClassName,
@@ -32,10 +31,10 @@ const Header = ({
           <div className="flex h-10 items-center px-3 sm:h-12 sm:px-4 w-full">
             <Link
               to="/"
-              className="flex items-center gap-2 sm:gap-3 font-bold text-sm sm:text-base bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent"
+              className="flex items-center gap-2 sm:gap-3 font-bold text-sm sm:text-base bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 bg-clip-text text-transparent"
             >
-              <div className="p-1.5 rounded-lg bg-gradient-to-br from-primary to-primary/80 shadow-sm">
-                <ChefHat className="h-4 w-4 sm:h-5 sm:w-5 text-primary-foreground" />
+              <div className="p-1.5 rounded-lg bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 shadow-sm">
+                <ChefHat className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               </div>
               <div className="hidden sm:block">
                 <div className="text-base font-semibold">AI Food App</div>
@@ -62,7 +61,7 @@ const Header = ({
                     <Button
                       size="sm"
                       aria-label="Entrar"
-                      className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/80 hover:to-primary shadow-sm transition-all duration-200 px-3 py-1.5 text-sm"
+                      className="gap-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg shadow-amber-500/20 transition-all duration-200 px-3 py-1.5 text-sm"
                     >
                       <LogIn className="h-4 w-4" />
                       <span className="hidden sm:inline">Entrar</span>
@@ -133,10 +132,10 @@ const Header = ({
           <Link
             to="/"
             aria-label="Página inicial"
-            className="flex items-center gap-2 sm:gap-3 font-bold text-sm sm:text-base bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent"
+            className="flex items-center gap-2 sm:gap-3 font-bold text-sm sm:text-base bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 bg-clip-text text-transparent"
           >
-            <div className="p-1.5 rounded-lg bg-gradient-to-br from-primary to-primary/80 shadow-sm">
-              <ChefHat className="h-4 w-4 sm:h-5 sm:w-5 text-primary-foreground" />
+            <div className="p-1.5 rounded-lg bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 shadow-sm">
+              <ChefHat className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
             </div>
             <div className="hidden sm:block">
               <div className="text-base font-semibold">AI Food App</div>
@@ -163,7 +162,7 @@ const Header = ({
                   <Button
                     size="sm"
                     aria-label="Entrar"
-                    className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/80 hover:to-primary shadow-sm transition-all duration-200 px-3 py-1.5 text-sm"
+                    className="gap-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg shadow-amber-500/20 transition-all duration-200 px-3 py-1.5 text-sm"
                   >
                     <LogIn className="h-4 w-4" />
                     <span className="hidden sm:inline">Entrar</span>
@@ -174,8 +173,8 @@ const Header = ({
               <div className="flex items-center gap-2 sm:gap-3">
                 {variant === 'desktop' && user && (
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-8 w-8 ring-1 ring-primary/20 transition-all duration-150 cursor-pointer">
-                      <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-semibold">
+                    <Avatar className="h-8 w-8 ring-2 ring-amber-500/30 transition-all duration-150 cursor-pointer">
+                      <AvatarFallback className="bg-gradient-to-br from-amber-500/20 to-orange-500/20 text-amber-600 dark:text-amber-400 font-semibold">
                         {user.name ? (
                           user.name.charAt(0).toUpperCase()
                         ) : (
