@@ -10,6 +10,7 @@
     "build:prod": "vite build --mode production",
     "start": "serve -s dist -l 8082",
     "start:dev": "serve -s dist -l 8084",
+    "deploy:dev": "bun run build:dev && bun run start:dev",
     "lint": "eslint .",
     "preview": "vite preview --port 8083",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\" \"*.{ts,tsx,js,jsx,json,md}\"",
