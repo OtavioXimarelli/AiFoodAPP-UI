@@ -54,104 +54,36 @@ const PageLoader = () => (
 );
 
 const App = () => {
-  // Initialize session service
+  // Initialize session service - OTIMIZADO
   useEffect(() => {
+    // Usar ref para garantir que só execute uma vez
+    const hasInitialized = sessionStorage.getItem('app_initialized');
+    
+    if (hasInitialized) {
+      return; // Já inicializou, não fazer nada
+    }
+
     // Log status de desenvolvimento
     logDevStatus();
 
-    // Inicializar apenas se não estivermos na página de login ou callback do OAuth2
-    const shouldInitSession =
-      !window.location.pathname.includes('/login') &&
-      !window.location.pathname.includes('/oauth2/callback') &&
-      !window.location.pathname.includes('/login/oauth2/code/');
-
-    // Flag para controlar se devemos configurar verificações periódicas
-    let shouldSetupPeriodicChecks = shouldInitSession;
-
-    const initApp = async () => {
-      try {
-        // Limpar marcadores de logout órfãos no início da aplicação
-        const logoutTimestamp = sessionStorage.getItem('logout_timestamp');
-        if (logoutTimestamp) {
-          const timeSinceLogout = Date.now() - parseInt(logoutTimestamp);
-          if (timeSinceLogout > 30000) {
-            console.log('🚀 App: Clearing old logout markers on startup');
-            sessionStorage.removeItem('logout_in_progress');
-            sessionStorage.removeItem('logout_timestamp');
-          }
-        } else if (sessionStorage.getItem('logout_in_progress') === 'true') {
-          // Logout marker sem timestamp = órfão
-          console.log('🚀 App: Clearing orphaned logout marker on startup');
-          sessionStorage.removeItem('logout_in_progress');
-        }
-
-        if (!shouldInitSession) {
-          console.log('🚀 App: Skipping session initialization on login/callback page');
-          return;
-        }
-
-        console.log('🚀 App: Initializing session service...');
-
-        // Verificar se já temos um indicador de sessão estabelecida
-        const sessionTimestamp = localStorage.getItem('session_established_at');
-
-        // Se já temos uma sessão estabelecida, apenas inicializar em segundo plano
-        if (sessionTimestamp) {
-          console.log(
-            '🚀 App: Found previous session from:',
-            new Date(sessionTimestamp).toLocaleString()
-          );
-
-          // Inicializar em background sem bloquear
-          sessionService.initialize().catch(error => {
-            console.error('🚀 App: Background session init failed:', error);
-            shouldSetupPeriodicChecks = false;
-          });
-        } else {
-          // Sem sessão anterior, verificar sincronamente
-          await sessionService.initialize();
-          console.log('🚀 App: Session service initialized successfully');
-        }
-      } catch (error) {
-        console.error('🚀 App: Failed to initialize session service:', error);
-        shouldSetupPeriodicChecks = false;
+    // Apenas limpar marcadores órfãos, sem inicializar sessão automaticamente
+    const logoutTimestamp = sessionStorage.getItem('logout_timestamp');
+    if (logoutTimestamp) {
+      const timeSinceLogout = Date.now() - parseInt(logoutTimestamp);
+      if (timeSinceLogout > 30000) {
+        sessionStorage.removeItem('logout_in_progress');
+        sessionStorage.removeItem('logout_timestamp');
       }
-    };
-
-    // Inicializar o app
-    initApp();
-
-    // Configurar verificação periódica mais espaçada (a cada 15 minutos)
-    // e apenas se não estivermos em páginas de autenticação
-    let refreshInterval: number | null = null;
-
-    if (shouldSetupPeriodicChecks) {
-      refreshInterval = window.setInterval(
-        () => {
-          // Não verificar se estivermos em página de login/oauth
-          if (
-            window.location.pathname.includes('/login') ||
-            window.location.pathname.includes('/oauth2/callback') ||
-            window.location.pathname.includes('/login/oauth2/code/')
-          ) {
-            return;
-          }
-
-          console.log('🔄 App: Running periodic session check');
-          sessionService.checkPersistentSession().catch(error => {
-            console.error('🔄 App: Periodic session check failed:', error);
-          });
-        },
-        15 * 60 * 1000
-      ); // 15 minutos
+    } else if (sessionStorage.getItem('logout_in_progress') === 'true') {
+      sessionStorage.removeItem('logout_in_progress');
     }
 
-    return () => {
-      if (refreshInterval !== null) {
-        window.clearInterval(refreshInterval);
-      }
-    };
-  }, []);
+    console.log('🚀 App: Application initialized');
+    sessionStorage.setItem('app_initialized', 'true');
+
+    // Removido: verificação automática de sessão e polling
+    // A sessão será verificada pelo ProtectedRoute quando necessário
+  }, []); // Run only once on mount
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -165,7 +97,12 @@ const App = () => {
           <TooltipProvider>
             <Toaster />
             <Sonner />
-            <BrowserRouter>
+            <BrowserRouter
+              future={{
+                v7_startTransition: true,
+                v7_relativeSplatPath: true,
+              }}
+            >
               <ErrorBoundary>
                 <Suspense fallback={<PageLoader />}>
                   <Routes>

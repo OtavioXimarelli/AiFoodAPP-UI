@@ -1,4 +1,4 @@
-import { useEffect, memo, useCallback } from 'react';
+import { useEffect, memo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import Header from '@/components/Header';
@@ -21,7 +21,6 @@ import {
   LoadingAnimation,
 } from '@/components/ui/animated';
 import { useIntersectionObserver } from '@/hooks/useScrollAnimation';
-import { usePerformance } from '@/hooks/usePerformance';
 import {
   ChefHat,
   Sparkles,
@@ -198,13 +197,10 @@ const INTERSECTION_OPTIONS = {
   threshold: 0.2,
 } as const;
 
-const Index = () => {
+const Index = memo(() => {
   const { isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
   const [showAppStatus, setShowAppStatus] = useState(false);
-  
-  // Track performance but don't extract the function
-  usePerformance('IndexPage');
 
   // Redirect authenticated users to dashboard
   useEffect(() => {
@@ -529,6 +525,8 @@ const Index = () => {
       </div>
     </PageTransition>
   );
-};
+});
+
+Index.displayName = 'Index';
 
 export default Index;
