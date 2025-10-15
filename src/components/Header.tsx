@@ -124,10 +124,10 @@ const Header = ({
     );
   }
 
-  // Non-home page header
+  // Non-home page header - Solid opaque header for dashboard
   return (
     <header className={containerClass}>
-      <GlassSurface className="w-full rounded-[28px] border border-white/10">
+      <div className="w-full rounded-[28px] border border-border/20 bg-background/95 backdrop-blur-sm shadow-lg">
         <div className="flex h-10 items-center px-3 sm:h-12 sm:px-4 w-full">
           <Link
             to="/"
@@ -220,7 +220,7 @@ const Header = ({
             </div>
           </div>
         </div>
-      </GlassSurface>
+      </div>
     </header>
   );
 };
