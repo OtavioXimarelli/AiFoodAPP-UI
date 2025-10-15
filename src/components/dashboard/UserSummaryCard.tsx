@@ -8,7 +8,22 @@ interface UserSummaryCardProps {
 export const UserSummaryCard = memo(({
   userName,
 }: UserSummaryCardProps) => {
-  const firstName = userName?.split(' ')[0] || 'Chef';
+  // Extract first name, handling cases where email might be in name field
+  const getFirstName = (name?: string): string => {
+    if (!name) return 'Chef';
+    
+    // If it's an email, extract the part before @
+    if (name.includes('@')) {
+      const emailPart = name.split('@')[0];
+      // Capitalize first letter of email username
+      return emailPart.charAt(0).toUpperCase() + emailPart.slice(1);
+    }
+    
+    // Otherwise, get first word (first name)
+    return name.split(' ')[0];
+  };
+  
+  const firstName = getFirstName(userName);
 
   return (
     <AnimatedElement variant="slideUp" delay={0}>

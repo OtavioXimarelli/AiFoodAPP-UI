@@ -7,6 +7,7 @@ import {
   UpdateFoodPayload,
   FoodGroup,
   FOOD_GROUP_LABELS,
+  TAG_TRANSLATIONS,
   validateFoodItem,
 } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -830,13 +831,18 @@ const FoodInventory = memo(() => {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {displayedItems.map(item => {
             const expirationStatus = getExpirationStatus(item.expiration);
+            // Translate tags to Portuguese
             const tags = item.tags
               ? item.tags
                   .split(',')
-                  .map(tag => tag.trim())
+                  .map(tag => {
+                    const trimmed = tag.trim().toLowerCase();
+                    // Try to find translation, fallback to original with first letter capitalized
+                    return TAG_TRANSLATIONS[trimmed] || trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+                  })
                   .filter(Boolean)
               : [];
             const today = new Date();
@@ -851,7 +857,12 @@ const FoodInventory = memo(() => {
             return (
               <Card
                 key={item.id}
-                className={`relative group bg-card border border-border/40 overflow-hidden rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ${isExpired ? 'ring-1 ring-red-500/20 border-red-300/60' : ''} ${isExpiring ? 'ring-1 ring-red-500/20 border-red-300/60' : ''}`}
+                className={cn(
+                  "relative group bg-card border overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300",
+                  isExpired && "ring-2 ring-red-500/30 border-red-400/60",
+                  isExpiring && !isExpired && "ring-2 ring-orange-500/30 border-orange-400/60",
+                  !isExpired && !isExpiring && "border-border/40 hover:border-border/60"
+                )}
                 aria-label={
                   isExpired
                     ? 'Alimento vencido'
@@ -860,193 +871,179 @@ const FoodInventory = memo(() => {
                       : undefined
                 }
               >
-                <div className={`absolute inset-x-0 top-0 h-1 ${expirationStatus.color}`} />
+                {/* Status bar at top */}
+                <div className={cn(
+                  "absolute inset-x-0 top-0 h-1.5 z-20",
+                  isExpired && "bg-red-500",
+                  isExpiring && !isExpired && "bg-orange-500",
+                  !isExpired && !isExpiring && "bg-gradient-to-r from-green-500 to-emerald-500"
+                )} />
 
-                <AspectRatio ratio={16 / 9} className="relative">
+                {/* Image with overlay */}
+                <AspectRatio ratio={16 / 9} className="relative bg-muted">
                   <img
                     src={getFoodImage(item.name || 'Unknown')}
                     alt={item.name || 'Alimento'}
-                    className={`object-cover w-full h-full transition-transform duration-300 group-hover:scale-[1.03] ${isExpired ? 'grayscale saturate-50 opacity-90' : ''}`}
+                    className={cn(
+                      "object-cover w-full h-full transition-all duration-300 group-hover:scale-105",
+                      isExpired && "grayscale opacity-75"
+                    )}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent" />
-                  {isExpired && (
-                    <>
-                      <div className="absolute inset-0 bg-red-500/10" />
-                      <div className="absolute top-2 left-2 z-10">
-                        <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-red-600 text-white shadow">
-                          Vencido
-                        </span>
-                      </div>
-                      <div className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-red-600/90 text-white shadow">
-                        <AlertTriangle className="h-3.5 w-3.5" />
-                      </div>
-                    </>
-                  )}
-                  {isExpiring && !isExpired && (
-                    <>
-                      <div className="absolute inset-0 bg-red-500/5" />
-                      <div className="absolute top-2 left-2 z-10">
-                        <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-red-600 text-white shadow">
-                          {daysLeft === 0 ? 'Expira hoje' : `Expira em ${daysLeft}d`}
-                        </span>
-                      </div>
-                      <div className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-red-600/90 text-white shadow">
-                        <AlertTriangle className="h-3.5 w-3.5" />
-                      </div>
-                    </>
-                  )}
-                </AspectRatio>
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-start">
-                    <CardTitle className="text-base text-foreground flex items-center gap-1">
-                      {isExpired && <AlertTriangle className="h-3.5 w-3.5 text-red-600" />}
-                      {isExpiring && !isExpired && (
-                        <AlertTriangle className="h-3.5 w-3.5 text-red-600" />
-                      )}
-                      {item.name || 'Alimento sem nome'}
-                    </CardTitle>
-                    <Badge
-                      className={`${expirationStatus.color} text-white text-xs font-medium ${expirationStatus.status === 'expired' ? 'animate-pulse' : ''}`}
-                    >
-                      {expirationStatus.text}
-                    </Badge>
-                  </div>
-                  <div className="mt-1 h-px bg-gradient-to-r from-transparent via-border/60 to-transparent" />
-                  <div className="mt-2 flex items-center gap-4 text-xs text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Package className="h-3 w-3" />
-                      <span>Qtd: {item.quantity}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <CalendarIcon className="h-3 w-3" />
-                      <span
-                        className={cn(
-                          daysLeft !== null && daysLeft < 0 ? 'text-red-600 line-through' : ''
-                        )}
-                      >
-                        {validDate ? format(exp!, 'dd/MM/yyyy', { locale: ptBR }) : 'Data inválida'}
-                      </span>
-                    </div>
-                  </div>
-                  {/* Days-left progress */}
-                  {pct !== null && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="mt-3">
-                          <div className="flex justify-between text-[10px] text-muted-foreground">
-                            <span>Validade</span>
-                            <span>
-                              {daysLeft !== null && daysLeft < 0
-                                ? 'Vencido'
-                                : daysLeft === 0
-                                  ? 'Hoje'
-                                  : `${daysLeft}d`}
-                            </span>
-                          </div>
-                          <Progress
-                            value={pct ?? 0}
-                            aria-label="Progresso de validade (0-30 dias)"
-                            title={
-                              validDate
-                                ? daysLeft !== null && daysLeft < 0
-                                  ? `Vencido em ${format(exp!, 'dd/MM/yyyy', { locale: ptBR })} (há ${Math.abs(daysLeft!)} dias)`
-                                  : daysLeft === 0
-                                    ? `Expira hoje (${format(exp!, 'dd/MM/yyyy', { locale: ptBR })})`
-                                    : `Expira em ${format(exp!, 'dd/MM/yyyy', { locale: ptBR })} (${daysLeft} dias)`
-                                : 'Data inválida'
-                            }
-                            className="mt-1 h-1.5"
-                            indicatorClassName={
-                              expirationStatus.status === 'expired'
-                                ? 'bg-red-500'
-                                : expirationStatus.status === 'expiring'
-                                  ? 'bg-red-500'
-                                  : expirationStatus.status === 'fresh'
-                                    ? 'bg-green-500'
-                                    : 'bg-gray-400'
-                            }
-                          />
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        {validDate ? (
-                          daysLeft !== null && daysLeft < 0 ? (
-                            <span>
-                              Vencido em {format(exp!, 'dd/MM/yyyy', { locale: ptBR })} (há{' '}
-                              {Math.abs(daysLeft!)} dias)
-                            </span>
-                          ) : daysLeft === 0 ? (
-                            <span>
-                              Expira hoje ({format(exp!, 'dd/MM/yyyy', { locale: ptBR })})
-                            </span>
-                          ) : (
-                            <span>
-                              Expira em {format(exp!, 'dd/MM/yyyy', { locale: ptBR })} ({daysLeft}{' '}
-                              dias)
-                            </span>
-                          )
-                        ) : (
-                          <span>Data inválida</span>
-                        )}
-                      </TooltipContent>
-                    </Tooltip>
-                  )}
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-xs">
-                      <span className="text-muted-foreground">Grupo:</span>
-                      <Badge variant="outline" className="text-xs">
-                        {FOOD_GROUP_LABELS[item.foodGroup]}
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                  
+                  {/* Status badge on image */}
+                  {(isExpired || isExpiring) && (
+                    <div className="absolute top-3 left-3 z-10 flex items-center gap-2">
+                      <Badge className={cn(
+                        "px-2.5 py-1 text-xs font-bold shadow-lg backdrop-blur-sm",
+                        isExpired && "bg-red-600/95 hover:bg-red-600",
+                        isExpiring && "bg-orange-600/95 hover:bg-orange-600"
+                      )}>
+                        <AlertTriangle className="h-3 w-3 mr-1" />
+                        {isExpired ? 'Vencido' : daysLeft === 0 ? 'Expira hoje!' : `${daysLeft} dias`}
                       </Badge>
                     </div>
+                  )}
+                  
+                  {/* Food name overlay on image */}
+                  <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
+                    <h3 className="text-base font-bold text-white drop-shadow-lg line-clamp-1">
+                      {item.name || 'Alimento sem nome'}
+                    </h3>
+                  </div>
+                </AspectRatio>
 
-                    {(item.calories || item.protein || item.fat || item.carbohydrates) && (
-                      <div className="text-xs text-muted-foreground">
-                        <div className="grid grid-cols-2 gap-1">
-                          {item.calories && <span>Cal: {item.calories}</span>}
-                          {item.protein && <span>Prot: {item.protein}g</span>}
-                          {item.fat && <span>Gord: {item.fat}g</span>}
-                          {item.carbohydrates && <span>Carb: {item.carbohydrates}g</span>}
-                        </div>
+                <CardContent className="p-4 space-y-3">
+                  {/* Main info row */}
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                      <Package className="h-4 w-4" />
+                      <span className="font-medium">Qtd: {item.quantity}</span>
+                    </div>
+                    <Badge variant="outline" className="text-xs font-medium">
+                      {FOOD_GROUP_LABELS[item.foodGroup]}
+                    </Badge>
+                  </div>
+
+                  {/* Expiration date */}
+                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <CalendarIcon className="h-4 w-4" />
+                    <span className={cn(
+                      "font-medium",
+                      daysLeft !== null && daysLeft < 0 && "text-red-600 line-through"
+                    )}>
+                      {validDate ? format(exp!, 'dd/MM/yyyy', { locale: ptBR }) : 'Data inválida'}
+                    </span>
+                  </div>
+
+                  {/* Progress bar */}
+                  {pct !== null && validDate && (
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span className="font-medium">Validade</span>
+                        <span className="font-semibold">
+                          {daysLeft !== null && daysLeft < 0
+                            ? 'Vencido'
+                            : daysLeft === 0
+                              ? 'Hoje'
+                              : `${daysLeft} dias`}
+                        </span>
                       </div>
-                    )}
+                      <Progress
+                        value={pct}
+                        className="h-2"
+                        indicatorClassName={cn(
+                          "transition-all duration-300",
+                          expirationStatus.status === 'expired' && "bg-red-500",
+                          expirationStatus.status === 'expiring' && "bg-orange-500",
+                          expirationStatus.status === 'fresh' && "bg-green-500"
+                        )}
+                      />
+                    </div>
+                  )}
 
-                    {tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {tags.slice(0, 2).map((tag, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
+                  {/* Nutritional information */}
+                  {(item.calories || item.protein || item.fat || item.carbohydrates) && (
+                    <div className="space-y-2">
+                      <div className="h-px bg-gradient-to-r from-transparent via-border/40 to-transparent" />
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        {item.calories && (
+                          <div className="flex justify-between items-center p-2 rounded-lg bg-muted/40">
+                            <span className="text-muted-foreground">Calorias</span>
+                            <span className="font-semibold text-orange-600">{item.calories}</span>
+                          </div>
+                        )}
+                        {item.protein && (
+                          <div className="flex justify-between items-center p-2 rounded-lg bg-muted/40">
+                            <span className="text-muted-foreground">Proteínas</span>
+                            <span className="font-semibold text-blue-600">{item.protein}g</span>
+                          </div>
+                        )}
+                        {item.carbohydrates && (
+                          <div className="flex justify-between items-center p-2 rounded-lg bg-muted/40">
+                            <span className="text-muted-foreground">Carboidratos</span>
+                            <span className="font-semibold text-green-600">{item.carbohydrates}g</span>
+                          </div>
+                        )}
+                        {item.fat && (
+                          <div className="flex justify-between items-center p-2 rounded-lg bg-muted/40">
+                            <span className="text-muted-foreground">Gorduras</span>
+                            <span className="font-semibold text-amber-600">{item.fat}g</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Tags */}
+                  {tags.length > 0 && (
+                    <div className="space-y-2">
+                      <div className="h-px bg-gradient-to-r from-transparent via-border/40 to-transparent" />
+                      <div className="flex flex-wrap gap-1.5">
+                        {tags.slice(0, 3).map((tag, index) => (
+                          <Badge 
+                            key={index} 
+                            variant="secondary" 
+                            className="text-xs px-2 py-0.5 bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                          >
                             {tag}
                           </Badge>
                         ))}
-                        {tags.length > 2 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{tags.length - 2}
+                        {tags.length > 3 && (
+                          <Badge 
+                            variant="outline" 
+                            className="text-xs px-2 py-0.5 border-primary/30 text-primary"
+                          >
+                            +{tags.length - 3}
                           </Badge>
                         )}
                       </div>
-                    )}
+                    </div>
+                  )}
 
-                    <div className="flex justify-end gap-2 pt-2">
-                      {(isExpired || isExpiring) && (
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="h-8 w-8 p-0"
-                                  title="Renovar validade"
-                                  aria-label="Renovar validade"
-                                >
-                                  <RefreshCw className="h-3 w-3" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>Renovar validade</TooltipContent>
-                            </Tooltip>
-                          </PopoverTrigger>
-                          <PopoverContent
+                  {/* Action buttons */}
+                  <div className="flex justify-end gap-2 pt-2">
+                    {(isExpired || isExpiring) && (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-9 px-3 hover:bg-green-50 hover:text-green-700 hover:border-green-300 dark:hover:bg-green-950/30 dark:hover:text-green-400 transition-all"
+                                title="Renovar validade"
+                                aria-label="Renovar validade"
+                              >
+                                <RefreshCw className="h-4 w-4 mr-1.5" />
+                                <span className="text-xs font-medium">Renovar</span>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Renovar validade</TooltipContent>
+                          </Tooltip>
+                        </PopoverTrigger>
+                        <PopoverContent
                             align="end"
                             className="w-44 p-2 bg-background border border-border/30 rounded-md shadow-md"
                           >
@@ -1086,11 +1083,12 @@ const FoodInventory = memo(() => {
                             size="sm"
                             variant="outline"
                             onClick={() => handleEdit(item)}
-                            className="h-8 w-8 p-0"
+                            className="h-9 px-3 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 dark:hover:bg-blue-950/30 dark:hover:text-blue-400 transition-all"
                             title="Editar alimento"
                             aria-label="Editar alimento"
                           >
-                            <Pencil className="h-3 w-3" />
+                            <Pencil className="h-4 w-4 mr-1.5" />
+                            <span className="text-xs font-medium">Editar</span>
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>Editar alimento</TooltipContent>
@@ -1102,11 +1100,12 @@ const FoodInventory = memo(() => {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="h-8 w-8 p-0"
+                                className="h-9 px-3 hover:bg-red-50 hover:text-red-700 hover:border-red-300 dark:hover:bg-red-950/30 dark:hover:text-red-400 transition-all"
                                 title="Excluir alimento"
                                 aria-label="Excluir alimento"
                               >
-                                <Trash2 className="h-3 w-3" />
+                                <Trash2 className="h-4 w-4 mr-1.5" />
+                                <span className="text-xs font-medium">Excluir</span>
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>Excluir alimento</TooltipContent>
@@ -1129,16 +1128,15 @@ const FoodInventory = memo(() => {
                         </AlertDialogContent>
                       </AlertDialog>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      )}
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
 
-      {/* Modal de Boas-vindas */}
-      <Dialog open={showWelcomeModal} onOpenChange={setShowWelcomeModal}>
+        {/* Modal de Boas-vindas */}
+        <Dialog open={showWelcomeModal} onOpenChange={setShowWelcomeModal}>
         <DialogContent className="max-w-lg bg-background border border-border/20 shadow-2xl">
           <DialogHeader className="space-y-4 pb-6 border-b border-border/10">
             <DialogTitle className="flex items-center gap-3 text-xl">

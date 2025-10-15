@@ -176,7 +176,7 @@ const DashboardHome = memo(() => {
         {/* Food Groups Distribution */}
         {insights.topGroups.length > 0 && (
           <InsightCard
-            title="Distribuição por Grupo"
+            title="Distribuição por Grupo Alimentar"
             items={insights.topGroups.map(g => ({
               label: g.label,
               value: `${g.percentage}%`,
