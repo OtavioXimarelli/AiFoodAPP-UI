@@ -174,12 +174,93 @@ export const validateFoodItem = (item: Partial<CreateFoodPayload>) => {
 
 // Food group display names
 export const FOOD_GROUP_LABELS: Record<FoodGroup, string> = {
-  [FoodGroup.FRUITS]: 'Fruits',
-  [FoodGroup.VEGETABLES]: 'Vegetables',
-  [FoodGroup.GRAINS]: 'Grains',
-  [FoodGroup.PROTEIN]: 'Protein',
-  [FoodGroup.DAIRY]: 'Dairy',
-  [FoodGroup.FATS_OILS]: 'Fats & Oils',
-  [FoodGroup.BEVERAGES]: 'Beverages',
-  [FoodGroup.SWEETS_SNACKS]: 'Sweets & Snacks',
+  [FoodGroup.FRUITS]: 'Frutas',
+  [FoodGroup.VEGETABLES]: 'Vegetais',
+  [FoodGroup.GRAINS]: 'Grãos',
+  [FoodGroup.PROTEIN]: 'Proteínas',
+  [FoodGroup.DAIRY]: 'Laticínios',
+  [FoodGroup.FATS_OILS]: 'Gorduras e Óleos',
+  [FoodGroup.BEVERAGES]: 'Bebidas',
+  [FoodGroup.SWEETS_SNACKS]: 'Doces e Lanches',
+};
+
+// Tag translation dictionary (English to Portuguese)
+export const TAG_TRANSLATIONS: Record<string, string> = {
+  // Common food tags
+  'organic': 'orgânico',
+  'fresh': 'fresco',
+  'frozen': 'congelado',
+  'canned': 'enlatado',
+  'dried': 'seco',
+  'raw': 'cru',
+  'cooked': 'cozido',
+  'processed': 'processado',
+  'natural': 'natural',
+  'artificial': 'artificial',
+  
+  // Dietary tags
+  'vegetarian': 'vegetariano',
+  'vegan': 'vegano',
+  'gluten-free': 'sem glúten',
+  'lactose-free': 'sem lactose',
+  'sugar-free': 'sem açúcar',
+  'low-fat': 'baixo teor de gordura',
+  'low-carb': 'low-carb',
+  'high-protein': 'rico em proteína',
+  'high-fiber': 'rico em fibras',
+  'keto': 'cetogênico',
+  
+  // Nutritional characteristics
+  'protein': 'proteína',
+  'carbohydrate': 'carboidrato',
+  'fiber': 'fibra',
+  'vitamin': 'vitamina',
+  'mineral': 'mineral',
+  'antioxidant': 'antioxidante',
+  'probiotic': 'probiótico',
+  
+  // Preparation methods
+  'grilled': 'grelhado',
+  'baked': 'assado',
+  'fried': 'frito',
+  'steamed': 'no vapor',
+  'boiled': 'cozido',
+  'roasted': 'torrado',
+  
+  // Categories
+  'snack': 'lanche',
+  'breakfast': 'café da manhã',
+  'lunch': 'almoço',
+  'dinner': 'jantar',
+  'dessert': 'sobremesa',
+  'beverage': 'bebida',
+  'appetizer': 'aperitivo',
+  
+  // Texture/Type
+  'crispy': 'crocante',
+  'creamy': 'cremoso',
+  'smooth': 'suave',
+  'chunky': 'pedaços',
+  'liquid': 'líquido',
+  'solid': 'sólido',
+  
+  // Storage
+  'refrigerated': 'refrigerado',
+  'room-temperature': 'temperatura ambiente',
+  
+  // Origin
+  'local': 'local',
+  'imported': 'importado',
+  'homemade': 'caseiro',
+  
+  // Chicken specific
+  'chicken': 'frango',
+  
+  // Legumes
+  'legume': 'legume',
+  'vegetable': 'vegetal',
+  'orange': 'laranja',
+  
+  // Snacks
+  'highfiber': 'rico em fibra',
 };
