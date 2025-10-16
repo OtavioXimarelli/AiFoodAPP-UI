@@ -183,7 +183,7 @@ const OptimizedFoodInventory = memo(() => {
   const filteredAndSortedItems = useMemo(() => {
     const safeFoodItems = Array.isArray(foodItems) ? foodItems : [];
 
-    let filtered = safeFoodItems.filter(item => {
+    const filtered = safeFoodItems.filter(item => {
       const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesFilter = filterGroup === 'all' || item.foodGroup === filterGroup;
       return matchesSearch && matchesFilter;

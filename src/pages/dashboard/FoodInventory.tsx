@@ -59,11 +59,12 @@ import {
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
-import { format, isAfter, differenceInDays, addDays } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { isAfter, differenceInDays, addDays } from 'date-fns';
 import { EnhancedClickSpark } from '@/components/ui/enhanced-click-spark';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Progress } from '@/components/ui/progress';
+import { getExpirationStatus, DATE_PRESETS, formatDatePtBR, formatDateShort, getDateFromDays } from '@/utils/dateUtils';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const FoodInventory = memo(() => {
   const { foodItems, loading, error, createFoodItem, updateFoodItem, deleteFoodItem, clearError } =
@@ -110,54 +111,6 @@ const FoodInventory = memo(() => {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  // Cálculo de status de validade (antes do uso em filtros/ordenação)
-  const getExpirationStatus = useCallback((expiration: string) => {
-    if (!expiration || typeof expiration !== 'string') {
-      return {
-        status: 'unknown',
-        color: 'bg-gray-500',
-        text: '❓ Sem data',
-        icon: '❓',
-      };
-    }
-
-    const expirationDate = new Date(expiration);
-
-    if (isNaN(expirationDate.getTime())) {
-      return {
-        status: 'invalid',
-        color: 'bg-gray-500',
-        text: '❓ Data inválida',
-        icon: '❓',
-      };
-    }
-
-    const today = new Date();
-    const daysUntilExpiration = differenceInDays(expirationDate, today);
-
-    if (daysUntilExpiration < 0) {
-      return {
-        status: 'expired',
-        color: 'bg-red-500',
-        text: '⚠️ Vencido',
-        icon: '🚨',
-      };
-    } else if (daysUntilExpiration <= 3) {
-      return {
-        status: 'expiring',
-        color: 'bg-red-500',
-        text: `⏰ ${daysUntilExpiration} ${daysUntilExpiration === 1 ? 'dia restante' : 'dias restantes'}`,
-        icon: '⚠️',
-      };
-    } else {
-      return {
-        status: 'fresh',
-        color: 'bg-green-500',
-        text: `✅ ${daysUntilExpiration} dias restantes`,
-        icon: '✅',
-      };
-    }
-  }, []);
   const displayedItems = useMemo(() => {
     // 1) filtro por grupo
     const groupFiltered =
@@ -209,7 +162,7 @@ const FoodInventory = memo(() => {
       }
     });
     return withDerived.map(x => x.item);
-  }, [safeFoodItems, activeGroup, statusFilter, sortBy, getExpirationStatus]);
+  }, [safeFoodItems, activeGroup, statusFilter, sortBy]);
 
   // Remove mock food images - these will be handled by your backend
   const getFoodImage = useCallback((name: string) => {
@@ -294,8 +247,8 @@ const FoodInventory = memo(() => {
       }
       setOpen(false);
       resetForm();
-    } catch (error: any) {
-      toast.error(error.message || 'Falha ao salvar alimento');
+    } catch (error) {
+      toast.error(getErrorMessage(error) || 'Falha ao salvar alimento');
     }
   };
 
@@ -303,8 +256,8 @@ const FoodInventory = memo(() => {
     try {
       await deleteFoodItem(id);
       toast.success('Alimento excluído com sucesso!');
-    } catch (error: any) {
-      toast.error(error.message || 'Falha ao excluir alimento');
+    } catch (error) {
+      toast.error(getErrorMessage(error) || 'Falha ao excluir alimento');
     }
   };
 
@@ -498,9 +451,7 @@ const FoodInventory = memo(() => {
                             >
                               <CalendarIcon className="mr-2 h-4 w-4 text-orange-600" />
                               {form.expiration && !isNaN(new Date(form.expiration).getTime()) ? (
-                                format(new Date(form.expiration), "dd 'de' MMMM 'de' yyyy", {
-                                  locale: ptBR,
-                                })
+                                formatDatePtBR(form.expiration)
                               ) : (
                                 <span>Selecione a data de validade</span>
                               )}
@@ -548,22 +499,16 @@ const FoodInventory = memo(() => {
                             {/* Footer com Atalhos */}
                             <div className="p-3 border-t border-border/10 bg-muted/20">
                               <div className="flex gap-1 flex-wrap">
-                                {[
-                                  { label: 'Hoje', days: 0 },
-                                  { label: '3 dias', days: 3 },
-                                  { label: '1 semana', days: 7 },
-                                  { label: '1 mês', days: 30 },
-                                ].map(option => (
+                                {DATE_PRESETS.map(option => (
                                   <Button
                                     key={option.label}
                                     type="button"
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => {
-                                      const date = addDays(new Date(), option.days);
                                       setForm({
                                         ...form,
-                                        expiration: date.toISOString().split('T')[0],
+                                        expiration: getDateFromDays(option.days),
                                       });
                                       setCalendarOpen(false);
                                     }}
@@ -577,29 +522,6 @@ const FoodInventory = memo(() => {
                           </PopoverContent>
                         </Popover>
 
-                        {/* Botões de Atalho Externa (mantida para compatibilidade) */}
-                        <div className="flex gap-1 flex-wrap">
-                          {[
-                            { label: 'Hoje', days: 0 },
-                            { label: '3 dias', days: 3 },
-                            { label: '1 semana', days: 7 },
-                            { label: '1 mês', days: 30 },
-                          ].map(option => (
-                            <Button
-                              key={option.label}
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                const date = addDays(new Date(), option.days);
-                                setForm({ ...form, expiration: date.toISOString().split('T')[0] });
-                              }}
-                              className="h-7 px-2 text-xs border-border/50 hover:border-primary/50 hover:bg-primary/5"
-                            >
-                              {option.label}
-                            </Button>
-                          ))}
-                        </div>
                         {formErrors.expiration && (
                           <p className="text-sm text-red-500 flex items-center gap-1">
                             <AlertTriangle className="h-3 w-3" />
@@ -933,7 +855,7 @@ const FoodInventory = memo(() => {
                       "font-medium",
                       daysLeft !== null && daysLeft < 0 && "text-red-600 line-through"
                     )}>
-                      {validDate ? format(exp!, 'dd/MM/yyyy', { locale: ptBR }) : 'Data inválida'}
+                      {validDate ? formatDateShort(exp!) : 'Data inválida'}
                     </span>
                   </div>
 
@@ -1048,12 +970,7 @@ const FoodInventory = memo(() => {
                             className="w-44 p-2 bg-background border border-border/30 rounded-md shadow-md"
                           >
                             <div className="grid gap-1">
-                              {[
-                                { label: 'Hoje', days: 0 },
-                                { label: '+3 dias', days: 3 },
-                                { label: '+7 dias', days: 7 },
-                                { label: '+30 dias', days: 30 },
-                              ].map(opt => (
+                              {DATE_PRESETS.map(opt => (
                                 <Button
                                   key={opt.label}
                                   variant="ghost"
