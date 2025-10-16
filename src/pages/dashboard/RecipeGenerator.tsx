@@ -35,6 +35,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import PageToolbar from '@/components/shared/PageToolbar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 const RecipeGenerator = memo(() => {
   const {
@@ -67,8 +68,8 @@ const RecipeGenerator = memo(() => {
         saveRecipes(newRecipes);
         toast.success(`${newRecipes.length} receitas geradas com sucesso!`);
       }
-    } catch (error: any) {
-      toast.error(error.message || 'Falha ao gerar receitas');
+    } catch (error) {
+      toast.error(getErrorMessage(error) || 'Falha ao gerar receitas');
     }
   }, [generateRecipe, saveRecipes, clearRecipes]);
 
@@ -82,8 +83,8 @@ const RecipeGenerator = memo(() => {
         await analyzeRecipe(id);
         setAnalysisModalOpen(true);
         toast.success('Análise nutricional concluída!');
-      } catch (error: any) {
-        toast.error(error.message || 'Falha ao analisar receita');
+      } catch (error) {
+        toast.error(getErrorMessage(error) || 'Falha ao analisar receita');
       }
     },
     [analyzeRecipe]

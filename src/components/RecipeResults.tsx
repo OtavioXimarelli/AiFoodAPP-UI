@@ -72,13 +72,6 @@ const RecipeResults = () => {
     }));
 
     // Salvar automaticamente as receitas geradas
-    // normalize some display fields
-    recipesToSave.forEach(r => {
-      r.prepTime = r.prepTime; // keep original but UI will format
-      r.calories = r.calories;
-      r.servings = r.servings;
-    });
-
     saveRecipes(recipesToSave);
   }, [saveRecipes]); // Remove mockRecipes dependency to avoid infinite loop
 

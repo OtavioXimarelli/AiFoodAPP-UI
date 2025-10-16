@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { foodService } from '@/services/foodService';
 import { FoodItem, BasicFoodPayload, CreateFoodPayload, UpdateFoodPayload } from '@/lib/types';
 import { useAuth } from './useAuth';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 export const useFoodItems = () => {
   const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
@@ -20,9 +21,9 @@ export const useFoodItems = () => {
       setError(null);
       const items = await foodService.getFoodItems();
       setFoodItems(items);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to fetch food items:', error);
-      setError(error.message || 'Failed to fetch food items');
+      setError(getErrorMessage(error) || 'Failed to fetch food items');
     } finally {
       setLoading(false);
     }
@@ -35,9 +36,10 @@ export const useFoodItems = () => {
       const newItem = await foodService.createFoodItem(payload);
       setFoodItems(prev => [...prev, newItem]);
       return newItem;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to create food item:', error);
-      setError(error.message || 'Failed to create food item');
+      const message = getErrorMessage(error) || 'Failed to create food item';
+      setError(message);
       throw error;
     }
   };
@@ -50,9 +52,10 @@ export const useFoodItems = () => {
       );
       setFoodItems(prev => [...prev, ...newItems]);
       return newItems;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to create food items:', error);
-      setError(error.message || 'Failed to create food items');
+      const message = getErrorMessage(error) || 'Failed to create food items';
+      setError(message);
       throw error;
     }
   };
@@ -63,9 +66,10 @@ export const useFoodItems = () => {
       const updatedItem = await foodService.updateFoodItem(payload);
       setFoodItems(prev => prev.map(item => (item.id === updatedItem.id ? updatedItem : item)));
       return updatedItem;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to update food item:', error);
-      setError(error.message || 'Failed to update food item');
+      const message = getErrorMessage(error) || 'Failed to update food item';
+      setError(message);
       throw error;
     }
   };
@@ -75,9 +79,10 @@ export const useFoodItems = () => {
       setError(null);
       await foodService.deleteFoodItem(id);
       setFoodItems(prev => prev.filter(item => item.id !== id));
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to delete food item:', error);
-      setError(error.message || 'Failed to delete food item');
+      const message = getErrorMessage(error) || 'Failed to delete food item';
+      setError(message);
       throw error;
     }
   };
