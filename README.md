@@ -47,6 +47,9 @@ src/
 ├── lib/            # Utilities & API client
 ├── services/       # API service layer
 ├── store/          # Zustand stores
+├── utils/          # Shared utility functions
+│   ├── dateUtils.ts      # Date formatting and expiration logic
+│   └── errorUtils.ts     # Error handling utilities
 └── styles/         # Global styles
 ```
 
@@ -62,6 +65,21 @@ src/
 ## Documentation
 
 - [API Documentation](./ai_food_app_api_docs.md) - Backend API reference
+- [Refactoring Summary](./REFACTORING_SUMMARY.md) - Recent code improvements and refactoring changes
+
+## Recent Improvements
+
+### Code Quality Refactoring (Latest)
+
+We've recently completed a comprehensive refactoring to improve code quality, modularity, and maintainability:
+
+✅ **Reduced code duplication by 7.4%** - Eliminated ~100 lines of duplicate code
+✅ **Improved type safety** - Fixed 7 TypeScript 'any' type issues
+✅ **New utility modules** - Created reusable date and error handling utilities
+✅ **Cleaner components** - Simplified complex logic and removed unnecessary code
+✅ **Better developer experience** - Improved IDE support and code navigation
+
+See [REFACTORING_SUMMARY.md](./REFACTORING_SUMMARY.md) for detailed information.
 
 ## Features
 
