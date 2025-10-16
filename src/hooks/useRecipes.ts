@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { recipeService } from '@/services/recipeService';
 import { Recipe } from '@/lib/types';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 export const useRecipes = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -16,9 +17,10 @@ export const useRecipes = () => {
       const newRecipes = await recipeService.generateRecipes();
       setRecipes(newRecipes);
       return newRecipes;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to generate recipes:', error);
-      setError(error.message || 'Failed to generate recipes');
+      const message = getErrorMessage(error) || 'Failed to generate recipes';
+      setError(message);
       throw error;
     } finally {
       setLoading(false);
@@ -32,9 +34,10 @@ export const useRecipes = () => {
       const analysisResult = await recipeService.analyzeRecipe(id);
       setAnalysis(analysisResult);
       return analysisResult;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to analyze recipe:', error);
-      setError(error.message || 'Failed to analyze recipe');
+      const message = getErrorMessage(error) || 'Failed to analyze recipe';
+      setError(message);
       throw error;
     } finally {
       setAnalyzingId(null);
