@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BasicFoodPayload } from '@/lib/types';
+import { BasicFoodPayload, FoodItem } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -28,7 +28,7 @@ import { DATE_PRESETS, formatDatePtBR, getDateFromDays } from '@/utils/dateUtils
 interface FoodInventoryFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  editing: any;
+  editing: FoodItem | null;
   form: BasicFoodPayload;
   formErrors: Record<string, string>;
   onFormChange: (form: BasicFoodPayload) => void;

@@ -60,17 +60,17 @@ export const FoodInventoryFilters: React.FC<FoodInventoryFiltersProps> = ({
         <div className="flex items-center gap-2 overflow-x-auto">
           <span className="text-[11px] text-muted-foreground whitespace-nowrap">Status:</span>
           {[
-            { v: 'all', label: 'Todos' },
-            { v: 'expired', label: 'Vencidos' },
-            { v: 'expiring', label: 'Expirando' },
-            { v: 'fresh', label: 'Frescos' },
+            { v: 'all' as const, label: 'Todos' },
+            { v: 'expired' as const, label: 'Vencidos' },
+            { v: 'expiring' as const, label: 'Expirando' },
+            { v: 'fresh' as const, label: 'Frescos' },
           ].map(opt => (
             <button
               key={opt.v}
-              onClick={() => onStatusFilterChange(opt.v as any)}
+              onClick={() => onStatusFilterChange(opt.v)}
               className={cn(
                 'px-3 py-1.5 rounded-full text-xs border transition-colors',
-                statusFilter === (opt.v as any)
+                statusFilter === opt.v
                   ? 'bg-primary text-primary-foreground border-primary'
                   : 'bg-muted/40 text-foreground/80 border-border/50 hover:bg-muted'
               )}
@@ -81,7 +81,12 @@ export const FoodInventoryFilters: React.FC<FoodInventoryFiltersProps> = ({
         </div>
         <div className="flex items-center gap-2">
           <span className="text-[11px] text-muted-foreground">Ordenar:</span>
-          <Select value={sortBy} onValueChange={v => onSortByChange(v as any)}>
+          <Select
+            value={sortBy}
+            onValueChange={v =>
+              onSortByChange(v as typeof sortBy)
+            }
+          >
             <SelectTrigger className="h-8 w-56 text-xs">
               <SelectValue placeholder="Ordenar" />
             </SelectTrigger>
